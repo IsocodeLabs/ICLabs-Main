@@ -100,12 +100,9 @@
         preloader.style.setProperty("--my", `${myPercent}%`);
       }
 
-      const hero = document.querySelector(".hero");
-      if (hero) {
-        const rect = hero.getBoundingClientRect();
-        targetOrbMouse.x = (event.clientX - rect.left) / rect.width - 0.5;
-        targetOrbMouse.y = (event.clientY - rect.top) / rect.height - 0.5;
-      }
+      // Global orb mouse tracking (viewport-relative since orbs are fixed)
+      targetOrbMouse.x = (event.clientX / window.innerWidth) - 0.5;
+      targetOrbMouse.y = (event.clientY / window.innerHeight) - 0.5;
     });
 
     gsap.ticker.add(() => {
@@ -461,30 +458,32 @@
     scrollTrigger: { trigger: ".work", start: "top bottom", end: "bottom top", scrub: true }
   });
 
-  // Dynamic scroll parallax for all background elements
-  gsap.utils.toArray(".motion-field i").forEach((item) => {
+  // Dynamic scroll parallax for fixed floating elements (driven by body scroll)
+  gsap.utils.toArray(".motion-field i").forEach((item, i) => {
+    const speed = 30 + (i * 18);
     gsap.to(item, {
-      yPercent: -60,
-      rotate: 45,
+      y: -speed,
+      rotate: 20 + i * 6,
       ease: "none",
       scrollTrigger: {
-        trigger: item,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 0.5
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.6
       }
     });
   });
 
-  gsap.utils.toArray(".hero-3d-orbs .orb").forEach((orb) => {
+  gsap.utils.toArray(".hero-3d-orbs .orb").forEach((orb, i) => {
+    const speed = 20 + (i * 12);
     gsap.to(orb, {
-      yPercent: -40,
+      y: -speed,
       ease: "none",
       scrollTrigger: {
-        trigger: orb,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 0.5
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.6
       }
     });
   });
