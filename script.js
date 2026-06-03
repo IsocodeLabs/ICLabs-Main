@@ -31,10 +31,22 @@
       el.style.opacity = "1";
       el.style.transform = "none";
     });
+    const preloader = document.querySelector(".preloader");
+    if (preloader) preloader.style.display = "none";
     return;
   }
 
-  gsap.registerPlugin(ScrollTrigger);
+  if (typeof ScrollTrigger !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+  } else {
+    const preloader = document.querySelector(".preloader");
+    if (preloader) preloader.style.display = "none";
+    document.querySelectorAll(".reveal").forEach((el) => {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+    });
+    return;
+  }
 
   /* ═══════════════════════════════════════════════════════
      LENIS SMOOTH SCROLL INTEGRATION
@@ -248,8 +260,13 @@
     "-=0.6"
   );
 
-  // Preloader mask reveal trigger logic
+  // Preloader mask reveal trigger logic with safety timeout
+  const safetyTimeout = setTimeout(() => {
+    startReveal();
+  }, 3500);
+
   function startReveal() {
+    clearTimeout(safetyTimeout);
     if (preloader && !preloader.classList.contains("revealing")) {
       const mxPercent = (mouse.x / window.innerWidth) * 100;
       const myPercent = (mouse.y / window.innerHeight) * 100;

@@ -1678,17 +1678,17 @@ html.lenis, html.lenis body {
   -webkit-mask-image: radial-gradient(
     circle at var(--mx, 50%) var(--my, 50%),
     transparent 0%,
-    transparent calc(var(--reveal-radius) - var(--reveal-feather)),
-    rgba(0, 0, 0, 0.4) calc(var(--reveal-radius) - var(--reveal-feather) * 0.5),
-    #000 var(--reveal-radius),
+    transparent var(--reveal-radius),
+    rgba(0, 0, 0, 0.5) calc(var(--reveal-radius) + var(--reveal-feather) * 0.5),
+    #000 calc(var(--reveal-radius) + var(--reveal-feather)),
     #000 100%
   );
   mask-image: radial-gradient(
     circle at var(--mx, 50%) var(--my, 50%),
     transparent 0%,
-    transparent calc(var(--reveal-radius) - var(--reveal-feather)),
-    rgba(0, 0, 0, 0.4) calc(var(--reveal-radius) - var(--reveal-feather) * 0.5),
-    #000 var(--reveal-radius),
+    transparent var(--reveal-radius),
+    rgba(0, 0, 0, 0.5) calc(var(--reveal-radius) + var(--reveal-feather) * 0.5),
+    #000 calc(var(--reveal-radius) + var(--reveal-feather)),
     #000 100%
   );
   -webkit-mask-repeat: no-repeat;
