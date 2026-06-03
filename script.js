@@ -189,7 +189,10 @@
   const headline = document.querySelector("[data-split]");
   if (headline) {
     const words = headline.textContent.trim().split(" ");
-    headline.innerHTML = words.map((word) => `<span class="word">${word}</span>`).join(" ");
+    headline.innerHTML = words.map((word) => {
+      const chars = word.split("").map((char) => `<span class="char">${char}</span>`).join("");
+      return `<span class="word">${chars}</span>`;
+    }).join(" ");
   }
 
   const introTL = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
@@ -206,11 +209,11 @@
     );
   }
 
-  // 2. Headline 3D word reveal
+  // 2. Headline 3D character reveal
   if (headline) {
-    introTL.fromTo(".word",
-      { opacity: 0, y: 50, rotateX: -60, scale: 0.82, transformPerspective: 600 },
-      { opacity: 1, y: 0, rotateX: 0, scale: 1, duration: 0.95, stagger: 0.04 },
+    introTL.fromTo(".char",
+      { opacity: 0, y: 35, rotateX: -45, scale: 0.85, transformPerspective: 600 },
+      { opacity: 1, y: 0, rotateX: 0, scale: 1, duration: 0.85, stagger: 0.018 },
       "-=0.55"
     );
   }
@@ -294,11 +297,11 @@
 
       let revealObj = { radius: 0 };
       revealTL.to(revealObj, {
-        radius: 150,
-        duration: 1.5,
-        ease: "power3.inOut",
+        radius: 120, // 120vmax covers any viewport diagonal completely
+        duration: 1.6,
+        ease: "power2.inOut",
         onUpdate: () => {
-          preloader.style.setProperty("--reveal-radius", `${revealObj.radius}%`);
+          preloader.style.setProperty("--reveal-radius", `${revealObj.radius}vmax`);
         }
       }, "-=0.35");
 

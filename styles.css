@@ -759,7 +759,12 @@ h1 {
 }
 .word {
   display: inline-block;
-  transform-origin: 0 80%;
+  white-space: nowrap;
+}
+.char {
+  display: inline-block;
+  transform-origin: 50% 80%;
+  will-change: transform, opacity;
 }
 
 @media (max-width: 1050px) {
@@ -1684,8 +1689,8 @@ html.lenis, html.lenis body {
   align-items: center;
   z-index: 99999;
   pointer-events: auto; /* block clicks while loading */
-  --reveal-radius: 0%;
-  --reveal-feather: 15%;
+  --reveal-radius: 0vmax;
+  --reveal-feather: 14vmax;
   will-change: mask-image, -webkit-mask-image;
 }
 
@@ -1693,18 +1698,20 @@ html.lenis, html.lenis body {
   pointer-events: none; /* pass clicks through once reveal starts */
   -webkit-mask-image: radial-gradient(
     circle at var(--mx, 50%) var(--my, 50%),
-    transparent 0%,
-    transparent var(--reveal-radius),
-    rgba(0, 0, 0, 0.5) calc(var(--reveal-radius) + var(--reveal-feather) * 0.5),
-    #000 calc(var(--reveal-radius) + var(--reveal-feather)),
+    transparent 0,
+    transparent calc(var(--reveal-radius) - var(--reveal-feather)),
+    rgba(0, 0, 0, 0.34) calc(var(--reveal-radius) - 8vmax),
+    rgba(0, 0, 0, 0.72) calc(var(--reveal-radius) - 3vmax),
+    #000 var(--reveal-radius),
     #000 100%
   );
   mask-image: radial-gradient(
     circle at var(--mx, 50%) var(--my, 50%),
-    transparent 0%,
-    transparent var(--reveal-radius),
-    rgba(0, 0, 0, 0.5) calc(var(--reveal-radius) + var(--reveal-feather) * 0.5),
-    #000 calc(var(--reveal-radius) + var(--reveal-feather)),
+    transparent 0,
+    transparent calc(var(--reveal-radius) - var(--reveal-feather)),
+    rgba(0, 0, 0, 0.34) calc(var(--reveal-radius) - 8vmax),
+    rgba(0, 0, 0, 0.72) calc(var(--reveal-radius) - 3vmax),
+    #000 var(--reveal-radius),
     #000 100%
   );
   -webkit-mask-repeat: no-repeat;
