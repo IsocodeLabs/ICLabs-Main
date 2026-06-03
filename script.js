@@ -39,20 +39,23 @@
   /* ═══════════════════════════════════════════════════════
      LENIS SMOOTH SCROLL INTEGRATION
      ═══════════════════════════════════════════════════════ */
-  const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    gestureOrientation: "vertical",
-    smoothWheel: true
-  });
+  let lenis;
+  if (typeof Lenis !== "undefined") {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      gestureOrientation: "vertical",
+      smoothWheel: true
+    });
 
-  lenis.on("scroll", ScrollTrigger.update);
+    lenis.on("scroll", ScrollTrigger.update);
 
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
 
-  gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(0);
+  }
 
   /* ═══════════════════════════════════════════════════════
      SMOOTH LERP LOOP — Custom Cursor, Glow Ring, and Orbs
@@ -294,6 +297,26 @@
       );
     },
     once: true
+  });
+
+  /* ═══════════════════════════════════════════════════════
+     SECTION HEAD REVEALS
+     ═══════════════════════════════════════════════════════ */
+  document.querySelectorAll(".section-head.reveal").forEach((head) => {
+    gsap.fromTo(head,
+      { opacity: 0, y: 35 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.85,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: head,
+          start: "top 88%",
+          once: true
+        }
+      }
+    );
   });
 
   /* ═══════════════════════════════════════════════════════

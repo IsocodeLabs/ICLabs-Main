@@ -1601,6 +1601,10 @@ h1 {
   position: relative;
 }
 
+.js-motion .reveal {
+  opacity: 0;
+}
+
 /* ── PHASE 3 — SMOOTH SCROLL SUPPORT ── */
 html.lenis, html.lenis body {
   height: auto;
