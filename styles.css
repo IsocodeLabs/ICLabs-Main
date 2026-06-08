@@ -724,13 +724,16 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(36px, 4.5vw, 68px); }
 }
 
 .testimonial-card {
+  position: relative;
   padding: clamp(24px, 3vw, 36px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  background: rgba(18, 24, 32, 0.78);
+  backdrop-filter: blur(12px);
   transform-style: preserve-3d;
   will-change: transform;
   transition: border-color 0.35s ease, box-shadow 0.4s ease;
+  overflow: hidden;
 }
 .testimonial-card::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit;
@@ -748,7 +751,7 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(36px, 4.5vw, 68px); }
   margin: 0;
   font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.7;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.88);
   font-style: italic;
 }
 
@@ -759,6 +762,15 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(36px, 4.5vw, 68px); }
   font-style: normal;
   font-weight: 700;
   color: var(--green-2);
+}
+
+.testimonials .section-head h2,
+.testimonials .section-head p {
+  color: var(--white);
+}
+
+.testimonials .eyebrow {
+  color: var(--cyan);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -980,95 +992,7 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(36px, 4.5vw, 68px); }
 }
 .parallax-wrap { overflow: hidden; position: relative; }
 
-/* ═══════════════════════════════════════════════════════
-   TESTIMONIALS
-   ═══════════════════════════════════════════════════════ */
-.testimonials {
-  background: var(--paper); color: var(--text);
-}
-.testimonial-grid {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px; width: min(100%, var(--max)); margin-inline: auto;
-  perspective: 1200px;
-}
-.testimonial-card {
-  position: relative; margin: 0;
-  padding: clamp(24px, 3vw, 36px);
-  border: 1px solid var(--line-dark); border-radius: var(--radius);
-  background: var(--white);
-  transform-style: preserve-3d; will-change: transform;
-  transition: border-color .35s ease, box-shadow .4s ease;
-}
-.testimonial-card::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
-  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(124,255,191,0.12), transparent 40%);
-  opacity: 0; transition: opacity 0.35s var(--ease-smooth);
-  pointer-events: none; z-index: 1;
-}
-.testimonial-card.is-hovering::before { opacity: 1; }
-.testimonial-card.is-hovering {
-  border-color: rgba(124,255,191,0.4);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.14), 0 0 0 1px rgba(124,255,191,0.15);
-}
-.testimonial-card p {
-  font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6;
-  color: var(--text); font-style: italic; margin-bottom: 20px;
-}
-.testimonial-card footer {
-  display: flex; flex-direction: column; gap: 2px;
-}
-.testimonial-card footer strong {
-  color: var(--text); font-size: 15px;
-}
-.testimonial-card footer span {
-  color: var(--muted); font-size: 13px;
-  font-family: "JetBrains Mono", monospace;
-}
 
-/* ═══════════════════════════════════════════════════════
-   PRICE FEATURES LIST
-   ═══════════════════════════════════════════════════════ */
-.price-features {
-  list-style: none; padding: 0; margin: 18px 0 0;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.price-features li {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 14px; color: #5b6673; line-height: 1.4;
-}
-.price-features li::before {
-  content: "✓"; flex-shrink: 0;
-  display: grid; place-items: center;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: rgba(0,185,118,0.12); color: var(--green);
-  font-size: 11px; font-weight: 900;
-}
-.price-card.featured .price-features li::before {
-  background: rgba(0,185,118,0.2);
-}
-
-/* ═══════════════════════════════════════════════════════
-   SCROLL HINT
-   ═══════════════════════════════════════════════════════ */
-.scroll-hint {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 8px; margin-top: 28px;
-}
-.scroll-hint span {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.2em;
-  color: rgba(255,255,255,0.4);
-}
-.scroll-hint-line {
-  width: 1px; height: 48px;
-  background: linear-gradient(to bottom, rgba(0,185,118,0.6), transparent);
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
-  50% { opacity: 1; transform: scaleY(1); }
-}
 
 /* ═══════════════════════════════════════════════════════
    LENIS SMOOTH SCROLL

@@ -756,7 +756,7 @@
      ═══════════════════════════════════════════════════════ */
   const header = document.querySelector(".site-header");
   if (header) {
-    document.querySelectorAll(".services, .pricing, .testimonials").forEach((sec) => {
+    document.querySelectorAll(".services, .pricing, .faq").forEach((sec) => {
       ScrollTrigger.create({
         trigger: sec,
         start: "top 44px",
