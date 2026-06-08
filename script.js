@@ -751,6 +751,25 @@
     });
   }
 
+  const tickerSecondary = document.querySelector(".ticker-secondary div");
+  if (tickerSecondary) {
+    ScrollTrigger.create({
+      trigger: ".ticker-secondary",
+      start: "top bottom",
+      end: "bottom top",
+      onUpdate: (self) => {
+        let velocity = self.getVelocity() / 300;
+        let skew = gsap.utils.clamp(-8, 8, velocity);
+        gsap.to(tickerSecondary, {
+          skewX: skew,
+          duration: 0.4,
+          ease: "power2.out",
+          overwrite: "auto"
+        });
+      }
+    });
+  }
+
   /* ═══════════════════════════════════════════════════════
      NAVBAR THEME TRANSITIONS — Light/Dark Mode Scroll Toggles
      ═══════════════════════════════════════════════════════ */
