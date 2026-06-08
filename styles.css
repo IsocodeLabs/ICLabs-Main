@@ -1126,3 +1126,8 @@ html.lenis, html.lenis body { height: auto; }
   .line-reveal span { transform: none !important; }
   .global-floating-elements { display: none; }
 }
+
+section#process.process {
+  background: var(--ink) !important;
+  color: var(--white) !important;
+}
