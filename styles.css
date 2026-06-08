@@ -21,7 +21,11 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 body {
   margin: 0;
   color: var(--white);
@@ -29,6 +33,7 @@ body {
   font-family: Inter, system-ui, sans-serif;
   letter-spacing: 0;
   overflow-x: hidden;
+  max-width: 100vw;
   position: relative;
 }
 a { color: inherit; text-decoration: none; }
@@ -183,7 +188,7 @@ button, input, select, textarea { font: inherit; }
 .hero {
   position: relative;
   min-height: 100svh;
-  padding: clamp(96px, 13vh, 140px) var(--pad) clamp(48px, 8vh, 80px);
+  padding: clamp(80px, 10vh, 110px) var(--pad) clamp(40px, 6vh, 60px);
   overflow: hidden;
   /* NO isolation: isolate — must not create stacking context */
   /* NO z-index — must not create stacking context */
@@ -224,10 +229,11 @@ button, input, select, textarea { font: inherit; }
   position: relative;
   z-index: 2;
   width: min(100%, var(--max));
+  max-width: var(--max); /* ensure it stays within 1200px */
   min-height: calc(100svh - 190px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 0.98fr) minmax(330px, 0.82fr);
+  grid-template-columns: 1.1fr 0.9fr;
   gap: clamp(24px, 5vw, 70px);
   align-items: center;
 }
@@ -246,7 +252,7 @@ button, input, select, textarea { font: inherit; }
 .status-pill i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 24px var(--green); }
 h1, h2, h3, p { margin-top: 0; }
 h1, .section-head h2, .contact-panel h2 { font-family: "Playfair Display", Georgia, serif; line-height: 0.95; letter-spacing: 0; }
-h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
+h1 { max-width: 760px; margin: 22px 0; font-size: clamp(36px, 4.5vw, 68px); }
 .hero-copy > p { max-width: 680px; color: rgba(255,255,255,0.72); font-size: clamp(16px, 1.7vw, 20px); line-height: 1.65; }
 .hero-actions { flex-wrap: wrap; gap: 12px; margin: 30px 0 20px; }
 
@@ -309,7 +315,9 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
    ═══════════════════════════════════════════════════════ */
 .showcase {
   position: relative;
-  min-height: clamp(430px, 56vw, 630px);
+  min-height: clamp(350px, 40vw, 520px);
+  max-width: 100%;
+  overflow: hidden;
   perspective: 1200px;
 }
 .device-shell, .floating-card {
@@ -320,13 +328,13 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
   transform-style: preserve-3d; will-change: transform;
   transition: border-color .4s ease, box-shadow .5s ease;
 }
-.device-shell { position: absolute; inset: 5% 0 auto; padding: 14px; min-height: 420px; }
+.device-shell { position: absolute; inset: 5% 0 auto; padding: 14px; min-height: 320px; max-width: 100%; }
 .device-shell:hover { border-color: rgba(124,255,191,0.3); box-shadow: 0 50px 100px rgba(0,0,0,0.45), 0 0 60px rgba(0,185,118,0.08); }
 .device-top { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.62); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-bottom: 12px; }
 .device-top span { width: 10px; height: 10px; border-radius: 50%; background: var(--red); }
 .device-top span:nth-child(2) { background: var(--amber); }
 .device-top span:nth-child(3) { background: var(--green); }
-.hospital-ui { display: grid; grid-template-columns: 0.32fr 1fr; min-height: 360px; border-radius: 7px; overflow: hidden; background: #0d1218; }
+.hospital-ui { display: grid; grid-template-columns: 0.32fr 1fr; min-height: 280px; border-radius: 7px; overflow: hidden; background: #0d1218; }
 .ui-sidebar { padding: 18px; border-right: 1px solid var(--line); background: rgba(255,255,255,0.04); }
 .ui-sidebar b { display: block; margin-bottom: 28px; }
 .ui-sidebar i { display: block; height: 10px; margin: 16px 0; border-radius: 999px; background: rgba(255,255,255,0.14); }
@@ -336,7 +344,7 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
   color: var(--cyan); font-family: "JetBrains Mono", monospace;
   font-size: 11px; font-weight: 900; text-transform: uppercase;
 }
-.ui-head h2 { margin: 6px 0 0; font-size: clamp(22px, 3vw, 34px); }
+.ui-head h2 { margin: 6px 0 0; font-size: clamp(18px, 2.2vw, 28px); }
 .ui-head button, .email-builder button, .product-page button { border: 0; border-radius: 7px; padding: 9px 12px; background: var(--green); color: #04120d; font-weight: 900; }
 .patient-card {
   display: grid; grid-template-columns: 55px 1fr auto; gap: 10px;
@@ -361,8 +369,8 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
 @keyframes meterFlow { from { width: 34%; } to { width: 88%; } }
 .floating-card { position: absolute; padding: 18px; }
 .floating-card:hover { border-color: rgba(124,255,191,0.4); box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 50px rgba(124,255,191,0.12); }
-.campaign-card { right: -4%; bottom: 18%; width: min(310px, 58vw); }
-.creator-card { left: -4%; bottom: 4%; width: min(260px, 52vw); }
+.campaign-card { right: 0%; bottom: 15%; width: min(280px, 52vw); }
+.creator-card { left: 0%; bottom: 2%; width: min(230px, 46vw); }
 .floating-card h3 { margin: 9px 0 14px; font-size: 20px; }
 .campaign-nodes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
 .campaign-nodes span {
@@ -403,7 +411,7 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
   z-index: 2;
 }
 .section-head { width: min(100%, var(--max)); margin: 0 auto clamp(28px, 5vw, 54px); }
-.section-head h2, .contact-panel h2 { max-width: 900px; margin-bottom: 16px; font-size: clamp(34px, 5.4vw, 72px); }
+.section-head h2, .contact-panel h2 { max-width: 900px; margin-bottom: 16px; font-size: clamp(28px, 3.8vw, 56px); }
 .section-head p:not(.eyebrow) { max-width: 720px; color: var(--muted); line-height: 1.7; }
 .eyebrow { transition: letter-spacing 0.5s var(--ease-smooth); }
 .section-head:hover .eyebrow { letter-spacing: 0.15em; }
@@ -436,7 +444,12 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
    SERVICES — With aggressive hover feedback
    ═══════════════════════════════════════════════════════ */
 .service-orbit, .work-board, .price-track, .process-rail, .contact { width: min(100%, var(--max)); margin-inline: auto; }
-.service-orbit { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; perspective: 1200px; }
+.service-orbit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  perspective: 1200px;
+}
 .service-tile {
   position: relative; min-height: 310px;
   padding: clamp(20px, 2.6vw, 30px);
@@ -474,8 +487,8 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
    ═══════════════════════════════════════════════════════ */
 .work-board { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; perspective: 1200px; }
 .work-card {
-  position: relative; display: grid; grid-template-columns: 0.95fr 1fr;
-  gap: 24px; min-height: 400px; padding: 18px;
+  position: relative; display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px; min-height: auto; padding: 18px;
   border: 1px solid var(--line); border-radius: var(--radius);
   background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.035));
   overflow: hidden;
@@ -505,7 +518,7 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
   background-size: 28px 28px; overflow: hidden;
 }
 .work-copy { align-self: center; }
-.work-copy h3 { margin: 10px 0 12px; font-size: clamp(26px, 3.4vw, 48px); }
+.work-copy h3 { margin: 10px 0 12px; font-size: clamp(22px, 2.6vw, 38px); }
 .work-copy p { color: rgba(255,255,255,.72); line-height: 1.65; }
 .work-copy a {
   color: var(--green-2); font-weight: 900;
@@ -568,7 +581,12 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
 /* ═══════════════════════════════════════════════════════
    PRICING — With depth shadows
    ═══════════════════════════════════════════════════════ */
-.price-track { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; perspective: 1200px; }
+.price-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  perspective: 1200px;
+}
 .price-card {
   position: relative; min-height: 310px;
   padding: clamp(20px, 2.6vw, 30px);
@@ -598,7 +616,7 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
   border-color: rgba(124,255,191,0.5);
   box-shadow: 0 35px 70px rgba(0,185,118,0.25), 0 0 60px rgba(0,185,118,0.12);
 }
-.price-card h3 { margin: 16px 0; font-size: clamp(34px, 4vw, 54px); }
+.price-card h3 { margin: 16px 0; font-size: clamp(28px, 3.2vw, 44px); }
 .price-card p { color: #5b6673; line-height: 1.65; }
 .price-count { font-family: inherit; font-size: inherit; font-weight: inherit; color: inherit; text-transform: none; }
 .price-card.featured { border-color: rgba(0,185,118,.6); box-shadow: 0 24px 80px rgba(0,185,118,.16); }
@@ -607,8 +625,11 @@ h1 { max-width: 760px; margin: 22px 0; font-size: clamp(42px, 7.3vw, 92px); }
    PROCESS — Chain reaction hover
    ═══════════════════════════════════════════════════════ */
 .process-rail {
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px; position: relative; perspective: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  position: relative;
+  perspective: 1200px;
 }
 .process-rail article {
   min-height: 220px; padding: 20px;
