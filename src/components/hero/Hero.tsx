@@ -29,9 +29,24 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
   // after mount so SSR HTML stays stable.
   const [glReady, setGlReady] = useState(false)
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_DISABLE_WEBGL && webglAvailable()) setGlReady(true)
+    if (process.env.NEXT_PUBLIC_DISABLE_WEBGL) {
+      console.debug('[hero] static frame — WebGL disabled via env')
+    } else if (!webglAvailable()) {
+      console.debug('[hero] static frame — no hardware WebGL on this machine')
+    } else {
+      setGlReady(true)
+    }
   }, [])
   const webgl = tier === 'full' && isDesktop && glReady
+
+  // one honest line in the console so "why is it static?" is never a mystery
+  useEffect(() => {
+    console.debug(
+      webgl
+        ? '[hero] webgl scene active'
+        : `[hero] static frame (motionTier=${tier}, desktop=${isDesktop}, gl=${glReady})`,
+    )
+  }, [webgl, tier, isDesktop, glReady])
 
   const wrapRef = useRef<HTMLDivElement>(null)
   const introRef = useRef<HTMLDivElement>(null)

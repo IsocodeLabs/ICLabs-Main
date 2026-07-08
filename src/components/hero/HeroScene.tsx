@@ -40,12 +40,14 @@ const WIND_FRAG = /* glsl */ `
   void main() {
     vec2 uv = vUv;
     // sway strongest at the flower tops, zero at the rooted bottom edge
-    float band = smoothstep(0.02, 0.32, uv.y) * smoothstep(0.78, 0.38, uv.y);
-    float sway = sin(uv.x * 6.0 + uTime * 0.85) * 0.55
-               + sin(uv.x * 13.0 - uTime * 1.6) * 0.3
-               + sin(uTime * 0.5) * 0.15;
-    uv.x += sway * uWind * band;
-    uv.y += cos(uv.x * 9.0 + uTime * 1.1) * uWind * 0.45 * band;
+    float band = smoothstep(0.02, 0.30, uv.y) * (1.0 - smoothstep(0.42, 0.80, uv.y));
+    // a slow gust travelling across the field + faster flutter on top
+    float gust = sin(uv.x * 4.0 + uTime * 0.7) * 0.6
+               + sin(uv.x * 9.0 - uTime * 1.4) * 0.28
+               + sin(uv.x * 21.0 + uTime * 2.3) * 0.16;
+    uv.x += gust * uWind * band;
+    uv.y += (cos(uv.x * 7.0 + uTime * 0.9) * 0.5
+           + sin(uv.x * 15.0 + uTime * 1.7) * 0.2) * uWind * 0.6 * band;
     vec4 c = texture2D(uMap, uv);
     if (c.a < 0.003) discard;
     gl_FragColor = c;
@@ -122,7 +124,7 @@ function Scene({ motion }: { motion: HeroMotionState }) {
         uniforms: {
           uMap: { value: flora },
           uTime: { value: 0 },
-          uWind: { value: 0.0065 },
+          uWind: { value: 0.016 },
         },
         transparent: true,
         depthWrite: false,
