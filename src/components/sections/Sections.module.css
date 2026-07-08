@@ -1,0 +1,343 @@
+/* Shared section rhythm — generous, editorial. */
+
+.section {
+  padding-block: clamp(96px, 14vh, 160px);
+}
+
+/* extra tail room so the next section's background fade happens over
+   whitespace, never over this section's content */
+.tailRoom {
+  padding-bottom: clamp(200px, 28vh, 320px);
+}
+
+.inner {
+  width: min(var(--container), 100% - var(--gutter) * 2);
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrowRow {
+  margin-bottom: var(--sp-24);
+}
+
+.narrow {
+  max-width: 62ch;
+}
+
+.lead {
+  font-size: var(--text-lead);
+  color: var(--fg, var(--ink));
+}
+
+.leadMuted {
+  font-size: var(--text-lead);
+  color: var(--fg-muted, var(--taupe));
+}
+
+.displayMd {
+  font-size: var(--text-display-md);
+}
+
+.displayLg {
+  font-size: var(--text-display-lg);
+}
+
+.stack24 > * + * {
+  margin-top: var(--sp-24);
+}
+
+.stack16 > * + * {
+  margin-top: var(--sp-16);
+}
+
+/* ---------- Problem ---------- */
+
+.problemNarrative {
+  max-width: 34ch;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--text-title);
+  line-height: 1.32;
+  font-weight: 420;
+}
+
+.problemNarrative p + p {
+  margin-top: var(--sp-32);
+}
+
+.problemNarrative strong {
+  font-weight: 560;
+  color: var(--copper-lit);
+}
+
+.statsBand {
+  margin-top: var(--sp-96);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-16);
+}
+
+.statCard {
+  padding: var(--sp-32) var(--sp-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+  min-height: 200px;
+}
+
+.statValue {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--fs-50);
+  font-weight: 480;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: var(--fs-14);
+  color: var(--fg-muted);
+  flex: 1;
+}
+
+.statSource {
+  color: var(--copper-lit);
+}
+
+@media (max-width: 1024px) {
+  .statsBand {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .statsBand {
+    grid-template-columns: 1fr;
+    margin-top: var(--sp-64);
+  }
+}
+
+/* ---------- What we build ---------- */
+
+.wwbGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: var(--sp-64);
+  align-items: start;
+}
+
+.wwbAside {
+  border-left: 2px solid var(--copper);
+  padding-left: var(--sp-24);
+  color: var(--fg-muted);
+  font-size: var(--fs-16);
+  max-width: 38ch;
+}
+
+@media (max-width: 1024px) {
+  .wwbGrid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-32);
+  }
+}
+
+/* ---------- Labs ---------- */
+
+.beliefBeat {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--text-display-md);
+  font-weight: 440;
+  max-width: 20ch;
+}
+
+.beliefBeat em {
+  font-style: normal;
+  font-weight: 620;
+  background: var(--copper-ink-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.labsGrid {
+  margin-top: var(--sp-64);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-24);
+}
+
+.productCardShadow {
+  filter: var(--e1-drop);
+  transition: filter var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-out);
+}
+
+.productCardShadow:hover {
+  filter: var(--e2-drop);
+  transform: translateY(-4px);
+}
+
+.productCard {
+  display: block;
+  background: #fffdf9;
+  height: 100%;
+}
+
+.productImageWrap {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.productImageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-out);
+}
+
+.productCardShadow:hover .productImageWrap img {
+  transform: scale(1.035);
+}
+
+.productBody {
+  padding: var(--sp-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+
+.productTopRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-12);
+}
+
+.productName {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--fs-28);
+  font-weight: 520;
+}
+
+.productStatus {
+  color: var(--copper);
+  white-space: nowrap;
+}
+
+.productBlurb {
+  color: var(--fg-muted);
+  font-size: var(--fs-16);
+  max-width: 44ch;
+}
+
+.productBadge {
+  margin-top: var(--sp-12);
+  color: rgba(26, 23, 20, 0.45);
+}
+
+.creatorMention {
+  margin-top: var(--sp-64);
+  padding-top: var(--sp-32);
+  border-top: 1px solid var(--line);
+  color: var(--fg-muted);
+  max-width: 58ch;
+}
+
+.creatorMention a {
+  color: var(--copper);
+  border-bottom: 1px solid rgba(176, 106, 59, 0.35);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.creatorMention a:hover {
+  border-color: var(--copper);
+}
+
+@media (max-width: 1024px) {
+  .labsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- CTA ---------- */
+
+.ctaWrap {
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-24);
+}
+
+.ctaBody {
+  max-width: 52ch;
+  color: var(--fg-muted);
+  font-size: var(--text-lead);
+}
+
+.ctaActions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-16);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--sp-16);
+}
+
+.ctaQuote {
+  margin-top: var(--sp-48);
+  color: rgba(244, 239, 230, 0.5);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--fs-16);
+  font-style: italic;
+  min-height: 1.6em;
+}
+
+/* ---------- About ---------- */
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-96);
+  align-items: start;
+}
+
+.valuesList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.valueItem {
+  padding-block: var(--sp-24);
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--sp-16);
+}
+
+.valueTitle {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--fs-21);
+  font-weight: 520;
+}
+
+.valueDesc {
+  color: var(--fg-muted);
+  font-size: var(--fs-16);
+}
+
+.teamLine {
+  margin-top: var(--sp-32);
+  color: var(--copper);
+}
+
+@media (max-width: 1024px) {
+  .aboutGrid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-48);
+  }
+
+  .valueItem {
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+}

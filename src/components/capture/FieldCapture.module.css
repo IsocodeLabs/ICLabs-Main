@@ -1,0 +1,96 @@
+.wrap {
+  max-width: 480px;
+}
+
+.label {
+  display: block;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--fs-21);
+  font-weight: 480;
+  margin-bottom: var(--sp-16);
+}
+
+.optional {
+  color: var(--fg-muted);
+  font-size: var(--fs-14);
+  font-family: var(--font-sans), sans-serif;
+  margin-left: var(--sp-8);
+}
+
+.row {
+  display: flex;
+  gap: var(--sp-12);
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--line);
+  padding: var(--sp-8) 0 var(--sp-12);
+  font-size: var(--text-lead);
+  color: var(--fg);
+  transition: border-color var(--dur-fast) var(--ease-out);
+  border-radius: 0;
+  min-width: 0;
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--copper);
+}
+
+.input::placeholder {
+  color: var(--fg-muted);
+  opacity: 0.55;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--sp-24);
+  min-height: 28px;
+}
+
+.dots {
+  display: flex;
+  gap: var(--sp-8);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.dotDone {
+  background: var(--copper);
+}
+
+.back {
+  color: var(--fg-muted);
+  font-size: var(--fs-14);
+}
+
+.back:hover {
+  color: var(--copper);
+}
+
+.error {
+  margin-top: var(--sp-12);
+  color: var(--error);
+  font-size: var(--fs-14);
+}
+
+.done {
+  font-size: var(--text-lead);
+}
+
+.doneNote {
+  margin-top: var(--sp-8);
+  color: var(--fg-muted);
+}

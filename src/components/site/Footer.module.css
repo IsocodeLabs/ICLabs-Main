@@ -1,0 +1,66 @@
+.footer {
+  padding-block: var(--sp-96) var(--sp-48);
+}
+
+.inner {
+  width: min(var(--container), 100% - var(--gutter) * 2);
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--sp-48);
+  justify-items: center;
+  text-align: center;
+}
+
+.belief {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--text-display-md);
+  font-weight: 440;
+}
+
+.wordmark {
+  font-weight: 600;
+  font-size: var(--fs-14);
+  letter-spacing: 0.16em;
+  color: var(--fg);
+}
+
+.wordmark span {
+  color: var(--copper-lit);
+}
+
+.nav {
+  display: flex;
+  gap: var(--sp-24);
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+}
+
+.nav a {
+  color: var(--fg-muted);
+  font-size: var(--fs-14);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.nav a:hover {
+  color: var(--copper-lit);
+}
+
+.legalRow {
+  display: flex;
+  gap: var(--sp-16);
+  align-items: center;
+  color: rgba(244, 239, 230, 0.4);
+  font-size: var(--fs-12);
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-24);
+  width: 100%;
+  justify-content: center;
+}
+
+.legalRow a:hover {
+  color: var(--copper-lit);
+}

@@ -1,0 +1,220 @@
+.page {
+  min-height: 100vh;
+  min-height: 100svh;
+  background:
+    radial-gradient(70% 55% at 70% 20%, rgba(176, 106, 59, 0.14), transparent 70%),
+    radial-gradient(50% 45% at 15% 80%, rgba(126, 74, 40, 0.1), transparent 70%),
+    var(--midnight);
+  color: var(--paper);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: var(--sp-24) var(--gutter) var(--sp-32);
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-16);
+  width: min(880px, 100%);
+  margin-inline: auto;
+}
+
+.wordmark {
+  font-weight: 600;
+  font-size: var(--fs-12);
+  letter-spacing: 0.16em;
+  color: var(--paper);
+}
+
+.wordmark span {
+  color: var(--copper-lit);
+}
+
+.progressTrack {
+  flex: 1;
+  height: 2px;
+  background: rgba(244, 239, 230, 0.14);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 380px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--copper-deep), var(--copper-lit));
+  transition: width 500ms var(--ease-out);
+  border-radius: 2px;
+}
+
+.stepCount {
+  color: rgba(244, 239, 230, 0.5);
+}
+
+.stage {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  width: min(880px, 100%);
+  margin-inline: auto;
+  padding-block: var(--sp-48);
+}
+
+.entryHeading,
+.prompt {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: var(--text-display-md);
+  font-weight: 460;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.entryCopy {
+  margin-top: var(--sp-24);
+  color: rgba(244, 239, 230, 0.65);
+  font-size: var(--text-lead);
+  max-width: 46ch;
+}
+
+.entryActions {
+  margin-top: var(--sp-48);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-16);
+}
+
+.hatch {
+  color: rgba(244, 239, 230, 0.65);
+  border-bottom: 1px solid rgba(206, 148, 99, 0.4);
+  padding-bottom: 2px;
+  font-size: var(--fs-16);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.hatch:hover {
+  color: var(--copper-lit);
+}
+
+.helper {
+  margin-top: var(--sp-12);
+  color: rgba(244, 239, 230, 0.5);
+  font-size: var(--fs-14);
+}
+
+/* ---- options ---- */
+
+.taps {
+  margin-top: var(--sp-48);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+  width: min(420px, 100%);
+}
+
+.tap {
+  padding: var(--sp-16) var(--sp-24);
+  border: 1px solid rgba(244, 239, 230, 0.16);
+  border-radius: var(--r-md);
+  color: var(--paper);
+  font-size: var(--fs-16);
+  text-align: center;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.tap:hover {
+  border-color: var(--copper);
+  background: rgba(176, 106, 59, 0.12);
+  transform: translateY(-1px);
+}
+
+.tiles {
+  margin-top: var(--sp-48);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-16);
+  width: min(880px, 100%);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+  padding: 0;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+}
+
+.tileImage {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(244, 239, 230, 0.12);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.tile:hover .tileImage {
+  border-color: var(--copper);
+  box-shadow: 0 12px 40px rgba(176, 106, 59, 0.25);
+}
+
+.tileLabel {
+  color: rgba(244, 239, 230, 0.85);
+  font-size: var(--fs-14);
+}
+
+.quote {
+  text-align: center;
+  color: rgba(244, 239, 230, 0.42);
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-size: var(--fs-14);
+  min-height: 1.6em;
+  width: min(880px, 100%);
+  margin-inline: auto;
+}
+
+.backRow {
+  margin-top: var(--sp-32);
+}
+
+.backLink {
+  color: rgba(244, 239, 230, 0.45);
+  font-size: var(--fs-14);
+}
+
+.backLink:hover {
+  color: var(--copper-lit);
+}
+
+.captureWrap {
+  margin-top: var(--sp-48);
+  text-align: left;
+  width: min(480px, 100%);
+}
+
+/* dark-register overrides for the shared capture */
+.captureWrap :global(.mono-label) {
+  color: var(--copper-lit);
+}
+
+@media (max-width: 1024px) {
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stage {
+    place-content: start center;
+    padding-top: var(--sp-64);
+  }
+}

@@ -1,0 +1,13 @@
+/* Frosted, warm-tinted translucency + a single luminous hairline. */
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--e1);
+}
+
+.dark {
+  background: var(--glass-bg-dark);
+  border-color: var(--glass-line-dark);
+}

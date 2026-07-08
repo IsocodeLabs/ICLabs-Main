@@ -1,0 +1,39 @@
+.page {
+  background: var(--paper);
+  min-height: 100vh;
+  padding: 160px 0 96px;
+}
+
+.inner {
+  width: min(720px, 100% - var(--gutter) * 2);
+  margin-inline: auto;
+}
+
+.title {
+  font-size: var(--text-display-md);
+  margin-bottom: var(--sp-16);
+}
+
+.note {
+  color: var(--taupe);
+  font-size: var(--fs-14);
+  border-left: 2px solid var(--warning);
+  padding-left: var(--sp-16);
+  margin-bottom: var(--sp-48);
+}
+
+.body h2 {
+  font-size: var(--fs-21);
+  margin: var(--sp-32) 0 var(--sp-8);
+}
+
+.body p {
+  color: rgba(26, 23, 20, 0.75);
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: var(--sp-32);
+  color: var(--copper);
+  font-size: var(--fs-14);
+}
