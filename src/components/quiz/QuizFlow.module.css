@@ -2,10 +2,10 @@
   min-height: 100vh;
   min-height: 100svh;
   background:
-    radial-gradient(70% 55% at 70% 20%, rgba(176, 106, 59, 0.14), transparent 70%),
-    radial-gradient(50% 45% at 15% 80%, rgba(126, 74, 40, 0.1), transparent 70%),
-    var(--midnight);
-  color: var(--paper);
+    radial-gradient(70% 55% at 72% 16%, rgba(20, 18, 16, 0.035), transparent 70%),
+    radial-gradient(52% 45% at 12% 84%, rgba(20, 18, 16, 0.03), transparent 70%),
+    var(--paper);
+  color: var(--ink);
   display: grid;
   grid-template-rows: auto 1fr auto;
   padding: var(--sp-24) var(--gutter) var(--sp-32);
@@ -24,17 +24,13 @@
   font-weight: 600;
   font-size: var(--fs-12);
   letter-spacing: 0.16em;
-  color: var(--paper);
-}
-
-.wordmark span {
-  color: var(--copper-lit);
+  color: var(--ink);
 }
 
 .progressTrack {
   flex: 1;
   height: 2px;
-  background: rgba(244, 239, 230, 0.14);
+  background: var(--hairline);
   border-radius: 2px;
   overflow: hidden;
   max-width: 380px;
@@ -42,13 +38,13 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--copper-deep), var(--copper-lit));
+  background: var(--ink);
   transition: width 500ms var(--ease-out);
   border-radius: 2px;
 }
 
 .stepCount {
-  color: rgba(244, 239, 230, 0.5);
+  color: var(--grey);
 }
 
 .stage {
@@ -63,16 +59,19 @@
 
 .entryHeading,
 .prompt {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
   font-size: var(--text-display-md);
-  font-weight: 460;
+  line-height: 0.98;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
   max-width: 22ch;
   text-wrap: balance;
 }
 
 .entryCopy {
   margin-top: var(--sp-24);
-  color: rgba(244, 239, 230, 0.65);
+  color: var(--grey);
   font-size: var(--text-lead);
   max-width: 46ch;
 }
@@ -86,20 +85,20 @@
 }
 
 .hatch {
-  color: rgba(244, 239, 230, 0.65);
-  border-bottom: 1px solid rgba(206, 148, 99, 0.4);
+  color: var(--grey);
+  border-bottom: 1px solid var(--ink);
   padding-bottom: 2px;
   font-size: var(--fs-16);
   transition: color var(--dur-fast) var(--ease-out);
 }
 
 .hatch:hover {
-  color: var(--copper-lit);
+  color: var(--ink);
 }
 
 .helper {
   margin-top: var(--sp-12);
-  color: rgba(244, 239, 230, 0.5);
+  color: var(--grey);
   font-size: var(--fs-14);
 }
 
@@ -115,9 +114,10 @@
 
 .tap {
   padding: var(--sp-16) var(--sp-24);
-  border: 1px solid rgba(244, 239, 230, 0.16);
+  border: 1px solid var(--hairline);
   border-radius: var(--r-md);
-  color: var(--paper);
+  background: var(--white);
+  color: var(--ink);
   font-size: var(--fs-16);
   text-align: center;
   transition:
@@ -127,8 +127,8 @@
 }
 
 .tap:hover {
-  border-color: var(--copper);
-  background: rgba(176, 106, 59, 0.12);
+  border-color: var(--ink);
+  background: var(--paper);
   transform: translateY(-1px);
 }
 
@@ -157,26 +157,28 @@
   width: 100%;
   object-fit: cover;
   border-radius: var(--r-md);
-  border: 1px solid rgba(244, 239, 230, 0.12);
-  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  border: 1px solid var(--hairline);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .tile:hover .tileImage {
-  border-color: var(--copper);
-  box-shadow: 0 12px 40px rgba(176, 106, 59, 0.25);
+  border-color: var(--ink);
+  box-shadow: var(--e2);
 }
 
 .tileLabel {
-  color: rgba(244, 239, 230, 0.85);
+  color: var(--ink);
   font-size: var(--fs-14);
 }
 
 .quote {
   text-align: center;
-  color: rgba(244, 239, 230, 0.42);
-  font-family: var(--font-display), Georgia, serif;
-  font-style: italic;
+  color: var(--grey);
+  font-family: var(--font-mono), 'Space Mono', monospace;
   font-size: var(--fs-14);
+  letter-spacing: 0.02em;
   min-height: 1.6em;
   width: min(880px, 100%);
   margin-inline: auto;
@@ -187,12 +189,13 @@
 }
 
 .backLink {
-  color: rgba(244, 239, 230, 0.45);
+  color: var(--grey);
   font-size: var(--fs-14);
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
 .backLink:hover {
-  color: var(--copper-lit);
+  color: var(--ink);
 }
 
 .captureWrap {
@@ -201,9 +204,8 @@
   width: min(480px, 100%);
 }
 
-/* dark-register overrides for the shared capture */
 .captureWrap :global(.mono-label) {
-  color: var(--copper-lit);
+  color: var(--grey);
 }
 
 @media (max-width: 1024px) {

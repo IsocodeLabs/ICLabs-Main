@@ -1,14 +1,13 @@
-/* The pinned hero journey — one considered thing at a time. */
+/* A single steady hero screen — no pinned journey. */
 
 .wrap {
   position: relative;
-  /* 100vh on screen + scroll room for the 4 text beats */
-  height: 440vh;
+  height: 100vh;
+  height: 100svh;
 }
 
 .sticky {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100vh;
   height: 100svh;
   overflow: hidden;
@@ -138,10 +137,6 @@
 }
 
 @media (max-width: 640px) {
-  .wrap {
-    height: 380vh;
-  }
-
   .intro {
     padding-top: max(11vh, 72px);
     justify-items: start;

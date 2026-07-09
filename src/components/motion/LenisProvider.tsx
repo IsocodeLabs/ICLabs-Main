@@ -23,10 +23,12 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (tier === 'static') return
 
+    // lerp-based (not a long duration/easing) so the page tracks the wheel
+    // tightly — precise, not a slow floaty drag. Higher lerp = snappier.
     const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3),
-      touchMultiplier: 1.4,
+      lerp: 0.16,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.5,
     })
 
     lenis.scrollTo(0, { immediate: true })

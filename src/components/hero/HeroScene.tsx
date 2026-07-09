@@ -148,31 +148,12 @@ function Scene({ motion }: { motion: HeroMotionState }) {
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime()
+    // in-place life only — breathing figures + wind flora. No parallax: the
+    // layers hold their position so scrolling stays precise and the scene
+    // never shifts under the pointer.
     figureMat.uniforms.uTime.value = t
     windMat.uniforms.uTime.value = t
 
-    const p = motion.progress
-    const px = motion.px
-    const py = motion.py
-
-    // parallax: flora most, figures a little, sky least
-    if (g1.current) {
-      g1.current.position.x = px * w * 0.006
-      g1.current.position.y = -py * h * 0.004 + p * h * 0.015
-    }
-    if (g2.current) {
-      g2.current.position.x = px * w * 0.017
-      g2.current.position.y = -py * h * 0.011 - p * h * 0.03
-    }
-    if (g3.current) {
-      g3.current.position.x = px * w * 0.036
-      g3.current.position.y = -py * h * 0.024 - p * h * 0.08
-    }
-    // gentle settle-zoom as the journey progresses
-    if (root.current) {
-      const z = 1 + p * 0.05
-      root.current.scale.set(z, z, 1)
-    }
     // laptop screen-glow breathes
     if (glowRef.current) {
       const mat = glowRef.current.material as THREE.MeshBasicMaterial
@@ -229,8 +210,10 @@ export default function HeroScene({
       // 'default' — NOT 'high-performance'. On dual-GPU MacBooks the
       // high-performance hint makes macOS switch to the discrete GPU right
       // after the context is created, which loses the just-made context.
-      // alpha:true so a lost canvas reveals the static poster underneath.
-      gl={{ antialias: false, alpha: true, powerPreference: 'default' }}
+      // alpha:false — an opaque buffer keeps the painterly colours true (a
+      // premultiplied-alpha buffer washed them darker/contrastier); the poster
+      // is revealed by REMOVING the canvas on context loss, not by transparency.
+      gl={{ antialias: false, alpha: false, powerPreference: 'default' }}
       camera={{ position: [0, 0, 5], fov: 42 }}
       style={{ position: 'absolute', inset: 0 }}
       onCreated={({ gl }) => {
