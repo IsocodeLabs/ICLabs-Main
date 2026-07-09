@@ -30,7 +30,7 @@ export function WorldBackground() {
       trigger: document.body,
       start: 'top top',
       end: 'bottom bottom',
-      scrub: 0.6,
+      scrub: 0.25,
       onUpdate: (self) => {
         const p = self.progress
         // slow parallax drift — the plate lags the page, but never scrolls off

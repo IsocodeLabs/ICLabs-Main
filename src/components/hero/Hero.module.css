@@ -1,13 +1,14 @@
-/* A single steady hero screen — no pinned journey. */
+/* The pinned hero journey — one considered thing at a time. */
 
 .wrap {
   position: relative;
-  height: 100vh;
-  height: 100svh;
+  /* 100vh on screen + scroll room for the text beats */
+  height: 440vh;
 }
 
 .sticky {
-  position: relative;
+  position: sticky;
+  top: 0;
   height: 100vh;
   height: 100svh;
   overflow: hidden;
@@ -16,6 +17,17 @@
 .scene {
   position: absolute;
   inset: 0;
+  /* reveal gently over the static poster so the WebGL handoff isn't a hard cut */
+  animation: sceneFadeIn 0.7s var(--ease-out) both;
+}
+
+@keyframes sceneFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .staticScene {
@@ -137,6 +149,10 @@
 }
 
 @media (max-width: 640px) {
+  .wrap {
+    height: 380vh;
+  }
+
   .intro {
     padding-top: max(11vh, 72px);
     justify-items: start;

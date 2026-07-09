@@ -26,7 +26,7 @@ export function LenisProvider({ children }: { children: ReactNode }) {
     // lerp-based (not a long duration/easing) so the page tracks the wheel
     // tightly — precise, not a slow floaty drag. Higher lerp = snappier.
     const lenis = new Lenis({
-      lerp: 0.16,
+      lerp: 0.24,
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
     })

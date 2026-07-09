@@ -1,7 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { useIsDesktop, useIsPhone, useMotionTier, webglAvailable } from '@/lib/capability'
 import type { HeroMotionState } from './HeroScene'
 import styles from './Hero.module.css'
@@ -15,13 +16,13 @@ type HeroProps = {
 }
 
 /**
- * Hero — Curiosity. A single, steady painterly screen: the belief line over
- * the WebGL scene, which is alive in place (breathing figures, wind in the
- * flora, a breathing laptop glow) but does NOT parallax or scroll-scrub — so
- * scrolling stays precise and returning to the top always shows this same
- * first screen. Mobile/reduced-motion/no-GL: the static composited frame.
+ * Hero — Curiosity. A pinned scroll-reveal text journey (belief line, then the
+ * beats swap in place) over the WebGL painterly scene. The scene is alive in
+ * place — breathing figures, wind flora, laptop glow — but does NOT parallax,
+ * so scrolling stays precise and the scene never shifts under the pointer.
+ * Mobile/reduced-motion/no-GL: the static composited frame.
  */
-export function Hero({ beliefLine, subline }: HeroProps) {
+export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
   const tier = useMotionTier()
   const isDesktop = useIsDesktop()
   const isPhone = useIsPhone()
@@ -49,19 +50,70 @@ export function Hero({ beliefLine, subline }: HeroProps) {
     )
   }, [webgl, tier, isDesktop, glReady])
 
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const introRef = useRef<HTMLDivElement>(null)
+  const beatRefs = useRef<Array<HTMLDivElement | null>>([])
   // the scene animates on its own clock; no scroll/pointer parallax feeds it
   const motion = useMemo<HeroMotionState>(() => ({ progress: 0, px: 0, py: 0 }), [])
 
+  // the scroll journey — the belief line, then the beats swap in place. Pure
+  // opacity/nudge on the text; the painterly scene stays put underneath.
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap || tier === 'static') return
+
+    const beats = beatRefs.current.filter(Boolean) as HTMLDivElement[]
+    const n = beats.length
+    const slice = n > 0 ? (1 - 0.22) / n : 1
+
+    const st = ScrollTrigger.create({
+      trigger: wrap,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      onUpdate: (self) => {
+        const p = self.progress
+
+        // intro: visible until 0.1, fades out by 0.2
+        if (introRef.current) {
+          const fade = gsap.utils.clamp(0, 1, (0.2 - p) / 0.1)
+          introRef.current.style.opacity = `${fade}`
+          introRef.current.style.transform = `translateY(${(1 - fade) * -26}px)`
+        }
+
+        beats.forEach((beat, i) => {
+          const start = 0.22 + i * slice
+          const mid = start + slice * 0.5
+          const end = start + slice
+          let o = 0
+          if (p >= start && p <= end) {
+            const inT = gsap.utils.clamp(0, 1, (p - start) / (slice * 0.28))
+            const outT =
+              i === n - 1 ? 1 : gsap.utils.clamp(0, 1, (end - p) / (slice * 0.28))
+            o = Math.min(inT, outT)
+          } else if (i === n - 1 && p > end) {
+            o = 1
+          }
+          beat.style.opacity = `${o}`
+          const drift = p >= mid ? 0 : (1 - gsap.utils.clamp(0, 1, (p - start) / (slice * 0.5))) * 18
+          beat.style.transform = `translateY(${drift}px)`
+        })
+      },
+    })
+    return () => st.kill()
+  }, [tier])
+
   // phones get the portrait crop; tablets/iPad + desktop get the wide composite
   const staticSrc = isPhone ? '/assets/hero/hero-mobile.webp' : '/assets/hero/hero-static.webp'
+  const isStatic = tier === 'static'
 
   return (
-    <div className={styles.wrap} id="top">
+    <div ref={wrapRef} className={styles.wrap} id="top" style={isStatic ? { height: '100svh' } : undefined}>
       <div className={styles.sticky}>
         {/* The static frame is ALWAYS the base layer. When WebGL is available
-            the canvas overlays it with the live scene; if the GL context is
-            lost, the canvas is removed and this animated still stands — the
-            hero can never vanish or flash. */}
+            the canvas overlays it (fading in) with the live scene; if the GL
+            context is lost, the canvas is removed and this animated still
+            stands — the hero can never vanish or flash white. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={staticSrc}
@@ -76,13 +128,30 @@ export function Hero({ beliefLine, subline }: HeroProps) {
         )}
         <div className={styles.grade} aria-hidden />
 
-        <div className={styles.intro}>
+        <div ref={introRef} className={styles.intro}>
           <h1 className={styles.belief}>{formatBelief(beliefLine)}</h1>
           <p className={styles.subline}>{subline}</p>
           <span className={`mono-label ${styles.scrollHint}`} aria-hidden>
             scroll
           </span>
         </div>
+
+        {/* at reduced motion the still frame stands alone; the narrative
+            carries on in Problem — no empty scroll theatre */}
+        {!isStatic &&
+          scrollBeats.map((text, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                beatRefs.current[i] = el
+              }}
+              className={styles.beat}
+            >
+              <div className={styles.beatCard}>
+                <p className={styles.beatText}>{text}</p>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   )

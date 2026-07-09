@@ -120,7 +120,7 @@ function Scene({ motion }: { motion: HeroMotionState }) {
         uniforms: {
           uMap: { value: figures },
           uTime: { value: 0 },
-          uAmp: { value: 0.0065 }, // breathing — perceptible but calm
+          uAmp: { value: 0.013 }, // breathing — clearly visible per-figure life
         },
         transparent: true,
         depthWrite: false,
@@ -136,7 +136,7 @@ function Scene({ motion }: { motion: HeroMotionState }) {
         uniforms: {
           uMap: { value: flora },
           uTime: { value: 0 },
-          uWind: { value: 0.022 },
+          uWind: { value: 0.036 },
         },
         transparent: true,
         depthWrite: false,
