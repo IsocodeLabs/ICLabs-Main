@@ -2,12 +2,12 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
-  height: clamp(180px, 26vw, 360px);
+  bottom: -1px;
+  height: clamp(200px, 28vw, 400px);
   z-index: 0;
   pointer-events: none;
   opacity: var(--flora-opacity, 0.9);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sway {
@@ -18,20 +18,27 @@
   background-position: center bottom;
   transform: scaleX(var(--flora-flip, 1)) scale(var(--flora-scale, 1));
   transform-origin: bottom center;
-  animation: floraSway 9s ease-in-out infinite;
+  animation: floraSway 8s ease-in-out infinite;
   will-change: transform;
+  /* melt the flora into the sky — no hard rectangle, no floating-image edge */
+  -webkit-mask-image: radial-gradient(120% 130% at 50% 100%, #000 32%, transparent 72%);
+  mask-image: radial-gradient(120% 130% at 50% 100%, #000 32%, transparent 72%);
 }
 
-/* show only one corner by nudging the asset (its flora sits at both edges) */
+/* show only one corner cluster (the asset carries flora at both edges) */
 .left .sway {
   background-position: left bottom;
-  background-size: 62% auto;
+  background-size: 60% auto;
   background-repeat: no-repeat;
+  -webkit-mask-image: radial-gradient(90% 120% at 22% 100%, #000 26%, transparent 68%);
+  mask-image: radial-gradient(90% 120% at 22% 100%, #000 26%, transparent 68%);
 }
 .right .sway {
   background-position: right bottom;
-  background-size: 62% auto;
+  background-size: 60% auto;
   background-repeat: no-repeat;
+  -webkit-mask-image: radial-gradient(90% 120% at 78% 100%, #000 26%, transparent 68%);
+  mask-image: radial-gradient(90% 120% at 78% 100%, #000 26%, transparent 68%);
 }
 
 @keyframes floraSway {
@@ -40,15 +47,15 @@
     transform: scaleX(var(--flora-flip, 1)) scale(var(--flora-scale, 1)) rotate(0deg) translateX(0);
   }
   50% {
-    transform: scaleX(var(--flora-flip, 1)) scale(calc(var(--flora-scale, 1) * 1.012)) rotate(0.5deg)
-      translateX(4px);
+    transform: scaleX(var(--flora-flip, 1)) scale(calc(var(--flora-scale, 1) * 1.02)) rotate(0.8deg)
+      translateX(7px);
   }
 }
 
 @media (max-width: 640px) {
   .frame {
-    height: clamp(120px, 34vw, 200px);
-    opacity: calc(var(--flora-opacity, 0.9) * 0.8);
+    height: clamp(130px, 36vw, 220px);
+    opacity: calc(var(--flora-opacity, 0.9) * 0.75);
   }
 }
 

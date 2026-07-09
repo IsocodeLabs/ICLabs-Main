@@ -58,9 +58,13 @@ export function webglAvailable(): boolean {
   if (glOK !== null) return glOK
   try {
     const canvas = document.createElement('canvas')
+    // Accept any working context — the hero's PerfGate drops to the static
+    // frame if early frames can't hold ~30fps, and a context-loss handler
+    // catches crashes, so we don't need to pre-reject on performance caveat.
     const gl =
-      canvas.getContext('webgl2', { failIfMajorPerformanceCaveat: true }) ||
-      canvas.getContext('webgl', { failIfMajorPerformanceCaveat: true })
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl')
     if (gl) {
       gl.getExtension('WEBGL_lose_context')?.loseContext()
       glOK = true

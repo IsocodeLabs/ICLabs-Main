@@ -76,10 +76,10 @@
 
   /* ---- Glass — quiet, monochrome-tinted (frosted paper + thin ink edge).
           Sits over a warm LIGHT world, so refraction is subtle by design. ---- */
-  --glass-bg: rgba(245, 241, 234, 0.55);
-  --glass-bg-strong: rgba(245, 241, 234, 0.74);
-  --glass-bg-dark: rgba(20, 18, 16, 0.5);
-  --glass-blur: 16px;
+  --glass-bg: rgba(245, 241, 234, 0.3);
+  --glass-bg-strong: rgba(245, 241, 234, 0.46);
+  --glass-bg-dark: rgba(20, 18, 16, 0.42);
+  --glass-blur: 22px;
   --glass-line: rgba(255, 255, 255, 0.6); /* top luminous hairline */
   --glass-edge: rgba(20, 18, 16, 0.1); /* thin ink border */
   --glass-edge-dark: rgba(245, 241, 234, 0.14);

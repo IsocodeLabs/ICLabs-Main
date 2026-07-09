@@ -45,9 +45,14 @@ export function FieldCapture({
 
   // one input element serves every step — controlled, so the value always
   // belongs to the current field
+  const mountedRef = useRef(false)
   useEffect(() => {
     setDraft(values[fields[step].name] ?? '')
-    inputRef.current?.focus()
+    // Do NOT steal focus on first mount — this form sits low on the page, and
+    // focusing it would scroll the whole page down to it on load. Only focus
+    // when the user advances a step, and never scroll to do it.
+    if (mountedRef.current) inputRef.current?.focus({ preventScroll: true })
+    else mountedRef.current = true
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
 
