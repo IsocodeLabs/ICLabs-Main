@@ -37,7 +37,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
     '@type': 'Organization',
     name: 'Isocode Labs',
     url,
-    logo: `${url}/logo.webp`,
+    logo: `${url}/assets/brand/il-monogram-black.png`,
     email: contact.email,
   }
 

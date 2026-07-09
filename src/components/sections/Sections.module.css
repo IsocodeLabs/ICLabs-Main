@@ -186,6 +186,76 @@
   gap: var(--sp-24);
 }
 
+/* Consistent OUTER frame — the leash across four interior worlds. */
+.productCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--e1);
+  color: var(--ink);
+  transition:
+    box-shadow var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out);
+}
+
+.productCard:hover {
+  box-shadow: var(--e2);
+  transform: translateY(-4px);
+}
+
+/* the interior world — each product's own brand image, full colour */
+.productImageWrap {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background: var(--paper);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.productImageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-out);
+}
+
+.productCard:hover .productImageWrap img {
+  transform: scale(1.035);
+}
+
+.productBody {
+  padding: var(--sp-32) var(--sp-24) var(--sp-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  flex: 1;
+}
+
+.productName {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-28);
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.productBlurb {
+  color: var(--fg-muted);
+  font-size: var(--fs-16);
+  line-height: 1.5;
+  max-width: 44ch;
+  flex: 1;
+}
+
+.productFrom {
+  margin-top: var(--sp-16);
+  color: var(--ink);
+  opacity: 0.55;
+}
+
 .creatorMention {
   margin-top: var(--sp-64);
   padding-top: var(--sp-32);

@@ -1,7 +1,6 @@
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
-import { Squircle } from '@/components/ui/Squircle'
 import styles from './Sections.module.css'
 
 type Product = {
@@ -42,22 +41,19 @@ export function Labs({ beliefBeat, heading, body, products, creatorMention }: La
 
         <Reveal stagger="[data-product]" className={styles.labsGrid}>
           {products.map((p) => (
-            <div key={p.slug} data-product className={styles.productCardShadow}>
-              <Squircle radius={24} as="a" className={styles.productCard} {...linkProps(p.outboundURL)}>
-                <div className={styles.productImageWrap}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.image} alt={`${p.name} — preview`} loading="lazy" />
-                </div>
-                <div className={styles.productBody}>
-                  <div className={styles.productTopRow}>
-                    <span className={styles.productName}>{p.name}</span>
-                    <span className={`mono-label ${styles.productStatus}`}>{p.statusLabel}</span>
-                  </div>
-                  <p className={styles.productBlurb}>{p.blurb}</p>
-                  <span className={`mono-label ${styles.productBadge}`}>{p.badge}</span>
-                </div>
-              </Squircle>
-            </div>
+            <a key={p.slug} data-product className={styles.productCard} {...linkProps(p.outboundURL)}>
+              {/* the interior world — each product's own brand image */}
+              <div className={styles.productImageWrap}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.image} alt={`${p.name}`} loading="lazy" />
+              </div>
+              {/* the shared outer frame — the leash that keeps four worlds coherent */}
+              <div className={styles.productBody}>
+                <span className={styles.productName}>{p.name}</span>
+                <p className={styles.productBlurb}>{p.blurb}</p>
+                <span className={`mono-label ${styles.productFrom}`}>{p.badge} →</span>
+              </div>
+            </a>
           ))}
         </Reveal>
 
