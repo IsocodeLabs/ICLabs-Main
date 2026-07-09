@@ -1,6 +1,7 @@
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
+import { Button } from '@/components/ui/Button'
 import styles from './Sections.module.css'
 
 type Product = {
@@ -57,13 +58,14 @@ export function Labs({ beliefBeat, heading, body, products, creatorMention }: La
           ))}
         </Reveal>
 
-        <Reveal className={styles.creatorMention}>
-          <p>
-            {creatorMention.body}{' '}
-            <a href={creatorMention.href} rel="noreferrer">
-              creator.isocodelabs.com →
-            </a>
-          </p>
+        <Reveal className={`theme-ink ${styles.creatorCard}`}>
+          <div className={styles.creatorCopy}>
+            <span className={`mono-label ${styles.creatorTag}`}>For creators</span>
+            <p className={styles.creatorText}>{creatorMention.body}</p>
+          </div>
+          <Button href={creatorMention.href} variant="ghost">
+            Explore the creator studio →
+          </Button>
         </Reveal>
       </div>
     </Section>

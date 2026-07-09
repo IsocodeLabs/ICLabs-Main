@@ -11,10 +11,22 @@
   position: absolute;
   inset: -6vh 0;
   background-image: url('/assets/sections/section-bg-sky.png');
-  background-size: cover;
+  background-size: 120% auto;
   background-position: center top;
   transform: scale(1.06);
-  will-change: transform;
+  will-change: transform, background-position;
+  /* slow cloud drift — always-on ambient motion (transform stays free for the
+     JS parallax; only background-position animates) */
+  animation: skyDrift 48s ease-in-out infinite alternate;
+}
+
+@keyframes skyDrift {
+  from {
+    background-position: 0% top;
+  }
+  to {
+    background-position: 100% top;
+  }
 }
 
 /* warm paper scrim — shifts opacity on scroll for legibility + atmosphere */
@@ -56,10 +68,10 @@
 @keyframes floraSway {
   0%,
   100% {
-    transform: rotate(0deg) translateX(0) scale(1);
+    transform: rotate(-1.2deg) translateX(-14px) scale(1);
   }
   50% {
-    transform: rotate(1deg) translateX(10px) scale(1.02);
+    transform: rotate(1.6deg) translateX(16px) scale(1.03);
   }
 }
 
@@ -71,7 +83,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .floraSway {
+  .floraSway,
+  .plate {
     animation: none;
   }
   .plate {

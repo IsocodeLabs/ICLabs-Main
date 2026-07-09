@@ -25,6 +25,26 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
+  /* the static frame is never frozen — a slow ken-burns keeps the scene alive
+     even when WebGL can't run */
+  transform-origin: 58% 62%;
+  animation: heroKenBurns 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes heroKenBurns {
+  from {
+    transform: scale(1.03) translate(0, 0);
+  }
+  to {
+    transform: scale(1.1) translate(-1.5%, -1.2%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staticScene {
+    animation: none;
+  }
 }
 
 /* soft cinematic grade over the scene */

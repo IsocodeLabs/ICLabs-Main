@@ -262,22 +262,51 @@
   font-size: var(--fs-12);
 }
 
-.creatorMention {
-  margin-top: var(--sp-64);
-  padding-top: var(--sp-32);
-  border-top: 1px solid var(--line);
-  color: var(--fg-muted);
-  max-width: 58ch;
+/* Creator program — a full rectangular banner card closing the Labs section */
+.creatorCard {
+  margin-top: var(--sp-32);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--r-lg);
+  padding: clamp(28px, 4vw, 48px);
+  box-shadow: var(--e2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-48);
 }
 
-.creatorMention a {
-  color: var(--ink);
-  border-bottom: 1px solid var(--ink);
-  transition: opacity var(--dur-fast) var(--ease-out);
+.creatorCopy {
+  display: grid;
+  gap: var(--sp-12);
 }
 
-.creatorMention a:hover {
-  opacity: 0.6;
+.creatorTag {
+  color: var(--paper);
+  opacity: 0.55;
+}
+
+.creatorText {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-title);
+  line-height: 1.05;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  max-width: 30ch;
+}
+
+/* ghost button sits on ink → paper outline, fills paper on hover */
+.creatorCard :global(a) {
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .creatorCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-24);
+  }
 }
 
 @media (max-width: 1024px) {
