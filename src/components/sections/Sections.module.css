@@ -182,7 +182,7 @@
 .labsGrid {
   margin-top: var(--sp-48);
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--sp-16);
 }
 
@@ -281,6 +281,12 @@
 }
 
 @media (max-width: 1024px) {
+  .labsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
   .labsGrid {
     grid-template-columns: 1fr;
   }

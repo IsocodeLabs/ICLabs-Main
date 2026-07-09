@@ -6,7 +6,7 @@
   pointer-events: none;
 }
 
-/* the one sky plate — reused behind every section */
+/* the one sky plate — reused behind every section, never scrolls off */
 .plate {
   position: absolute;
   inset: -6vh 0;
@@ -21,27 +21,63 @@
 .scrim {
   position: absolute;
   inset: 0;
-  opacity: 0.18;
+  opacity: 0.16;
   background:
-    linear-gradient(180deg, rgba(245, 241, 234, 0.1) 0%, rgba(245, 241, 234, 0.55) 60%, rgba(245, 241, 234, 0.72) 100%),
-    radial-gradient(120% 80% at 50% 20%, transparent 40%, rgba(20, 18, 16, 0.06) 100%);
+    linear-gradient(180deg, rgba(245, 241, 234, 0.08) 0%, rgba(245, 241, 234, 0.5) 62%, rgba(245, 241, 234, 0.66) 100%),
+    radial-gradient(120% 80% at 50% 18%, transparent 40%, rgba(20, 18, 16, 0.05) 100%);
   will-change: opacity;
 }
 
-/* fine film grain to marry the layers (kept very quiet) */
-.grain {
+/* flora pinned to the bottom of the viewport — fades/drifts in place on scroll */
+.flora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1vh;
+  height: clamp(220px, 32vh, 440px);
+  opacity: 0.85;
+  will-change: opacity, transform;
+}
+
+.floraSway {
   position: absolute;
   inset: 0;
-  opacity: 0.04;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url('/assets/sections/section-flora-edges.png');
+  background-size: cover;
+  background-position: center bottom;
+  transform-origin: bottom center;
+  animation: floraSway 7s ease-in-out infinite;
+  will-change: transform;
+  /* melt the top into the sky — no hard edge */
+  -webkit-mask-image: linear-gradient(to top, #000 46%, transparent 96%);
+  mask-image: linear-gradient(to top, #000 46%, transparent 96%);
+}
+
+@keyframes floraSway {
+  0%,
+  100% {
+    transform: rotate(0deg) translateX(0) scale(1);
+  }
+  50% {
+    transform: rotate(1deg) translateX(10px) scale(1.02);
+  }
+}
+
+@media (max-width: 640px) {
+  .flora {
+    height: clamp(150px, 30vh, 240px);
+    opacity: 0.7;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .floraSway {
+    animation: none;
+  }
   .plate {
     transform: scale(1.02);
   }
   .scrim {
-    opacity: 0.4;
+    opacity: 0.38;
   }
 }

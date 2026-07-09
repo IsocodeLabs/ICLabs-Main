@@ -95,24 +95,6 @@ function glowTexture(): THREE.Texture {
   return tex
 }
 
-/** Adaptive floor: if early frames can't hold ~30fps, drop to the still. */
-function PerfGate({ onPoor }: { onPoor?: () => void }) {
-  const samples = useRef<number[]>([])
-  const done = useRef(false)
-  useFrame((_, delta) => {
-    if (done.current || !onPoor) return
-    if (samples.current.length < 70) {
-      samples.current.push(delta)
-      return
-    }
-    done.current = true
-    const recent = samples.current.slice(20)
-    const median = recent.sort((a, b) => a - b)[Math.floor(recent.length / 2)]
-    if (median > 0.034) onPoor()
-  })
-  return null
-}
-
 function Scene({ motion }: { motion: HeroMotionState }) {
   const { viewport } = useThree()
   const [base, figures, flora] = useLoader(THREE.TextureLoader, [
@@ -254,7 +236,6 @@ export default function HeroScene({
         })
       }}
     >
-      <PerfGate onPoor={onFallback} />
       <Scene motion={motion} />
     </Canvas>
   )

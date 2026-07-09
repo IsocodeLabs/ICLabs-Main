@@ -6,21 +6,24 @@ import { useMotionTier } from '@/lib/capability'
 import styles from './WorldBackground.module.css'
 
 /**
- * The hero's world, everywhere (ui-trial §"section treatment"). ONE light
- * painterly sky plate runs fixed behind every section below the hero. It does
- * not switch images — instead a single overlay shifts value + warmth on scroll
- * (one evolving atmosphere), and the plate parallaxes slower than the content
- * so scrolling feels like travel. Reduced motion → static plate, steady scrim.
+ * The hero's world, everywhere (ui-trial §"section treatment"). ONE fixed
+ * painterly stage runs behind every section below the hero: a sky plate up top
+ * and a flora band pinned to the bottom of the viewport. Nothing scrolls away —
+ * the content scrolls OVER the stage, and the stage evolves *in place*: the sky
+ * scrim shifts value/warmth and the flora ebbs (fades + drifts) on scroll, plus
+ * a constant gentle sway. Reduced motion → a steady, still stage.
  */
 export function WorldBackground() {
   const plateRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
+  const floraRef = useRef<HTMLDivElement>(null)
   const tier = useMotionTier()
 
   useEffect(() => {
     const plate = plateRef.current
     const scrim = scrimRef.current
-    if (!plate || !scrim) return
+    const flora = floraRef.current
+    if (!plate || !scrim || !flora) return
     if (tier === 'static') return
 
     const st = ScrollTrigger.create({
@@ -30,11 +33,14 @@ export function WorldBackground() {
       scrub: 0.6,
       onUpdate: (self) => {
         const p = self.progress
-        // slow parallax drift — the plate lags the page
-        plate.style.transform = `translate3d(0, ${(-p * 8).toFixed(2)}vh, 0) scale(1.06)`
-        // atmosphere: a touch more paper scrim as we descend (legibility +
-        // "evening" settle), never fully hiding the sky
-        scrim.style.opacity = `${(0.18 + p * 0.34).toFixed(3)}`
+        // slow parallax drift — the plate lags the page, but never scrolls off
+        plate.style.transform = `translate3d(0, ${(-p * 6).toFixed(2)}vh, 0) scale(1.06)`
+        // atmosphere: a touch more paper scrim as we descend
+        scrim.style.opacity = `${(0.16 + p * 0.32).toFixed(3)}`
+        // flora ebbs in place — fades + drifts as the scene changes, pinned
+        const ebb = Math.sin(p * Math.PI * 3.2)
+        flora.style.opacity = `${(0.82 + ebb * 0.18).toFixed(3)}`
+        flora.style.transform = `translate3d(0, ${(ebb * 2.2).toFixed(2)}vh, 0)`
       },
     })
     return () => st.kill()
@@ -44,6 +50,9 @@ export function WorldBackground() {
     <div aria-hidden className={styles.root}>
       <div ref={plateRef} className={styles.plate} />
       <div ref={scrimRef} className={styles.scrim} />
+      <div ref={floraRef} className={styles.flora}>
+        <div className={styles.floraSway} />
+      </div>
     </div>
   )
 }
