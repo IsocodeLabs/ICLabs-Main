@@ -12,16 +12,24 @@
   transition: opacity var(--dur-med) var(--ease-out);
 }
 
-.wordmark {
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-12);
+}
+
+.mark {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
+.name {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-weight: 600;
   font-size: var(--fs-14);
   letter-spacing: 0.16em;
   color: var(--ink);
-}
-
-.wordmark span {
-  color: var(--copper);
 }
 
 .links {
@@ -33,13 +41,14 @@
 
 .links a {
   font-size: var(--fs-14);
-  color: rgba(26, 23, 20, 0.75);
-  transition: color var(--dur-fast) var(--ease-out);
+  color: var(--ink);
+  opacity: 0.72;
+  transition: opacity var(--dur-fast) var(--ease-out);
   padding: var(--sp-8) var(--sp-4);
 }
 
 .links a:hover {
-  color: var(--copper);
+  opacity: 1;
 }
 
 @media (max-width: 1024px) {

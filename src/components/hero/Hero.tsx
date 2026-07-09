@@ -115,7 +115,9 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
     return () => st.kill()
   }, [tier, motion])
 
-  const staticSrc = isDesktop ? '/hero/hero-static.webp' : '/hero/hero-mobile.webp'
+  const staticSrc = isDesktop
+    ? '/assets/hero/hero-static.webp'
+    : '/assets/hero/hero-mobile.webp'
   const isStatic = tier === 'static'
 
   return (

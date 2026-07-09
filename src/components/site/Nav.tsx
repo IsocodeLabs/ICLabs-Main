@@ -1,20 +1,23 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import glass from '@/components/ui/Glass.module.css'
 import styles from './Nav.module.css'
+import monogram from '../../../public/assets/brand/il-monogram-black.png'
 
-/** Floating glass nav — minimal, one CTA. No hamburger; the page is the menu. */
+/** Floating glass nav — IL monogram, ink on paper. One CTA; the page is the menu. */
 export function Nav({ contactEmail }: { contactEmail: string }) {
   const pathname = usePathname()
   // the quiz is a focused surface with its own top bar — no competing chrome
   if (pathname?.startsWith('/quiz')) return null
   return (
     <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main">
-      <Link href="/#top" className={styles.wordmark}>
-        ISOCODE<span>LABS</span>
+      <Link href="/#top" className={styles.brand} aria-label="ISOCODELABS — home">
+        <Image src={monogram} alt="" className={styles.mark} priority />
+        <span className={styles.name}>ISOCODELABS</span>
       </Link>
       <ul className={styles.links}>
         <li>
