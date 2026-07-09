@@ -1,48 +1,30 @@
 /* ============================================================
-   ISOCODELABS design tokens — the concrete layer of ui.md.
-   One system, two intensities: rich on public, restrained in-product.
+   ISOCODELABS design tokens — Build 2 monochrome system (ui-trial.md).
+   Chrome is pure mono (ink on warm paper); the painterly imagery stays
+   full-colour. No copper, no gold — contrast comes from value + bold type.
    ============================================================ */
 
 :root {
-  /* ---- Colour (anchored on the logo: ink · copper · cream) ---- */
-  --paper: #f4efe6;
-  --ink: #1a1714;
-  --midnight: #12161c;
-  --copper: #b06a3b;
-  --copper-lit: #ce9463;
-  --copper-deep: #7e4a28;
-  --taupe: #8a7f70;
-  --hairline: rgba(26, 23, 20, 0.1);
-  --hairline-on-dark: rgba(244, 239, 230, 0.13);
+  /* ---- Colour — pure monochrome chrome ---- */
+  --ink: #141210; /* near-black; text + marks */
+  --paper: #f5f1ea; /* warm off-white; base */
+  --white: #ffffff; /* sparingly — cards / lift */
+  --grey: #6b655e; /* secondary text */
+  --hairline: #d8d2c8; /* rules, borders */
 
-  --success: #4e7a5a;
-  --warning: #c08a3e;
-  --error: #b0503c;
+  /* alpha variants for edges over imagery / glass */
+  --ink-a08: rgba(20, 18, 16, 0.08);
+  --ink-a12: rgba(20, 18, 16, 0.12);
+  --ink-a20: rgba(20, 18, 16, 0.2);
+  --ink-a60: rgba(20, 18, 16, 0.6);
+  --paper-a70: rgba(245, 241, 234, 0.7);
+  --hairline-on-dark: rgba(245, 241, 234, 0.16);
 
-  /* Copper is forged metal — always a light-to-dark gradient, never flat clay. */
-  --copper-metal: linear-gradient(
-    137deg,
-    var(--copper-lit) 0%,
-    var(--copper) 48%,
-    var(--copper-deep) 100%
-  );
-  --copper-metal-bright: linear-gradient(137deg, #dca87d 0%, #bd7847 48%, #8a5530 100%);
-  --copper-ink-text: linear-gradient(
-    103deg,
-    var(--copper-lit) 0%,
-    var(--copper) 55%,
-    var(--copper-deep) 100%
-  );
+  /* semantic (kept mono-adjacent, used only for form states) */
+  --success: #3f6b4a;
+  --error: #a5432f;
 
-  /* Copper as light — the signature glow that blooms against Midnight. */
-  --copper-glow: radial-gradient(
-    closest-side,
-    rgba(206, 148, 99, 0.32),
-    rgba(176, 106, 59, 0.1) 55%,
-    transparent 100%
-  );
-
-  /* ---- Type (perfect fourth, 1.333: 12·14·16·21·28·37·50·66·88) ---- */
+  /* ---- Type ---- Anton display · General Sans body · Space Mono accent */
   --fs-12: 0.75rem;
   --fs-14: 0.875rem;
   --fs-16: 1rem;
@@ -53,16 +35,17 @@
   --fs-66: 4.125rem;
   --fs-88: 5.5rem;
 
-  /* Fluid display sizes (public register only) */
-  --text-display-xl: clamp(2.5rem, 1.55rem + 4.2vw, 5.5rem); /* 40 → 88 */
-  --text-display-lg: clamp(2.1rem, 1.45rem + 3vw, 4.125rem); /* 34 → 66 */
-  --text-display-md: clamp(1.75rem, 1.35rem + 1.9vw, 3.125rem); /* 28 → 50 */
-  --text-title: clamp(1.5rem, 1.25rem + 1.1vw, 2.3125rem); /* 24 → 37 */
-  --text-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem); /* 18 → 21 */
+  /* Fluid display sizes (Anton is condensed — it can run large) */
+  --text-display-xl: clamp(2.75rem, 1.4rem + 6vw, 7rem); /* 44 → 112 */
+  --text-display-lg: clamp(2.25rem, 1.4rem + 4vw, 5rem); /* 36 → 80 */
+  --text-display-md: clamp(1.85rem, 1.35rem + 2.4vw, 3.5rem); /* 30 → 56 */
+  --text-title: clamp(1.4rem, 1.15rem + 1.2vw, 2.25rem); /* 22 → 36 */
+  --text-lead: clamp(1.125rem, 1.04rem + 0.4vw, 1.375rem); /* 18 → 22 */
 
-  --lh-body: 1.55;
-  --lh-display: 1.06;
-  --track-display: -0.015em;
+  --lh-body: 1.6;
+  --lh-display: 0.98; /* Anton sits tight */
+  --track-display: 0.005em;
+  --track-mono: 0.14em; /* Space Mono eyebrows/labels run spaced + caps */
 
   /* ---- Space (8px grid) ---- */
   --sp-4: 0.25rem;
@@ -74,29 +57,32 @@
   --sp-48: 3rem;
   --sp-64: 4rem;
   --sp-96: 6rem;
+  --sp-128: 8rem;
 
-  /* ---- Shape (G2 curvature applied via Squircle; these are the radii) ---- */
-  --r-sm: 10px;
-  --r-md: 16px;
-  --r-lg: 24px;
+  /* ---- Shape — small radii (mono system favours hairlines over big curves) ---- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
   --r-pill: 999px;
 
-  /* ---- Depth — layered, warm, Ink-tinted (never neutral grey) ---- */
-  --e1: 0 1px 2px rgba(26, 23, 20, 0.06), 0 4px 12px rgba(26, 23, 20, 0.07);
-  --e2: 0 2px 4px rgba(26, 23, 20, 0.07), 0 12px 32px rgba(26, 23, 20, 0.12);
-  --e3: 0 4px 8px rgba(26, 23, 20, 0.08), 0 24px 64px rgba(26, 23, 20, 0.2);
+  /* ---- Depth — soft, ink-tinted, never neutral grey ---- */
+  --e1: 0 1px 2px rgba(20, 18, 16, 0.05), 0 4px 12px rgba(20, 18, 16, 0.06);
+  --e2: 0 2px 4px rgba(20, 18, 16, 0.06), 0 12px 32px rgba(20, 18, 16, 0.1);
+  --e3: 0 4px 8px rgba(20, 18, 16, 0.07), 0 24px 64px rgba(20, 18, 16, 0.16);
 
-  /* drop-shadow variants (follow clip-path, for squircled surfaces) */
-  --e1-drop: drop-shadow(0 4px 10px rgba(26, 23, 20, 0.09));
-  --e2-drop: drop-shadow(0 2px 4px rgba(26, 23, 20, 0.07))
-    drop-shadow(0 12px 28px rgba(26, 23, 20, 0.13));
+  --e1-drop: drop-shadow(0 4px 10px rgba(20, 18, 16, 0.08));
+  --e2-drop: drop-shadow(0 2px 4px rgba(20, 18, 16, 0.06))
+    drop-shadow(0 12px 28px rgba(20, 18, 16, 0.11));
 
-  /* ---- Glass — frosted, warm-tinted, one luminous hairline ---- */
-  --glass-bg: rgba(244, 239, 230, 0.6);
-  --glass-bg-dark: rgba(18, 22, 28, 0.52);
-  --glass-blur: 18px;
-  --glass-line: rgba(255, 251, 244, 0.55);
-  --glass-line-dark: rgba(206, 148, 99, 0.28);
+  /* ---- Glass — quiet, monochrome-tinted (frosted paper + thin ink edge).
+          Sits over a warm LIGHT world, so refraction is subtle by design. ---- */
+  --glass-bg: rgba(245, 241, 234, 0.55);
+  --glass-bg-strong: rgba(245, 241, 234, 0.74);
+  --glass-bg-dark: rgba(20, 18, 16, 0.5);
+  --glass-blur: 16px;
+  --glass-line: rgba(255, 255, 255, 0.6); /* top luminous hairline */
+  --glass-edge: rgba(20, 18, 16, 0.1); /* thin ink border */
+  --glass-edge-dark: rgba(245, 241, 234, 0.14);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -111,20 +97,23 @@
   --gutter: clamp(20px, 4vw, 48px);
 }
 
-/* ---- Section registers: each section declares its skin; the fixed
-        background layer cross-fades beneath (no hard boundaries). ---- */
+/* ---- Section registers. Build 2 runs one light painterly world down the
+        whole page, so most sections are .theme-paper; .theme-ink is reserved
+        for reverse contexts (footer, ClearQuote interior). ---- */
 .theme-paper {
   --bg: var(--paper);
   --fg: var(--ink);
-  --fg-muted: var(--taupe);
+  --fg-muted: var(--grey);
   --line: var(--hairline);
   color: var(--fg);
 }
 
+/* legacy alias so existing markup keeps working — now pure ink, not blue */
+.theme-ink,
 .theme-midnight {
-  --bg: var(--midnight);
+  --bg: var(--ink);
   --fg: var(--paper);
-  --fg-muted: #9aa1ab;
+  --fg-muted: #a49e95;
   --line: var(--hairline-on-dark);
   color: var(--fg);
 }

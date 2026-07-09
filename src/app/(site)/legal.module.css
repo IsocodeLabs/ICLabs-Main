@@ -15,7 +15,7 @@
 }
 
 .note {
-  color: var(--taupe);
+  color: var(--grey);
   font-size: var(--fs-14);
   border-left: 2px solid var(--warning);
   padding-left: var(--sp-16);
@@ -34,6 +34,6 @@
 .back {
   display: inline-block;
   margin-bottom: var(--sp-32);
-  color: var(--copper);
+  color: var(--ink);
   font-size: var(--fs-14);
 }

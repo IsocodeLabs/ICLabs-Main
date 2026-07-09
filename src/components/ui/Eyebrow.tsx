@@ -5,7 +5,7 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
   return (
     <span
       className={`mono-label ${className ?? ''}`}
-      style={{ color: 'var(--copper)', display: 'inline-block' }}
+      style={{ color: 'var(--fg-muted, var(--grey))', display: 'inline-block' }}
     >
       {children}
     </span>

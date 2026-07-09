@@ -38,7 +38,7 @@
 
 .input:focus {
   outline: none;
-  border-bottom-color: var(--copper);
+  border-bottom-color: var(--ink);
 }
 
 .input::placeholder {
@@ -68,7 +68,7 @@
 }
 
 .dotDone {
-  background: var(--copper);
+  background: var(--ink);
 }
 
 .back {
@@ -77,7 +77,7 @@
 }
 
 .back:hover {
-  color: var(--copper);
+  color: var(--ink);
 }
 
 .error {
