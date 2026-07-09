@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
-import { useIsDesktop, useMotionTier, webglAvailable } from '@/lib/capability'
+import { useIsDesktop, useIsPhone, useMotionTier, webglAvailable } from '@/lib/capability'
 import type { HeroMotionState } from './HeroScene'
 import styles from './Hero.module.css'
 
@@ -23,6 +23,7 @@ type HeroProps = {
 export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
   const tier = useMotionTier()
   const isDesktop = useIsDesktop()
+  const isPhone = useIsPhone()
   // WebGL is a desktop treat; mobile gets the static composited frame
   // (text journey still runs there — it's cheap and carries the narrative).
   // Requires real hardware GL — software renderers get the still, decided
@@ -115,9 +116,8 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
     return () => st.kill()
   }, [tier, motion])
 
-  const staticSrc = isDesktop
-    ? '/assets/hero/hero-static.webp'
-    : '/assets/hero/hero-mobile.webp'
+  // phones get the portrait crop; tablets/iPad + desktop get the wide composite
+  const staticSrc = isPhone ? '/assets/hero/hero-mobile.webp' : '/assets/hero/hero-static.webp'
   const isStatic = tier === 'static'
 
   return (

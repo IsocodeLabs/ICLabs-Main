@@ -86,3 +86,16 @@ export function useIsDesktop(): boolean {
     () => true,
   )
 }
+
+/** Phones (portrait). Tablets/iPad count as false so they get the wide art. */
+export function useIsPhone(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia('(max-width: 767px)')
+      mq.addEventListener('change', cb)
+      return () => mq.removeEventListener('change', cb)
+    },
+    () => window.matchMedia('(max-width: 767px)').matches,
+    () => false,
+  )
+}

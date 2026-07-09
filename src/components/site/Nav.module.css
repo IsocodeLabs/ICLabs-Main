@@ -65,5 +65,13 @@
 @media (max-width: 640px) {
   .nav {
     top: var(--sp-12);
+    gap: var(--sp-12);
+  }
+}
+
+/* tight phones: drop the wordmark, keep the monogram + CTA so nothing overlaps */
+@media (max-width: 480px) {
+  .name {
+    display: none;
   }
 }
