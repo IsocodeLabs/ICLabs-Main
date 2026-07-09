@@ -130,7 +130,7 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
       <div className={styles.sticky}>
         {webgl ? (
           <div className={styles.scene}>
-            <HeroScene motion={motion} onFallback={() => setGlReady(false)} />
+            <HeroScene motion={motion} />
           </div>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element

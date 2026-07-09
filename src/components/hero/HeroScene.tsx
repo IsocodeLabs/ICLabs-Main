@@ -217,23 +217,23 @@ function Scene({ motion }: { motion: HeroMotionState }) {
 
 export default function HeroScene({
   motion,
-  onFallback,
 }: {
   motion: HeroMotionState
-  /** called when the GPU can't carry the scene — context loss or poor fps */
-  onFallback?: () => void
 }) {
   return (
     <Canvas
       dpr={[1, 1.75]}
-      gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
+      // 'default' — NOT 'high-performance'. On dual-GPU MacBooks the
+      // high-performance hint makes macOS switch to the discrete GPU right
+      // after the context is created, which loses the just-made context (the
+      // "loads for a second then falls back" bug). 'default' stays put.
+      gl={{ antialias: false, alpha: false, powerPreference: 'default' }}
       camera={{ position: [0, 0, 5], fov: 42 }}
       style={{ position: 'absolute', inset: 0 }}
       onCreated={({ gl }) => {
-        gl.domElement.addEventListener('webglcontextlost', (e) => {
-          e.preventDefault()
-          onFallback?.()
-        })
+        // If a context loss still happens, let the browser RESTORE it instead
+        // of tearing down to the static frame — preventDefault enables restore.
+        gl.domElement.addEventListener('webglcontextlost', (e) => e.preventDefault())
       }}
     >
       <Scene motion={motion} />
