@@ -180,10 +180,10 @@
 }
 
 .labsGrid {
-  margin-top: var(--sp-64);
+  margin-top: var(--sp-48);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--sp-24);
+  gap: var(--sp-16);
 }
 
 /* Consistent OUTER frame — the leash across four interior worlds. */
@@ -209,7 +209,7 @@
 /* the interior world — each product's own brand image, full colour */
 .productImageWrap {
   position: relative;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--paper);
   border-bottom: 1px solid var(--hairline);
@@ -227,7 +227,7 @@
 }
 
 .productBody {
-  padding: var(--sp-32) var(--sp-24) var(--sp-24);
+  padding: var(--sp-16) var(--sp-24) var(--sp-24);
   display: flex;
   flex-direction: column;
   gap: var(--sp-8);
@@ -236,7 +236,7 @@
 
 .productName {
   font-family: var(--font-display), 'Arial Narrow', sans-serif;
-  font-size: var(--fs-28);
+  font-size: var(--fs-21);
   letter-spacing: var(--track-display);
   text-transform: uppercase;
   line-height: 1;
@@ -244,16 +244,22 @@
 
 .productBlurb {
   color: var(--fg-muted);
-  font-size: var(--fs-16);
+  font-size: var(--fs-14);
   line-height: 1.5;
   max-width: 44ch;
   flex: 1;
+  /* keep every card the same tight height */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .productFrom {
-  margin-top: var(--sp-16);
+  margin-top: var(--sp-12);
   color: var(--ink);
   opacity: 0.55;
+  font-size: var(--fs-12);
 }
 
 .creatorMention {
