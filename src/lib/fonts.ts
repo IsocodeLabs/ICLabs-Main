@@ -1,15 +1,18 @@
-import { Fraunces, Geist_Mono } from 'next/font/google'
+import { Anton, Space_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 
 /**
- * Type per ui.md — Fraunces display (soft/optical character, mixed weights),
- * General Sans body (warm-humanist, not Inter), refined mono for labels/data.
+ * Type per ui-trial.md (Build 2 mono system):
+ *   Display: Anton        — one loud condensed voice (headlines only)
+ *   Body:    General Sans — clean neutral humanist, readable at length
+ *   Accent:  Space Mono   — eyebrows, labels, the "from ISOCODELABS" tag
+ * Never set body copy in the display face.
  */
 
-export const fraunces = Fraunces({
+export const anton = Anton({
   subsets: ['latin'],
+  weight: '400',
   variable: '--font-display',
-  axes: ['opsz', 'SOFT', 'WONK'],
   display: 'swap',
 })
 
@@ -23,11 +26,11 @@ export const generalSans = localFont({
   display: 'swap',
 })
 
-export const geistMono = Geist_Mono({
+export const spaceMono = Space_Mono({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400', '700'],
   variable: '--font-mono',
   display: 'swap',
 })
 
-export const fontVariables = `${fraunces.variable} ${generalSans.variable} ${geistMono.variable}`
+export const fontVariables = `${anton.variable} ${generalSans.variable} ${spaceMono.variable}`
