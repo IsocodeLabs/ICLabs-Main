@@ -217,24 +217,28 @@ function Scene({ motion }: { motion: HeroMotionState }) {
 
 export default function HeroScene({
   motion,
+  onContextLost,
 }: {
   motion: HeroMotionState
+  /** context is gone — parent should drop to the static poster underneath */
+  onContextLost?: () => void
 }) {
   return (
     <Canvas
       dpr={[1, 1.75]}
       // 'default' — NOT 'high-performance'. On dual-GPU MacBooks the
       // high-performance hint makes macOS switch to the discrete GPU right
-      // after the context is created, which loses the just-made context (the
-      // "loads for a second then falls back" bug). 'default' stays put.
-      // alpha:true so a lost context reveals the static poster underneath
+      // after the context is created, which loses the just-made context.
+      // alpha:true so a lost canvas reveals the static poster underneath.
       gl={{ antialias: false, alpha: true, powerPreference: 'default' }}
       camera={{ position: [0, 0, 5], fov: 42 }}
       style={{ position: 'absolute', inset: 0 }}
       onCreated={({ gl }) => {
-        // If a context loss still happens, let the browser RESTORE it instead
-        // of tearing down to the static frame — preventDefault enables restore.
-        gl.domElement.addEventListener('webglcontextlost', (e) => e.preventDefault())
+        // On context loss, DON'T let the browser restore it — a restored
+        // context has lost every texture and re-renders the meshes white over
+        // the poster. Tear the canvas down instead and let the animated static
+        // poster underneath stand. No white, no blank.
+        gl.domElement.addEventListener('webglcontextlost', () => onContextLost?.())
       }}
     >
       <Scene motion={motion} />

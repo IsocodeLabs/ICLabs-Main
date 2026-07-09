@@ -142,7 +142,7 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
         />
         {webgl && (
           <div className={styles.scene}>
-            <HeroScene motion={motion} />
+            <HeroScene motion={motion} onContextLost={() => setGlReady(false)} />
           </div>
         )}
         <div className={styles.grade} aria-hidden />

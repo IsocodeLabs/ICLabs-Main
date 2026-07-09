@@ -63,12 +63,10 @@ export function webglAvailable(): boolean {
     const gl = (canvas.getContext('webgl2') ||
       canvas.getContext('webgl') ||
       canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null
-    if (gl) {
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
-      glOK = true
-    } else {
-      glOK = false
-    }
+    // Note: do NOT call loseContext() here — explicitly destroying a context
+    // right before R3F creates its own churns GPU state (and on some Macs
+    // nudges a GPU switch that kills the real hero context). Let it GC.
+    glOK = !!gl
   } catch {
     glOK = false
   }
