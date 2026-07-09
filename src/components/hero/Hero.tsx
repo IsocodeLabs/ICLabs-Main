@@ -128,18 +128,22 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
       style={isStatic ? { height: '100svh' } : undefined}
     >
       <div className={styles.sticky}>
-        {webgl ? (
+        {/* The static frame is ALWAYS the base layer. When WebGL is available
+            the canvas overlays it with the live scene; if the GL context is
+            ever lost (e.g. a macOS GPU switch), the canvas simply goes
+            transparent and this animated still shows through — the hero can
+            never vanish. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={staticSrc}
+          alt="A painter at an easel and a developer at a glowing laptop, at work together in a sunlit wildflower meadow."
+          className={styles.staticScene}
+          fetchPriority="high"
+        />
+        {webgl && (
           <div className={styles.scene}>
             <HeroScene motion={motion} />
           </div>
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={staticSrc}
-            alt="A painter at an easel and a developer at a glowing laptop, at work together in a sunlit wildflower meadow."
-            className={styles.staticScene}
-            fetchPriority="high"
-          />
         )}
         <div className={styles.grade} aria-hidden />
 

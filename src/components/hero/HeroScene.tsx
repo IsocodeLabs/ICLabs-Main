@@ -227,7 +227,8 @@ export default function HeroScene({
       // high-performance hint makes macOS switch to the discrete GPU right
       // after the context is created, which loses the just-made context (the
       // "loads for a second then falls back" bug). 'default' stays put.
-      gl={{ antialias: false, alpha: false, powerPreference: 'default' }}
+      // alpha:true so a lost context reveals the static poster underneath
+      gl={{ antialias: false, alpha: true, powerPreference: 'default' }}
       camera={{ position: [0, 0, 5], fov: 42 }}
       style={{ position: 'absolute', inset: 0 }}
       onCreated={({ gl }) => {
