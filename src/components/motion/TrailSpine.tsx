@@ -134,25 +134,20 @@ export function TrailSpine() {
       }}
     >
       <defs>
-        <linearGradient id="trail-metal" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#CE9463" />
-          <stop offset="0.5" stopColor="#B06A3B" />
-          <stop offset="1" stopColor="#7E4A28" />
-        </linearGradient>
         <filter id="trail-glow" x="-200%" y="-200%" width="500%" height="500%">
-          <feGaussianBlur stdDeviation="6" />
+          <feGaussianBlur stdDeviation="5" />
         </filter>
       </defs>
       <path
         ref={pathRef}
         d={geom.d}
         fill="none"
-        stroke="url(#trail-metal)"
-        strokeWidth="1.75"
+        stroke="#141210"
+        strokeWidth="1.4"
         strokeLinecap="round"
-        opacity="0.55"
+        opacity="0.32"
       />
-      <circle ref={cometRef} r="7" fill="rgba(206,148,99,0.5)" filter="url(#trail-glow)" opacity="0" />
+      <circle ref={cometRef} r="5" fill="rgba(20,18,16,0.4)" filter="url(#trail-glow)" opacity="0" />
     </svg>
   )
 }

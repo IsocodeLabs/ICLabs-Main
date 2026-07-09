@@ -1,5 +1,8 @@
 .footer {
+  background: var(--ink);
   padding-block: var(--sp-96) var(--sp-48);
+  position: relative;
+  z-index: 1;
 }
 
 .inner {
@@ -13,21 +16,32 @@
   text-align: center;
 }
 
-.belief {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: var(--text-display-md);
-  font-weight: 440;
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-12);
 }
 
-.wordmark {
+.mark {
+  height: 28px;
+  width: auto;
+}
+
+.name {
   font-weight: 600;
   font-size: var(--fs-14);
-  letter-spacing: 0.16em;
-  color: var(--fg);
+  letter-spacing: 0.18em;
+  color: var(--paper);
 }
 
-.wordmark span {
-  color: var(--copper-lit);
+.belief {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-display-md);
+  line-height: 0.98;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  max-width: 18ch;
 }
 
 .nav {
@@ -46,14 +60,14 @@
 }
 
 .nav a:hover {
-  color: var(--copper-lit);
+  color: var(--paper);
 }
 
 .legalRow {
   display: flex;
   gap: var(--sp-16);
   align-items: center;
-  color: rgba(244, 239, 230, 0.4);
+  color: rgba(245, 241, 234, 0.4);
   font-size: var(--fs-12);
   border-top: 1px solid var(--line);
   padding-top: var(--sp-24);
@@ -62,5 +76,5 @@
 }
 
 .legalRow a:hover {
-  color: var(--copper-lit);
+  color: var(--paper);
 }

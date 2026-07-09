@@ -1,5 +1,5 @@
 import { getSiteContent } from '@/lib/content'
-import { BackgroundConductor } from '@/components/motion/BackgroundConductor'
+import { WorldBackground } from '@/components/motion/WorldBackground'
 import { TrailSpine } from '@/components/motion/TrailSpine'
 import { Hero } from '@/components/hero/Hero'
 import { Problem } from '@/components/sections/Problem'
@@ -16,13 +16,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <BackgroundConductor />
+      <WorldBackground />
       <div style={{ position: 'relative' }}>
         <TrailSpine />
         <main>
-          {/* the hero paints itself; data-bg hands Paper to the conductor
-              so the blend into Midnight starts as Problem approaches */}
-          <div data-bg="#F4EFE6" data-glow="0" data-trail="center" style={{ '--self-bg': '#F4EFE6' } as React.CSSProperties}>
+          {/* the hero paints its own scene; the sky world takes over below it */}
+          <div data-trail="center">
             <Hero
               beliefLine={content.hero.beliefLine}
               subline={content.hero.subline}

@@ -1,0 +1,59 @@
+.frame {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(180px, 26vw, 360px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--flora-opacity, 0.9);
+  overflow: hidden;
+}
+
+.sway {
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/sections/section-flora-edges.png');
+  background-size: cover;
+  background-position: center bottom;
+  transform: scaleX(var(--flora-flip, 1)) scale(var(--flora-scale, 1));
+  transform-origin: bottom center;
+  animation: floraSway 9s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* show only one corner by nudging the asset (its flora sits at both edges) */
+.left .sway {
+  background-position: left bottom;
+  background-size: 62% auto;
+  background-repeat: no-repeat;
+}
+.right .sway {
+  background-position: right bottom;
+  background-size: 62% auto;
+  background-repeat: no-repeat;
+}
+
+@keyframes floraSway {
+  0%,
+  100% {
+    transform: scaleX(var(--flora-flip, 1)) scale(var(--flora-scale, 1)) rotate(0deg) translateX(0);
+  }
+  50% {
+    transform: scaleX(var(--flora-flip, 1)) scale(calc(var(--flora-scale, 1) * 1.012)) rotate(0.5deg)
+      translateX(4px);
+  }
+}
+
+@media (max-width: 640px) {
+  .frame {
+    height: clamp(120px, 34vw, 200px);
+    opacity: calc(var(--flora-opacity, 0.9) * 0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sway {
+    animation: none;
+  }
+}

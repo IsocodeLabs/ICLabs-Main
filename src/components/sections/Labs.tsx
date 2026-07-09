@@ -28,16 +28,13 @@ type LabsProps = {
  */
 export function Labs({ beliefBeat, heading, body, products, creatorMention }: LabsProps) {
   return (
-    <Section id="labs" bg="#F4EFE6" theme="paper" glow={0.35} trail="left" className={styles.section}>
+    <Section id="labs" trail="left" flora={{ side: 'left', flip: true, scale: 1.05 }} className={styles.section}>
       <div className={styles.inner}>
-        <Reveal className={styles.eyebrowRow}>
-          <Eyebrow>{heading}</Eyebrow>
-        </Reveal>
-
-        <Reveal>
+        <Reveal className={styles.panel}>
+          <div className={styles.eyebrowRow}>
+            <Eyebrow>{heading}</Eyebrow>
+          </div>
           <h2 className={styles.beliefBeat}>{formatBeat(beliefBeat)}</h2>
-        </Reveal>
-        <Reveal delay={0.1}>
           <p className={styles.leadMuted} style={{ marginTop: 'var(--sp-24)', maxWidth: '48ch' }}>
             {body}
           </p>
@@ -79,7 +76,7 @@ export function Labs({ beliefBeat, heading, body, products, creatorMention }: La
 
 const linkProps = (href: string) => ({ href, target: '_blank', rel: 'noreferrer' })
 
-/** Emphasise the second clause in copper — the stated belief, said out loud. */
+/** Emphasise the second clause with a crafted underline — belief said out loud. */
 function formatBeat(beat: string) {
   const marker = 'We build and run our own.'
   const idx = beat.indexOf(marker)

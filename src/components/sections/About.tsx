@@ -14,45 +14,41 @@ type AboutProps = {
 
 /**
  * About — values + the quiet team line + "talk to our team".
- * No names, no photos; the values carry it.
+ * No names, no photos; the values carry it. Content in a glass panel.
  */
 export function About({ heading, body, teamLine, contactHeading, values }: AboutProps) {
   return (
     <Section
       id="about"
-      bg="#F4EFE6"
-      theme="paper"
-      glow={0.15}
       trail="right"
+      flora={{ side: 'both', scale: 1 }}
       className={`${styles.section} ${styles.tailRoom}`}
     >
       <div className={styles.inner}>
-        <Reveal className={styles.eyebrowRow}>
-          <Eyebrow>{heading}</Eyebrow>
-        </Reveal>
-
-        <div className={styles.aboutGrid}>
-          <div>
-            <Reveal className={styles.stack24}>
-              {body.map((p, i) =>
-                i === 0 ? (
-                  <h2 key={i} className={styles.displayMd} style={{ maxWidth: '18ch' }}>
-                    {p}
-                  </h2>
-                ) : (
-                  <p key={i} className={styles.leadMuted} style={{ maxWidth: '46ch' }}>
-                    {p}
-                  </p>
-                ),
-              )}
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className={`mono-label ${styles.teamLine}`}>{teamLine}</p>
-            </Reveal>
+        <Reveal className={styles.panel}>
+          <div className={styles.eyebrowRow}>
+            <Eyebrow>{heading}</Eyebrow>
           </div>
 
-          <div>
-            <Reveal stagger="[data-value]" as="div">
+          <div className={styles.aboutGrid}>
+            <div>
+              <div className={styles.stack24}>
+                {body.map((p, i) =>
+                  i === 0 ? (
+                    <h2 key={i} className={styles.heading} style={{ maxWidth: '18ch' }}>
+                      {p}
+                    </h2>
+                  ) : (
+                    <p key={i} className={styles.leadMuted} style={{ maxWidth: '46ch' }}>
+                      {p}
+                    </p>
+                  ),
+                )}
+              </div>
+              <p className={styles.teamLine}>{teamLine}</p>
+            </div>
+
+            <div>
               <ul className={styles.valuesList}>
                 {values.map((v) => (
                   <li key={v.title} data-value className={styles.valueItem}>
@@ -61,18 +57,19 @@ export function About({ heading, body, teamLine, contactHeading, values }: About
                   </li>
                 ))}
               </ul>
-            </Reveal>
 
-            <Reveal delay={0.1}>
               <div id="contact" style={{ marginTop: 'var(--sp-64)' }}>
-                <h3 className={styles.displayMd} style={{ fontSize: 'var(--fs-28)', marginBottom: 'var(--sp-24)' }}>
+                <h3
+                  className={styles.heading}
+                  style={{ fontSize: 'var(--fs-28)', marginBottom: 'var(--sp-24)' }}
+                >
                   {contactHeading}
                 </h3>
                 <AboutContact />
               </div>
-            </Reveal>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </Section>
   )

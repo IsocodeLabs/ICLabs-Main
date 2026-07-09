@@ -1,33 +1,35 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { FloraEdge } from './FloraEdge'
+
+type FloraConfig = { side?: 'both' | 'left' | 'right'; flip?: boolean; scale?: number; opacity?: number }
 
 type SectionProps = {
   id?: string
-  /** paints the fixed background layer as this section takes over */
-  bg: string
-  theme: 'paper' | 'midnight'
-  /** 0..1 — copper atmosphere intensity while this section holds */
-  glow?: number
   /** which side the guiding trail weaves to at this section */
   trail?: 'left' | 'right' | 'center'
+  /** frame this section's bottom corners with swaying flora (code variety) */
+  flora?: FloraConfig | false
+  /** reverse register — ink base for dark sections (footer, dark cards) */
+  reverse?: boolean
   className?: string
+  style?: CSSProperties
   children: ReactNode
 }
 
 /**
- * A spine section: transparent itself (the BackgroundConductor cross-fades
- * the canvas beneath), declaring its colours + trail anchor via data attrs.
- * At reduced motion (html.no-blend) it paints its own background.
+ * A section in the one painterly world: transparent over the fixed sky plate,
+ * optionally framed with edge flora, declaring its trail anchor. Content sits
+ * in glass panels (provided by each section) so it stays legible over the sky.
  */
-export function Section({ id, bg, theme, glow = 0, trail, className, children }: SectionProps) {
+export function Section({ id, trail, flora, reverse, className, style, children }: SectionProps) {
   return (
     <section
       id={id}
-      data-bg={bg}
-      data-glow={glow}
       data-trail={trail}
-      className={`${theme === 'midnight' ? 'theme-midnight' : 'theme-paper'} ${className ?? ''}`}
-      style={{ '--self-bg': bg, position: 'relative' } as CSSProperties}
+      className={`${reverse ? 'theme-ink' : 'theme-paper'} ${className ?? ''}`}
+      style={{ position: 'relative', ...style }}
     >
+      {flora !== false && <FloraEdge {...(flora ?? {})} />}
       {children}
     </section>
   )

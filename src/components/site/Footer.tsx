@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Section } from '@/components/site/Section'
 import styles from './Footer.module.css'
+import monogramWhite from '../../../public/assets/brand/il-monogram-white.png'
 
 type FooterProps = {
   beliefLine: string
@@ -9,15 +11,16 @@ type FooterProps = {
   copyright: string
 }
 
-/** Quiet close — the trail resolves here, the belief restated once. */
+/** Quiet close — the trail resolves here on ink, the belief restated once. */
 export function Footer({ beliefLine, navLinks, legalLinks, copyright }: FooterProps) {
   const year = new Date().getFullYear()
   return (
-    <Section bg="#1A1714" theme="midnight" glow={0.45} trail="center" className={styles.footer}>
+    <Section reverse flora={false} trail="center" className={styles.footer}>
       <footer className={styles.inner}>
-        <span className={styles.wordmark}>
-          ISOCODE<span>LABS</span>
-        </span>
+        <div className={styles.brand}>
+          <Image src={monogramWhite} alt="" className={styles.mark} />
+          <span className={styles.name}>ISOCODELABS</span>
+        </div>
         <p className={styles.belief}>{beliefLine}</p>
         <ul className={styles.nav}>
           {navLinks.map((l) => (
