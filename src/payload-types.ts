@@ -557,7 +557,11 @@ export interface Application {
     | number
     | boolean
     | null;
-  status?: ('new' | 'shortlist' | 'interview' | 'offer' | 'rejected') | null;
+  status: 'new' | 'shortlist' | 'interview' | 'offer' | 'rejected';
+  /**
+   * Auto-flagged when this email had already applied before.
+   */
+  duplicateEmail?: boolean | null;
   /**
    * Internal only.
    */
@@ -974,6 +978,7 @@ export interface ApplicationsSelect<T extends boolean = true> {
   why?: T;
   answers?: T;
   status?: T;
+  duplicateEmail?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
