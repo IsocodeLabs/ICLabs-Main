@@ -1,6 +1,7 @@
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
+import { Button } from '@/components/ui/Button'
 import { AboutContact } from './AboutContact'
 import styles from './Sections.module.css'
 
@@ -46,6 +47,11 @@ export function About({ heading, body, teamLine, contactHeading, values }: About
                 )}
               </div>
               <p className={styles.teamLine}>{teamLine}</p>
+              <div style={{ marginTop: 'var(--sp-24)' }}>
+                <Button href="/about" variant="ghost" size="sm">
+                  More about the studio →
+                </Button>
+              </div>
             </div>
 
             <div>

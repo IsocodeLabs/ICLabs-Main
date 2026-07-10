@@ -1,0 +1,223 @@
+/* /about — a content page over the light anchor world. Editorial rhythm,
+   quiet glass, no homepage journey chrome. */
+
+.page {
+  position: relative;
+}
+
+/* first band clears the floating glass nav */
+.introSection {
+  padding-top: clamp(132px, 20vh, 220px);
+}
+
+.introPanel {
+  border-radius: var(--r-lg);
+  padding: clamp(var(--sp-32), 5vw, var(--sp-64));
+  max-width: 62ch;
+}
+
+.title {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-display-md);
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 400;
+  margin-top: var(--sp-16);
+  max-width: 22ch;
+  /* never split a long word like CRAFTSMANSHIP mid-glyph (global heading rule
+     sets break-word); wrap at spaces only */
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.introBody {
+  margin-top: var(--sp-32);
+  display: grid;
+  gap: var(--sp-24);
+}
+
+.introBody p {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  line-height: var(--lh-body);
+  color: var(--ink);
+  max-width: 58ch;
+}
+
+.introBody p:not(:first-child) {
+  color: var(--grey);
+}
+
+/* ── shared block headers ── */
+.blockHead {
+  margin-bottom: var(--sp-48);
+  max-width: 52ch;
+}
+
+.blockHeading {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-display-md);
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 400;
+  margin-top: var(--sp-16);
+}
+
+.blockIntro {
+  margin-top: var(--sp-24);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  line-height: var(--lh-body);
+  color: var(--grey);
+  max-width: 48ch;
+}
+
+/* ── values ── */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-24);
+}
+
+.valueCard {
+  border-radius: var(--r-md);
+  padding: var(--sp-32);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+}
+
+.valueTitle {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-21);
+  line-height: 1.1;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.valueDesc {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  color: var(--grey);
+}
+
+/* ── founders ── */
+.foundersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(var(--sp-24), 4vw, var(--sp-48));
+  max-width: 900px;
+}
+
+.founderCard {
+  border-radius: var(--r-lg);
+  padding: var(--sp-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-24);
+}
+
+.founderPhoto {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+}
+
+.founderImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.founderMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+
+.founderName {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-title);
+  line-height: 1;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.founderTitle {
+  color: var(--grey);
+}
+
+.founderEdu {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  color: var(--ink);
+  margin-top: var(--sp-4);
+}
+
+.founderSocials {
+  display: flex;
+  gap: var(--sp-12);
+  margin-top: var(--sp-8);
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.socialLink:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ── contact close ── */
+.contactPanel {
+  border-radius: var(--r-lg);
+  padding: clamp(var(--sp-32), 5vw, var(--sp-64));
+  max-width: 56ch;
+}
+
+.contactHeading {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-display-md);
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.contactBody {
+  margin-top: var(--sp-12);
+  margin-bottom: var(--sp-32);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  color: var(--grey);
+}
+
+@media (max-width: 720px) {
+  .foundersGrid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+}

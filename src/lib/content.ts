@@ -2,9 +2,11 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import {
   aboutContent,
+  aboutPageContent,
   contactChannels,
   ctaContent,
   footerContent,
+  foundersContent,
   heroContent,
   labsContent,
   problemContent,
@@ -153,6 +155,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         body: home.about?.body?.map((p: { text: string }) => p.text) ?? fallback.about.body,
         teamLine: home.about?.teamLine ?? fallback.about.teamLine,
         contactHeading: home.about?.contactHeading ?? fallback.about.contactHeading,
+        moreLink: fallback.about.moreLink,
       },
       values:
         values.docs.length > 0
@@ -184,6 +187,77 @@ export async function getSiteContent(): Promise<SiteContent> {
       seo: {
         metaTitle: settings?.defaultSEO?.metaTitle ?? fallback.seo.metaTitle,
         metaDescription: settings?.defaultSEO?.metaDescription ?? fallback.seo.metaDescription,
+      },
+    }
+  } catch {
+    return fallback
+  }
+}
+
+export type Founder = {
+  name: string
+  title: string
+  photo: string
+  eduLine: string
+  socials: Array<{ platform: string; url: string }>
+}
+
+export type AboutPageContent = {
+  page: typeof aboutPageContent
+  values: typeof valuesContent
+  founders: Founder[]
+  contact: typeof contactChannels
+}
+
+/**
+ * The standalone /about page. Reads founders + values + about copy from the CMS,
+ * falling back field-by-field to seed so it never renders blank. Founders' socials
+ * only surface once a URL is set (added via CMS later).
+ */
+export async function getAboutPageContent(): Promise<AboutPageContent> {
+  const fallback: AboutPageContent = {
+    page: aboutPageContent,
+    values: valuesContent,
+    founders: foundersContent,
+    contact: contactChannels,
+  }
+
+  try {
+    const payload = await getPayload({ config })
+    const [values, founders, settings] = await Promise.all([
+      payload.find({ collection: 'values', sort: 'order', limit: 12 }),
+      payload.find({ collection: 'founders', sort: 'order', depth: 1, limit: 12 }),
+      payload.findGlobal({ slug: 'site-settings' }),
+    ])
+
+    return {
+      page: aboutPageContent,
+      values:
+        values.docs.length > 0
+          ? values.docs.map((v, i) => ({
+              title: v.title,
+              description: v.description,
+              order: v.order ?? i,
+            }))
+          : fallback.values,
+      founders:
+        founders.docs.length > 0
+          ? founders.docs.map((f, i) => ({
+              name: f.name,
+              title: f.title ?? 'Co-founder',
+              photo: mediaURL(f.photo, fallback.founders[i % fallback.founders.length]?.photo ?? ''),
+              eduLine: f.eduLine ?? '',
+              socials: (f.socials ?? [])
+                .filter((s: { url?: string }) => Boolean(s.url))
+                .map((s: { platform: string; url: string }) => ({
+                  platform: s.platform,
+                  url: s.url,
+                })),
+            }))
+          : fallback.founders,
+      contact: {
+        email: settings?.contactChannels?.email ?? fallback.contact.email,
+        phone: settings?.contactChannels?.phone ?? fallback.contact.phone,
       },
     }
   } catch {

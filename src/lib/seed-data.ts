@@ -134,7 +134,53 @@ export const aboutContent = {
   ],
   teamLine: 'A small senior team, held to a top-0.5% craft bar.',
   contactHeading: 'Talk to our team',
+  // homepage teaser → links to the full /about page
+  moreLink: { label: 'More about the studio', href: '/about' },
 }
+
+/**
+ * The standalone /about page — a fuller statement than the homepage teaser.
+ * Same voice: proof over bragging, craft first. Section framings live here so
+ * they're seed-fallback-safe like everything else.
+ */
+export const aboutPageContent = {
+  eyebrow: 'About',
+  heading: 'A craftsmanship studio that happens to build software.',
+  intro: [
+    'Most software is made to function. We make it to be felt — because the difference is the whole business. It’s what makes a first-time visitor trust you, and a returning one stay.',
+    'We build public-facing websites and apps the way a hardware company builds a product: every surface considered, every moment of using it intentional. “It works” is the floor we start from, never where we stop.',
+    'We’re a small, senior team. One bar holds everything we ship — craft — and it doesn’t move, even when moving it would be cheaper or faster for us.',
+    'That bar decides who we work with, too. We take on the work we know we can make right, run our own products to the same standard, and we’re honest when something isn’t for us.',
+  ],
+  valuesEyebrow: 'What we hold to',
+  valuesHeading: 'Five things that don’t bend.',
+  foundersEyebrow: 'The people',
+  foundersHeading: 'Two people, one bar.',
+  foundersIntro:
+    'We started Isocode to build the software we kept wishing existed — held to a standard we couldn’t find anywhere else.',
+  contactHeading: 'Talk to our team',
+  contactBody: 'Not a sales form — a real inbox a real person reads.',
+}
+
+/** The two co-founders (photos in public/assets/about; socials added via CMS). */
+export const foundersContent = [
+  {
+    name: 'Aryan Malhotra',
+    title: 'Co-founder',
+    photo: '/assets/about/founder-1.jpg',
+    eduLine: 'B.Tech, IIT Kharagpur',
+    socials: [] as Array<{ platform: string; url: string }>,
+    order: 1,
+  },
+  {
+    name: 'Devansh Mishra',
+    title: 'Co-founder',
+    photo: '/assets/about/founder-2.jpg',
+    eduLine: 'B.Tech + M.Tech, IIT Kharagpur',
+    socials: [] as Array<{ platform: string; url: string }>,
+    order: 2,
+  },
+]
 
 export const valuesContent = [
   {

@@ -27,7 +27,7 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
           <Link href="/#labs">Labs</Link>
         </li>
         <li>
-          <Link href="/#about">About</Link>
+          <Link href="/about">About</Link>
         </li>
         <li>
           <a href={`mailto:${contactEmail}`}>Contact</a>

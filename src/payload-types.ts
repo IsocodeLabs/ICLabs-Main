@@ -78,6 +78,7 @@ export interface Config {
     'quiz-questions': QuizQuestion;
     'lead-submissions': LeadSubmission;
     pages: Page;
+    founders: Founder;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +97,7 @@ export interface Config {
     'quiz-questions': QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
     'lead-submissions': LeadSubmissionsSelect<false> | LeadSubmissionsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    founders: FoundersSelect<false> | FoundersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -440,6 +442,33 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "founders".
+ */
+export interface Founder {
+  id: number;
+  name: string;
+  title?: string | null;
+  photo?: (number | null) | Media;
+  /**
+   * e.g. "B.Tech, IIT Kharagpur".
+   */
+  eduLine?: string | null;
+  /**
+   * Icon links. Leave empty to hide until URLs are ready.
+   */
+  socials?:
+    | {
+        platform: 'linkedin' | 'github' | 'x';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -505,6 +534,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'founders';
+        value: number | Founder;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -749,6 +782,26 @@ export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   body?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "founders_select".
+ */
+export interface FoundersSelect<T extends boolean = true> {
+  name?: T;
+  title?: T;
+  photo?: T;
+  eduLine?: T;
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }

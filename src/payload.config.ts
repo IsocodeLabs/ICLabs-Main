@@ -14,6 +14,7 @@ import { ValueQuotes } from '@/collections/ValueQuotes'
 import { Quizzes, QuizStages, QuizQuestions } from '@/collections/Quizzes'
 import { LeadSubmissions } from '@/collections/LeadSubmissions'
 import { Pages } from '@/collections/Pages'
+import { Founders } from '@/collections/Founders'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { Homepage } from '@/globals/Homepage'
 
@@ -39,6 +40,7 @@ export default buildConfig({
     QuizQuestions,
     LeadSubmissions,
     Pages,
+    Founders,
   ],
   globals: [SiteSettings, Homepage],
   editor: lexicalEditor(),
