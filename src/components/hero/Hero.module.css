@@ -17,17 +17,15 @@
 .scene {
   position: absolute;
   inset: 0;
-  /* reveal gently over the static poster so the WebGL handoff isn't a hard cut */
-  animation: sceneFadeIn 0.7s var(--ease-out) both;
+  /* held invisible until the scene's first frame paints (JS adds .sceneReady),
+     then it cross-fades in over the static poster — so the handoff lands
+     exactly when the sway begins, never a hard cut or an empty fading canvas */
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out);
 }
 
-@keyframes sceneFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.sceneReady {
+  opacity: 1;
 }
 
 .staticScene {

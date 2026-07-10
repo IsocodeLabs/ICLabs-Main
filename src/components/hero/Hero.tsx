@@ -41,6 +41,11 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
   }, [])
   const webgl = tier === 'full' && isDesktop && glReady
 
+  // the live scene cross-fades in only once its FIRST frame has painted, so the
+  // handoff from the static poster lands exactly when the sway begins — never a
+  // hard swap, never an empty canvas fading in ahead of its textures
+  const [sceneReady, setSceneReady] = useState(false)
+
   // one honest line in the console so "why is it static?" is never a mystery
   useEffect(() => {
     console.debug(
@@ -109,6 +114,16 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
 
   return (
     <div ref={wrapRef} className={styles.wrap} id="top" style={isStatic ? { height: '100svh' } : undefined}>
+      {/* Warm the three layer textures the moment the hero mounts so the live
+          scene boots fast and the static-poster glimpse before it is minimal.
+          Desktop-only — phones/tablets never load the WebGL layers. */}
+      {isDesktop && !isStatic && (
+        <>
+          <link rel="preload" as="image" href="/assets/hero/hero-l1-sky.png" />
+          <link rel="preload" as="image" href="/assets/hero/hero-l2-figures.png" />
+          <link rel="preload" as="image" href="/assets/hero/hero-l3-flora.png" />
+        </>
+      )}
       <div className={styles.sticky}>
         {/* The static frame is ALWAYS the base layer. When WebGL is available
             the canvas overlays it (fading in) with the live scene; if the GL
@@ -122,8 +137,15 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
           fetchPriority="high"
         />
         {webgl && (
-          <div className={styles.scene}>
-            <HeroScene motion={motion} onContextLost={() => setGlReady(false)} />
+          <div className={`${styles.scene} ${sceneReady ? styles.sceneReady : ''}`}>
+            <HeroScene
+              motion={motion}
+              onReady={() => setSceneReady(true)}
+              onContextLost={() => {
+                setSceneReady(false)
+                setGlReady(false)
+              }}
+            />
           </div>
         )}
         <div className={styles.grade} aria-hidden />

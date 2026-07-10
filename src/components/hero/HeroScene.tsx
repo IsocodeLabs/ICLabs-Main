@@ -95,7 +95,7 @@ function glowTexture(): THREE.Texture {
   return tex
 }
 
-function Scene({ motion }: { motion: HeroMotionState }) {
+function Scene({ motion, onReady }: { motion: HeroMotionState; onReady?: () => void }) {
   const { viewport } = useThree()
   const [base, figures, flora] = useLoader(THREE.TextureLoader, [
     '/assets/hero/hero-l1-sky.png',
@@ -103,6 +103,7 @@ function Scene({ motion }: { motion: HeroMotionState }) {
     '/assets/hero/hero-l3-flora.png',
   ])
   for (const t of [base, figures, flora]) t.colorSpace = THREE.SRGBColorSpace
+  const readyFired = useRef(false)
 
   const [w, h] = coverScale(viewport.width, viewport.height)
 
@@ -159,6 +160,14 @@ function Scene({ motion }: { motion: HeroMotionState }) {
       const mat = glowRef.current.material as THREE.MeshBasicMaterial
       mat.opacity = 0.3 + Math.sin(t * 0.9) * 0.12 + Math.sin(t * 2.3) * 0.04
     }
+
+    // first painted frame → tell the parent it can cross-fade the live scene
+    // in over the static poster (so the swap lands exactly when sway begins,
+    // never on an empty/loading canvas)
+    if (!readyFired.current) {
+      readyFired.current = true
+      onReady?.()
+    }
   })
 
   return (
@@ -199,10 +208,13 @@ function Scene({ motion }: { motion: HeroMotionState }) {
 export default function HeroScene({
   motion,
   onContextLost,
+  onReady,
 }: {
   motion: HeroMotionState
   /** context is gone — parent should drop to the static poster underneath */
   onContextLost?: () => void
+  /** first frame painted — parent can cross-fade the scene in */
+  onReady?: () => void
 }) {
   return (
     <Canvas
@@ -224,7 +236,7 @@ export default function HeroScene({
         gl.domElement.addEventListener('webglcontextlost', () => onContextLost?.())
       }}
     >
-      <Scene motion={motion} />
+      <Scene motion={motion} onReady={onReady} />
     </Canvas>
   )
 }
