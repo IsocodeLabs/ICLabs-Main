@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { legalStubs } from '@/lib/seed-data'
+import { legalPages } from '@/lib/seed-data'
 import styles from '../legal.module.css'
 
 const SLUGS = ['privacy', 'terms'] as const
@@ -19,19 +19,25 @@ type Params = { params: Promise<{ legal: string }> }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { legal } = await params
-  const stub = legalStubs.find((s) => s.slug === legal)
-  return { title: stub?.title ?? 'Legal', robots: { index: false } }
+  const page = legalPages.find((s) => s.slug === legal)
+  if (!page) return { title: 'Legal' }
+  return {
+    title: page.title,
+    description: page.description,
+    alternates: { canonical: `/${page.slug}` },
+  }
 }
 
 export default async function LegalPage({ params }: Params) {
   const { legal } = await params
   if (!SLUGS.includes(legal as (typeof SLUGS)[number])) notFound()
 
-  const stub = legalStubs.find((s) => s.slug === legal)!
+  const page = legalPages.find((s) => s.slug === legal)!
+  const other = legalPages.find((s) => s.slug !== legal)!
 
-  // Prefer the CMS page when it exists; fall back to the structured stub.
+  // Prefer the CMS page when it exists; fall back to the structured content.
   let cmsBody: unknown = null
-  let title = stub.title
+  let title = page.title
   try {
     const payload = await getPayload({ config })
     const pages = await payload.find({
@@ -44,7 +50,7 @@ export default async function LegalPage({ params }: Params) {
       title = pages.docs[0].title
     }
   } catch {
-    // CMS unavailable — stub carries it
+    // CMS unavailable — the structured content carries it
   }
 
   return (
@@ -54,19 +60,40 @@ export default async function LegalPage({ params }: Params) {
           ← isocodelabs.com
         </Link>
         <h1 className={styles.title}>{title}</h1>
-        {!cmsBody && <p className={styles.note}>{stub.note}</p>}
+        <p className={styles.updated}>Last updated: {page.updated}</p>
+
         <div className={styles.body}>
           {cmsBody ? (
             <RichText data={cmsBody as never} />
           ) : (
-            stub.sections.map((s) => (
-              <section key={s.heading}>
-                <h2>{s.heading}</h2>
-                <p>{s.body}</p>
-              </section>
-            ))
+            <>
+              {page.intro.map((p, i) => (
+                <p key={`intro-${i}`} className={styles.lead}>
+                  {p}
+                </p>
+              ))}
+              {page.sections.map((s) => (
+                <section key={s.heading}>
+                  <h2>{s.heading}</h2>
+                  {s.body?.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                  {s.bullets && (
+                    <ul>
+                      {s.bullets.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
+            </>
           )}
         </div>
+
+        <nav className={styles.crossLinks} aria-label="Other legal pages">
+          <Link href={`/${other.slug}`}>{other.title} →</Link>
+        </nav>
       </div>
     </div>
   )

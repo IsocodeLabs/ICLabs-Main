@@ -328,45 +328,197 @@ export const shortQuiz = {
   ],
 }
 
-export const legalStubs = [
+const LEGAL_CONTACT = 'hello@isocodelabs.com'
+const LEGAL_UPDATED = 'July 10, 2026'
+
+/**
+ * Real legal pages (privacy, terms), plain-white register, indexable.
+ *
+ * Grounded in the facts we hold today: Isocode Labs operates isocodelabs.com and
+ * is not yet incorporated, so there is no registered company name/number or
+ * address to cite; contact is a single inbox; data lives on Google Cloud; the
+ * site sets no cookies and runs no analytics; and these policies also cover the
+ * job-application data collected on the Careers page. Written to be publishable
+ * and human-readable — still worth a lawyer's pass before you rely on them, but
+ * no longer a placeholder.
+ *
+ * Each section body is an array of paragraphs; `bullets` renders as a list.
+ * The CMS `pages` collection can override any page by slug (see the route).
+ */
+export type LegalSection = {
+  heading: string
+  body?: string[]
+  bullets?: string[]
+}
+
+export type LegalPage = {
+  title: string
+  slug: 'privacy' | 'terms'
+  description: string
+  updated: string
+  intro: string[]
+  sections: LegalSection[]
+}
+
+export const legalPages: LegalPage[] = [
   {
     title: 'Privacy Policy',
     slug: 'privacy',
+    description:
+      'How Isocode Labs handles the information you share through isocodelabs.com — what we collect, why, where it is stored, and your rights.',
+    updated: LEGAL_UPDATED,
+    intro: [
+      'Isocode Labs (“Isocode”, “we”, “us”) operates isocodelabs.com. This policy explains what personal information we collect through this website, why we collect it, how we look after it, and the choices you have. We keep it deliberately short because we deliberately collect very little.',
+      'Isocode Labs is an early-stage studio and is not yet incorporated as a registered company. Until it is, the point of contact for anything in this policy is a real person reachable at the address below.',
+    ],
     sections: [
       {
-        heading: 'What we collect',
-        body: 'Placeholder — describe the data collected: quiz answers, contact details (name, email, company), and basic analytics/cookies if enabled.',
+        heading: 'The short version',
+        body: [
+          'We only collect information you choose to give us — when you send an enquiry, complete the fit questionnaire, or apply for a role. We use it to reply to you and, for applications, to evaluate your candidacy. We do not sell it, we do not use it for advertising, and we do not track you around the web.',
+        ],
       },
       {
-        heading: 'How it’s used',
-        body: 'Placeholder — qualification of enquiries and human follow-up. Quiz answers inform whether and how we reach out.',
+        heading: 'Information you give us',
+        body: ['Depending on how you use the site, this can include:'],
+        bullets: [
+          'Enquiries & the fit questionnaire: your answers, and the contact details you submit — typically your name, email address, company, and any note you write.',
+          'Job applications (Careers page): your name, email address, your answers to the application questions, and the résumé or CV file you upload (PDF).',
+          'Correspondence: anything you include when you email us directly.',
+        ],
       },
       {
-        heading: 'Storage & retention',
-        body: 'Placeholder — where submissions are stored, for how long, and how deletion can be requested.',
+        heading: 'Information we do not collect',
+        body: [
+          'This website sets no cookies, runs no analytics, and embeds no advertising or third-party tracking pixels. We do not build a profile of your browsing, and we do not fingerprint your device. Our hosting provider may process standard technical information (such as your IP address in server logs) purely to deliver and secure the site; we do not use that information to identify or track you.',
+        ],
       },
       {
-        heading: 'Third parties',
-        body: 'Placeholder — hosting and analytics providers, if any.',
+        heading: 'How we use your information',
+        body: ['We use what you send us only to:'],
+        bullets: [
+          'Understand and respond to your enquiry, and decide whether we are a good fit to work together.',
+          'Review and respond to job applications, and contact you about the role you applied for.',
+          'Keep a record of our correspondence with you.',
+        ],
       },
       {
-        heading: 'Your rights & contact',
-        body: 'Placeholder — access/correction/deletion requests via hello@isocodelabs.com.',
+        heading: 'Legal basis',
+        body: [
+          'We process this information on the basis of your consent, given when you choose to submit a form, and our legitimate interest in responding to enquiries and running a recruitment process. You can withdraw your consent at any time by contacting us.',
+        ],
+      },
+      {
+        heading: 'Where it is stored and who can see it',
+        body: [
+          'Submissions are stored on Google Cloud Platform infrastructure, which may process and store data on servers located outside your country. Access is limited to the members of Isocode who need it to respond to you or assess your application.',
+          'We do not sell, rent, or trade your personal information. We share it with service providers (such as Google Cloud) only to the extent needed to operate the site and store submissions, and we require them to protect it.',
+        ],
+      },
+      {
+        heading: 'How long we keep it',
+        body: [
+          'We keep enquiry and questionnaire submissions for as long as needed to follow up and for a reasonable period afterwards for our records. We keep job applications for the duration of the relevant hiring process and a limited period after, in case a future role fits. You can ask us to delete your information sooner at any time.',
+        ],
+      },
+      {
+        heading: 'Your rights',
+        body: ['You can ask us to:'],
+        bullets: [
+          'Tell you what personal information of yours we hold.',
+          'Correct information that is wrong or out of date.',
+          'Delete your information, or stop using it.',
+        ],
+      },
+      {
+        heading: 'Children',
+        body: [
+          'This website and our services are intended for adults and are not directed at children under 18. We do not knowingly collect information from children.',
+        ],
+      },
+      {
+        heading: 'Changes to this policy',
+        body: [
+          'We may update this policy as Isocode grows — for example, once the business is incorporated, or if we introduce new tools. When we do, we will change the “Last updated” date above. Material changes will be reflected here before they take effect.',
+        ],
+      },
+      {
+        heading: 'Contact',
+        body: [
+          `For any privacy question or request — access, correction, or deletion — email ${LEGAL_CONTACT}. A person, not a bot, reads that inbox.`,
+        ],
       },
     ],
-    note: 'Boilerplate scaffolding only — have a professional review before publishing.',
   },
   {
-    title: 'Terms of Service',
+    title: 'Terms & Conditions',
     slug: 'terms',
-    sections: [
-      { heading: 'Use of this site', body: 'Placeholder — acceptable use of isocodelabs.com.' },
-      { heading: 'Intellectual property', body: 'Placeholder — ownership of site content and marks.' },
-      { heading: 'Quiz & enquiry terms', body: 'Placeholder — submissions are enquiries, not contracts; no obligation to respond.' },
-      { heading: 'Limitation of liability', body: 'Placeholder — standard limitation language.' },
-      { heading: 'Governing law', body: 'Placeholder — jurisdiction to be confirmed.' },
-      { heading: 'Contact', body: 'Placeholder — hello@isocodelabs.com.' },
+    description:
+      'The terms that govern your use of isocodelabs.com — acceptable use, intellectual property, enquiries and applications, and governing law.',
+    updated: LEGAL_UPDATED,
+    intro: [
+      'These terms govern your use of isocodelabs.com. By using this website you agree to them. If you do not agree, please do not use the site.',
+      'The site is operated by Isocode Labs (“Isocode”, “we”, “us”), an early-stage studio that is not yet incorporated as a registered company.',
     ],
-    note: 'Boilerplate scaffolding only — have a professional review before publishing.',
+    sections: [
+      {
+        heading: 'Using this site',
+        body: [
+          'You may browse the site and use its forms for their intended purpose — to learn about Isocode, to enquire about working with us, and to apply for roles. You agree not to misuse the site: no attempting to break, overload, probe, or gain unauthorised access to it or its systems; no scraping or automated harvesting; and no submitting content that is unlawful, misleading, or infringes someone else’s rights.',
+        ],
+      },
+      {
+        heading: 'Intellectual property',
+        body: [
+          'The content of this website — its text, design, layout, graphics, and the Isocode name, logo, and product names (including CVBuddy, ClearQuote, LifeTreeOS, and Meddesk) — belongs to Isocode or is used with permission, and is protected by intellectual-property laws. You may not copy, reproduce, or reuse it without our written permission, except for your own personal, non-commercial reference.',
+        ],
+      },
+      {
+        heading: 'Enquiries and the fit questionnaire',
+        body: [
+          'Submitting an enquiry or completing the questionnaire is a request to start a conversation — it is not an offer, a contract, or a guarantee of any kind. We are under no obligation to respond, to take on any project, or to provide any service, and any engagement we do enter into will be governed by a separate written agreement.',
+        ],
+      },
+      {
+        heading: 'Job applications',
+        body: [
+          'Applying for a role does not create an offer of employment or any obligation on our part to interview, respond, or hire. You confirm that the information and documents you submit are accurate and yours to share. How we handle your application data is described in our Privacy Policy.',
+        ],
+      },
+      {
+        heading: 'Our own products and external links',
+        body: [
+          'This site links to products we build and run, and may link to third-party websites. Links to external sites are provided for convenience; we are not responsible for their content, practices, or availability. Use of any Isocode product is governed by that product’s own terms.',
+        ],
+      },
+      {
+        heading: 'No warranties',
+        body: [
+          'This website is provided “as is” and “as available”, without warranties of any kind, whether express or implied. We do not warrant that the site will be uninterrupted, error-free, or free of harmful components, or that any information on it is complete or current.',
+        ],
+      },
+      {
+        heading: 'Limitation of liability',
+        body: [
+          'To the fullest extent permitted by law, Isocode and the people behind it will not be liable for any indirect, incidental, or consequential loss, or any loss of data, profit, or goodwill, arising from your use of — or inability to use — this website. Nothing in these terms excludes any liability that cannot lawfully be excluded.',
+        ],
+      },
+      {
+        heading: 'Governing law',
+        body: [
+          'These terms are governed by the laws of India. Any dispute arising out of or relating to this website or these terms is subject to the exclusive jurisdiction of the courts of Delhi, India.',
+        ],
+      },
+      {
+        heading: 'Changes to these terms',
+        body: [
+          'We may update these terms from time to time — for example, once the business is incorporated. The current version always lives at this address, with the “Last updated” date shown above. Continuing to use the site after a change means you accept the updated terms.',
+        ],
+      },
+      {
+        heading: 'Contact',
+        body: [`Questions about these terms? Email ${LEGAL_CONTACT}.`],
+      },
+    ],
   },
 ]

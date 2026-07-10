@@ -1,3 +1,6 @@
+/* Legal pages — plain white register, no anchor world. Built for reading:
+   comfortable measure, clear hierarchy, generous rhythm. */
+
 .page {
   background: var(--paper);
   min-height: 100vh;
@@ -9,31 +12,117 @@
   margin-inline: auto;
 }
 
-.title {
-  font-size: var(--text-display-md);
-  margin-bottom: var(--sp-16);
-}
-
-.note {
-  color: var(--grey);
-  font-size: var(--fs-14);
-  border-left: 2px solid var(--warning);
-  padding-left: var(--sp-16);
-  margin-bottom: var(--sp-48);
-}
-
-.body h2 {
-  font-size: var(--fs-21);
-  margin: var(--sp-32) 0 var(--sp-8);
-}
-
-.body p {
-  color: rgba(26, 23, 20, 0.75);
-}
-
 .back {
   display: inline-block;
   margin-bottom: var(--sp-32);
-  color: var(--ink);
+  color: var(--grey);
   font-size: var(--fs-14);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.title {
+  font-size: var(--text-display-md);
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: var(--sp-8);
+}
+
+.updated {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--fs-12);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: var(--sp-48);
+}
+
+/* intro paragraphs — slightly larger, full ink */
+.lead {
+  font-size: var(--text-lead);
+  line-height: var(--lh-body);
+  color: var(--ink);
+  margin-bottom: var(--sp-16);
+}
+
+.body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.body section {
+  margin-top: var(--sp-40);
+}
+
+.body h2 {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-21);
+  line-height: 1.1;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: var(--sp-12);
+}
+
+.body p {
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  color: rgba(26, 23, 20, 0.78);
+  margin-bottom: var(--sp-12);
+}
+
+.body ul {
+  list-style: none;
+  margin: var(--sp-8) 0 var(--sp-12);
+  padding: 0;
+}
+
+.body li {
+  position: relative;
+  padding-left: var(--sp-24);
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  color: rgba(26, 23, 20, 0.78);
+  margin-bottom: var(--sp-8);
+}
+
+.body li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.55;
+}
+
+.body a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.crossLinks {
+  margin-top: var(--sp-64);
+  padding-top: var(--sp-24);
+  border-top: 1px solid var(--hairline);
+}
+
+.crossLinks a {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-21);
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.crossLinks a:hover {
+  opacity: 0.6;
 }
