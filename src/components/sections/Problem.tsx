@@ -17,7 +17,7 @@ type ProblemProps = {
  */
 export function Problem({ narrative, stats }: ProblemProps) {
   return (
-    <Section id="problem" trail="left" flora={{ side: 'left', scale: 1.05 }} className={styles.section}>
+    <Section id="problem" trail="left" flora={{ side: 'left', scale: 1.05 }} className={`${styles.section} ${styles.afterHero}`}>
       <div className={styles.inner}>
         <Reveal className={styles.panel}>
           <div className={styles.eyebrowRow}>

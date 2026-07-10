@@ -5,6 +5,25 @@
   position: relative;
 }
 
+/* The first section after the hero rises INTO the pinned hero as it fades in
+   place, so there's no dead scroll tail: the hero dissolves and this section
+   is already arriving underneath. Pulled up ~ the sticky's own height, with a
+   trimmed top so its content lands promptly. (Paints over the faded hero — the
+   world stage shows through both.) */
+.afterHero {
+  margin-top: -76vh;
+  padding-top: clamp(48px, 7vh, 90px);
+}
+
+@media (max-width: 1024px) {
+  /* no hero pin on phone/iPad — the hero is a single still screen, so the
+     section follows normally with no overlap */
+  .afterHero {
+    margin-top: 0;
+    padding-top: clamp(110px, 15vh, 180px);
+  }
+}
+
 /* extra tail room so flora + parallax breathe before the next section */
 .tailRoom {
   padding-bottom: clamp(220px, 30vh, 340px);

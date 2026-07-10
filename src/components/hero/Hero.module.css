@@ -2,9 +2,8 @@
 
 .wrap {
   position: relative;
-  /* 100vh on screen + scroll room for the text beats. Kept tight so the
-     journey never leaves a page of dead scroll before the next section. */
-  height: 300vh;
+  /* 100vh on screen + scroll room for the text beats */
+  height: 440vh;
 }
 
 .sticky {

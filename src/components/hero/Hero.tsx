@@ -86,10 +86,10 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
           beat.style.transform = `translateY(${drift}px)`
         })
 
-        // the in-place farewell: over the last short stretch the whole sticky
-        // scene fades where it stands, revealing the world stage behind — the
-        // hero dissolves into the site instead of scrolling off
-        const bye = gsap.utils.clamp(0, 1, (p - 0.94) / 0.06)
+        // the in-place farewell: over the last stretch the whole sticky scene
+        // fades where it stands, revealing the world stage behind — the hero
+        // dissolves into the site instead of scrolling off
+        const bye = gsap.utils.clamp(0, 1, (p - 0.9) / 0.1)
         sticky.style.opacity = `${1 - bye}`
       },
     })
