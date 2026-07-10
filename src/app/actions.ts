@@ -93,3 +93,96 @@ export async function submitLead(
     }
   }
 }
+
+/**
+ * Job-application intake — the careers write path. Takes FormData (so the résumé
+ * PDF rides along), validates here, uploads the file to the private Resumes
+ * collection, then writes an Applications doc. Same discipline as submitLead:
+ * honeypot, email regex, length caps, server-side overrideAccess. The résumé is
+ * PDF-only and capped at 5 MB. Public direct writes to either collection are
+ * refused (create: noOne).
+ */
+const RESUME_MAX_BYTES = 5 * 1024 * 1024
+const RESERVED_APP_KEYS = new Set(['name', 'email', 'role', 'roleTitle', 'website', 'resume'])
+
+export async function submitApplication(
+  formData: FormData,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    // honeypot: pretend success, store nothing
+    if (clean(formData.get('website'), 200)) return { ok: true }
+
+    const name = clean(formData.get('name'), 120)
+    const email = clean(formData.get('email'), 200)
+    const role = clean(formData.get('role'), 60) || 'open'
+    const roleTitle = clean(formData.get('roleTitle'), 160)
+
+    if (!name) return { ok: false, error: 'We need a name to know who applied.' }
+    if (!EMAIL_RE.test(email)) {
+      return { ok: false, error: 'That email doesn’t look complete — mind checking it?' }
+    }
+
+    // capture every non-reserved field (incl. any CMS-added ones) as answers
+    const answers: Record<string, string> = {}
+    for (const [key, value] of formData.entries()) {
+      if (RESERVED_APP_KEYS.has(key)) continue
+      const v = clean(value, 4000)
+      if (v) answers[key] = v
+    }
+
+    // résumé: required, PDF only, size-capped
+    const file = formData.get('resume')
+    const isFile = file && typeof file === 'object' && 'arrayBuffer' in file
+    const resumeFile = isFile ? (file as File) : null
+    if (!resumeFile || resumeFile.size === 0) {
+      return { ok: false, error: 'Please attach your résumé as a PDF.' }
+    }
+    if (resumeFile.type !== 'application/pdf') {
+      return { ok: false, error: 'Your résumé needs to be a PDF file.' }
+    }
+    if (resumeFile.size > RESUME_MAX_BYTES) {
+      return { ok: false, error: 'That résumé is over 5 MB — mind compressing it?' }
+    }
+
+    const payload = await getPayload({ config })
+
+    const buffer = Buffer.from(await resumeFile.arrayBuffer())
+    const uploaded = await payload.create({
+      collection: 'resumes',
+      overrideAccess: true,
+      data: { applicantName: name },
+      file: {
+        data: buffer,
+        mimetype: 'application/pdf',
+        name: resumeFile.name || `${name.replace(/\s+/g, '-').toLowerCase()}-resume.pdf`,
+        size: resumeFile.size,
+      },
+    })
+
+    await payload.create({
+      collection: 'applications',
+      overrideAccess: true,
+      data: {
+        name,
+        email,
+        role,
+        roleTitle,
+        college: answers.college,
+        year: answers.year,
+        portfolioUrl: answers.portfolioUrl,
+        why: answers.why,
+        resume: uploaded.id,
+        answers,
+        status: 'new',
+      },
+    })
+
+    return { ok: true }
+  } catch (err) {
+    console.error('[submitApplication]', err)
+    return {
+      ok: false,
+      error: 'Something went wrong on our side — nothing you did. Try again, or email us directly.',
+    }
+  }
+}

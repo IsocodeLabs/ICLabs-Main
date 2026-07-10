@@ -79,6 +79,9 @@ export interface Config {
     'lead-submissions': LeadSubmission;
     pages: Page;
     founders: Founder;
+    'job-openings': JobOpening;
+    applications: Application;
+    resumes: Resume;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -98,6 +101,9 @@ export interface Config {
     'lead-submissions': LeadSubmissionsSelect<false> | LeadSubmissionsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     founders: FoundersSelect<false> | FoundersSelect<true>;
+    'job-openings': JobOpeningsSelect<false> | JobOpeningsSelect<true>;
+    applications: ApplicationsSelect<false> | ApplicationsSelect<true>;
+    resumes: ResumesSelect<false> | ResumesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -110,10 +116,12 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     homepage: Homepage;
+    'application-form': ApplicationForm;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'application-form': ApplicationFormSelect<false> | ApplicationFormSelect<true>;
   };
   locale: null;
   widgets: {
@@ -469,6 +477,120 @@ export interface Founder {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-openings".
+ */
+export interface JobOpening {
+  id: number;
+  title: string;
+  /**
+   * Stable slug the application form targets, e.g. "swe-intern".
+   */
+  roleKey: string;
+  type?: ('intern' | 'fullTime' | 'contract') | null;
+  /**
+   * e.g. Engineering, Design, Sales.
+   */
+  dept?: string | null;
+  location?: string | null;
+  /**
+   * e.g. "₹50k / month stipend".
+   */
+  stipend?: string | null;
+  /**
+   * One or two lines shown on the role card.
+   */
+  blurb?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  active?: boolean | null;
+  /**
+   * The evergreen "exceptional / open application" entry.
+   */
+  openApplication?: boolean | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications".
+ */
+export interface Application {
+  id: number;
+  name: string;
+  email: string;
+  /**
+   * roleKey applied for, or "open" for the open application.
+   */
+  role?: string | null;
+  /**
+   * Human title captured at submit time.
+   */
+  roleTitle?: string | null;
+  college?: string | null;
+  year?: string | null;
+  portfolioUrl?: string | null;
+  resume?: (number | null) | Resume;
+  why?: string | null;
+  /**
+   * Raw captured field map (key → value), for CMS-added fields.
+   */
+  answers?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status?: ('new' | 'shortlist' | 'interview' | 'offer' | 'rejected') | null;
+  /**
+   * Internal only.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Applicant résumés (PDF). Private — never exposed publicly.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumes".
+ */
+export interface Resume {
+  id: number;
+  /**
+   * Captured for admin context; the file itself is the résumé.
+   */
+  applicantName?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -538,6 +660,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'founders';
         value: number | Founder;
+      } | null)
+    | ({
+        relationTo: 'job-openings';
+        value: number | JobOpening;
+      } | null)
+    | ({
+        relationTo: 'applications';
+        value: number | Application;
+      } | null)
+    | ({
+        relationTo: 'resumes';
+        value: number | Resume;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -807,6 +941,63 @@ export interface FoundersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-openings_select".
+ */
+export interface JobOpeningsSelect<T extends boolean = true> {
+  title?: T;
+  roleKey?: T;
+  type?: T;
+  dept?: T;
+  location?: T;
+  stipend?: T;
+  blurb?: T;
+  description?: T;
+  active?: T;
+  openApplication?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "applications_select".
+ */
+export interface ApplicationsSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  role?: T;
+  roleTitle?: T;
+  college?: T;
+  year?: T;
+  portfolioUrl?: T;
+  resume?: T;
+  why?: T;
+  answers?: T;
+  status?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumes_select".
+ */
+export interface ResumesSelect<T extends boolean = true> {
+  applicantName?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -988,6 +1179,42 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "application-form".
+ */
+export interface ApplicationForm {
+  id: number;
+  /**
+   * Short line above the form.
+   */
+  intro?: string | null;
+  /**
+   * Ordered fields rendered after name/email/role (always present).
+   */
+  fields?:
+    | {
+        key: string;
+        label: string;
+        type?: ('text' | 'email' | 'url' | 'textarea' | 'select' | 'file') | null;
+        placeholder?: string | null;
+        required?: boolean | null;
+        /**
+         * For select fields only.
+         */
+        options?:
+          | {
+              label?: string | null;
+              value?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1126,6 +1353,33 @@ export interface HomepageSelect<T extends boolean = true> {
             };
         teamLine?: T;
         contactHeading?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "application-form_select".
+ */
+export interface ApplicationFormSelect<T extends boolean = true> {
+  intro?: T;
+  fields?:
+    | T
+    | {
+        key?: T;
+        label?: T;
+        type?: T;
+        placeholder?: T;
+        required?: T;
+        options?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

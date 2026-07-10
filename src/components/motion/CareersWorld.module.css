@@ -1,0 +1,108 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  background: #0d0b0a;
+}
+
+/* base desk plate — slow ken-burns drift, always-on ambient */
+.plate {
+  position: absolute;
+  inset: -4%;
+  background-image: url('/assets/careers/careers-base.jpg');
+  background-size: cover;
+  background-position: center 42%;
+  transform: scale(1.06);
+  will-change: transform;
+  animation: careersDrift 46s ease-in-out infinite alternate;
+}
+
+@keyframes careersDrift {
+  from {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(-1.6%, -1.1%, 0);
+  }
+}
+
+/* foreground botanical vignette — gentle sway (alpha center shows the desk) */
+.layer {
+  position: absolute;
+  inset: -3%;
+  background-image: url('/assets/careers/careers-layer.png');
+  background-size: cover;
+  background-position: center;
+  transform-origin: 50% 62%;
+  opacity: 0.9;
+  will-change: transform;
+  animation: careersSway 9.5s ease-in-out infinite;
+}
+
+@keyframes careersSway {
+  0%,
+  100% {
+    transform: rotate(-0.6deg) translateX(-8px) scale(1.02);
+  }
+  50% {
+    transform: rotate(0.7deg) translateX(10px) scale(1.04);
+  }
+}
+
+/* ink veil — keep the scene visible up top, deepen toward the foot where the
+   form sits, so white copy stays legible everywhere */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(13, 11, 10, 0.3) 0%,
+      rgba(13, 11, 10, 0.12) 26%,
+      rgba(13, 11, 10, 0.44) 68%,
+      rgba(13, 11, 10, 0.74) 100%
+    ),
+    radial-gradient(120% 90% at 50% 22%, transparent 42%, rgba(13, 11, 10, 0.4) 100%);
+}
+
+/* ── phone / iPad: one still device crop behind the whole page ── */
+.sharedPlate {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+.sharedScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 11, 10, 0.32) 0%,
+    rgba(13, 11, 10, 0.16) 30%,
+    rgba(13, 11, 10, 0.5) 74%,
+    rgba(13, 11, 10, 0.76) 100%
+  );
+}
+
+/* static motion tier — hold a still frame */
+.still .plate,
+.still .layer {
+  animation: none;
+}
+.still .plate {
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate,
+  .layer {
+    animation: none;
+  }
+  .plate {
+    transform: scale(1.03);
+  }
+}

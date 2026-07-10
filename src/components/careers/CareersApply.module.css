@@ -1,0 +1,284 @@
+/* Careers — dark register. White copy on the atelier world, content on .dark
+   glass. Paired with .theme-ink on the page wrapper. */
+
+.section {
+  position: relative;
+  padding-block: clamp(40px, 6vh, 88px);
+}
+
+.inner {
+  width: min(var(--container), 100% - var(--gutter) * 2);
+  margin-inline: auto;
+}
+
+/* ── block headers ── */
+.blockHead {
+  margin-bottom: var(--sp-40);
+  max-width: 56ch;
+}
+
+.blockHeading {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-display-md);
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  font-weight: 400;
+  margin-top: var(--sp-16);
+}
+
+.blockNote {
+  margin-top: var(--sp-16);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  line-height: var(--lh-body);
+  color: #b8b1a8;
+  max-width: 46ch;
+}
+
+/* ── role cards ── */
+.roleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-24);
+}
+
+.roleCard {
+  border-radius: var(--r-lg);
+  padding: clamp(var(--sp-24), 3vw, var(--sp-32));
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+  box-shadow:
+    inset 0 1px 0 rgba(245, 241, 234, 0.1),
+    0 18px 44px rgba(0, 0, 0, 0.4);
+}
+
+.roleCardOpen {
+  border-style: dashed;
+  border-color: rgba(245, 241, 234, 0.28);
+}
+
+.roleTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-16);
+}
+
+.roleTitle {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-21);
+  line-height: 1.08;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  font-weight: 400;
+}
+
+.roleType {
+  flex-shrink: 0;
+  color: #b8b1a8;
+}
+
+.roleMeta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--fs-12);
+  letter-spacing: 0.04em;
+  color: #9d968c;
+}
+
+.roleBlurb {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  color: #d8d2c8;
+  flex: 1;
+}
+
+.roleApply {
+  align-self: flex-start;
+  margin-top: var(--sp-8);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--paper);
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.roleApply:hover {
+  opacity: 0.65;
+}
+
+/* ── application form ── */
+.formPanel {
+  border-radius: var(--r-lg);
+  padding: clamp(var(--sp-32), 4vw, var(--sp-64));
+  max-width: 760px;
+  margin-inline: auto;
+  box-shadow:
+    inset 0 1px 0 rgba(245, 241, 234, 0.1),
+    0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-20);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  color: #cfc8bd;
+}
+
+.optional {
+  color: #8f887e;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  color: var(--paper);
+  background: rgba(245, 241, 234, 0.06);
+  border: 1px solid rgba(245, 241, 234, 0.16);
+  border-radius: var(--r-sm);
+  padding: var(--sp-12) var(--sp-16);
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #8f887e;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: rgba(245, 241, 234, 0.5);
+  background: rgba(245, 241, 234, 0.09);
+}
+
+.field select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.file {
+  cursor: pointer;
+  padding: var(--sp-12) var(--sp-16);
+}
+
+.file::file-selector-button {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  color: var(--ink);
+  background: var(--paper);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: var(--sp-8) var(--sp-16);
+  margin-right: var(--sp-16);
+  cursor: pointer;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.formPrivacy {
+  grid-column: 1 / -1;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-12);
+  color: #8f887e;
+  margin-top: var(--sp-4);
+}
+
+.error {
+  grid-column: 1 / -1;
+  font-size: var(--fs-14);
+  color: #e8a99a;
+}
+
+.submit {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: var(--sp-8);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: none;
+  border-radius: var(--r-pill);
+  padding: var(--sp-12) var(--sp-32);
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.submit:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.submit:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ── done state ── */
+.done {
+  text-align: center;
+  padding: var(--sp-32) 0;
+}
+
+.doneHeading {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-display-md);
+  line-height: 1.02;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  font-weight: 400;
+}
+
+.doneNote {
+  margin-top: var(--sp-16);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  color: #b8b1a8;
+}
+
+@media (max-width: 640px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}

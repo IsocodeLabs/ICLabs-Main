@@ -522,3 +522,123 @@ export const legalPages: LegalPage[] = [
     ],
   },
 ]
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Careers (v3.4) — the dark "craftsmanship at work" world. Evergreen hiring
+   surface for all of Isocode. Copy is seed-fallback-safe; CMS wins once set.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export const careersContent = {
+  eyebrow: 'Careers',
+  heading: 'For the few who’d rather build things properly.',
+  pitch:
+    'Isocode is a small, senior studio held to a single bar — craft. If “good enough” has never once sat right with you, this is where that instinct is the job, not a liability.',
+  barEyebrow: 'The bar',
+  barHeading: 'What we hire for.',
+  barBody: [
+    'We are not hiring seat-fillers. We hire people who are in the top fraction of their craft — engineers, designers, and operators who care how a thing is made, not only that it ships.',
+    'The team stays small on purpose. That means real ownership from week one, work reviewed like it matters, and no hiding behind process. It also means the bar to get in is high, and we keep it there.',
+  ],
+  barPoints: [
+    { title: 'Craft over credentials', body: 'Show us something you made. A repo, a design, a deal you closed — proof beats a résumé line.' },
+    { title: 'Ownership, not tickets', body: 'You’ll own outcomes end to end, with the seniority around you to learn fast.' },
+    { title: 'Remote, senior, quiet', body: 'Work from anywhere, on your own clock. We optimise for deep work, not presence theatre.' },
+  ],
+  rolesEyebrow: 'Open roles',
+  rolesHeading: 'Where we’re hiring.',
+  rolesNote: 'Remote. We hire the person first, then shape the role around them.',
+  formEyebrow: 'Apply',
+  formHeading: 'Tell us who you are.',
+  formIntro: 'One form. Pick the role, tell us a little, and show us something you’ve made.',
+  closeLine: 'Don’t see your role? The open application is always read by a person.',
+  backLabel: '← isocodelabs.com',
+}
+
+export type JobOpeningSeed = {
+  title: string
+  roleKey: string
+  type: 'intern' | 'fullTime' | 'contract'
+  dept: string
+  location: string
+  stipend: string
+  blurb: string
+  active: boolean
+  openApplication: boolean
+  order: number
+}
+
+export const jobOpenings: JobOpeningSeed[] = [
+  {
+    title: 'Software Engineering Intern',
+    roleKey: 'swe-intern',
+    type: 'intern',
+    dept: 'Engineering',
+    location: 'Remote',
+    stipend: '₹50k / month stipend',
+    blurb:
+      'Build production software to a craft bar most places only talk about — and have it reviewed like it matters.',
+    active: true,
+    openApplication: false,
+    order: 1,
+  },
+  {
+    title: 'Design Intern',
+    roleKey: 'design-intern',
+    type: 'intern',
+    dept: 'Design',
+    location: 'Remote',
+    stipend: '₹50k / month stipend',
+    blurb:
+      'Design interfaces people feel, not just use. Every surface considered, every interaction intentional.',
+    active: true,
+    openApplication: false,
+    order: 2,
+  },
+  {
+    title: 'Sales Executive',
+    roleKey: 'sales-exec',
+    type: 'fullTime',
+    dept: 'Sales',
+    location: 'Remote',
+    stipend: '₹20–50k / month',
+    blurb:
+      'Bring the right clients to a studio that only takes work it can make right. Consultative, never pushy.',
+    active: true,
+    openApplication: false,
+    order: 3,
+  },
+  {
+    title: 'Exceptional / open application',
+    roleKey: 'open',
+    type: 'fullTime',
+    dept: 'Any',
+    location: 'Remote',
+    stipend: 'By fit',
+    blurb:
+      'Don’t see your role? If you’re exceptional at what you do, tell us. We hire the person, then find the shape.',
+    active: true,
+    openApplication: true,
+    order: 99,
+  },
+]
+
+export type ApplicationFieldSeed = {
+  key: string
+  label: string
+  type: 'text' | 'email' | 'url' | 'textarea' | 'select' | 'file'
+  placeholder?: string
+  required: boolean
+  options?: { label: string; value: string }[]
+}
+
+export const applicationForm = {
+  intro: 'Everything here stays private — read only by the team, never sold or shared.',
+  // name / email / role are always rendered first; these follow, in order.
+  fields: [
+    { key: 'college', label: 'College / University', type: 'text', placeholder: 'Where you study or studied', required: false },
+    { key: 'year', label: 'Year / graduation', type: 'text', placeholder: 'e.g. 3rd year, or 2027', required: false },
+    { key: 'portfolioUrl', label: 'GitHub or portfolio URL', type: 'url', placeholder: 'https://', required: false },
+    { key: 'resume', label: 'Résumé (PDF)', type: 'file', required: true },
+    { key: 'why', label: 'Why Isocode?', type: 'textarea', placeholder: 'A few honest lines — what draws you here, and what you’ve made.', required: false },
+  ] as ApplicationFieldSeed[],
+}

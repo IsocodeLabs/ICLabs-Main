@@ -3,11 +3,14 @@ import config from '@payload-config'
 import {
   aboutContent,
   aboutPageContent,
+  applicationForm,
+  careersContent,
   contactChannels,
   ctaContent,
   footerContent,
   foundersContent,
   heroContent,
+  jobOpenings,
   labsContent,
   problemContent,
   shortQuiz,
@@ -258,6 +261,107 @@ export async function getAboutPageContent(): Promise<AboutPageContent> {
       contact: {
         email: settings?.contactChannels?.email ?? fallback.contact.email,
         phone: settings?.contactChannels?.phone ?? fallback.contact.phone,
+      },
+    }
+  } catch {
+    return fallback
+  }
+}
+
+export type CareerRole = {
+  title: string
+  roleKey: string
+  type: string
+  dept: string
+  location: string
+  stipend: string
+  blurb: string
+  openApplication: boolean
+}
+
+export type ApplicationField = {
+  key: string
+  label: string
+  type: 'text' | 'email' | 'url' | 'textarea' | 'select' | 'file'
+  placeholder?: string
+  required: boolean
+  options?: { label: string; value: string }[]
+}
+
+export type CareersContent = {
+  page: typeof careersContent
+  roles: CareerRole[]
+  form: { intro: string; fields: ApplicationField[] }
+}
+
+/**
+ * The Careers page. Reads active job openings + the application-form config from
+ * the CMS, falling back field-by-field to seed so nothing renders blank. Roles
+ * are sorted by `order`; the open application is just another opening flagged
+ * `openApplication`.
+ */
+export async function getCareersContent(): Promise<CareersContent> {
+  const toRole = (r: (typeof jobOpenings)[number]): CareerRole => ({
+    title: r.title,
+    roleKey: r.roleKey,
+    type: r.type,
+    dept: r.dept,
+    location: r.location,
+    stipend: r.stipend,
+    blurb: r.blurb,
+    openApplication: r.openApplication,
+  })
+
+  const fallback: CareersContent = {
+    page: careersContent,
+    roles: jobOpenings.filter((r) => r.active).map(toRole),
+    form: { intro: applicationForm.intro, fields: applicationForm.fields },
+  }
+
+  try {
+    const payload = await getPayload({ config })
+    const [openings, form] = await Promise.all([
+      payload.find({
+        collection: 'job-openings',
+        where: { active: { equals: true } },
+        sort: 'order',
+        limit: 50,
+      }),
+      payload.findGlobal({ slug: 'application-form' }),
+    ])
+
+    return {
+      page: careersContent,
+      roles:
+        openings.docs.length > 0
+          ? openings.docs.map((o) => ({
+              title: o.title,
+              roleKey: o.roleKey,
+              type: o.type ?? 'fullTime',
+              dept: o.dept ?? '',
+              location: o.location ?? 'Remote',
+              stipend: o.stipend ?? '',
+              blurb: o.blurb ?? '',
+              openApplication: Boolean(o.openApplication),
+            }))
+          : fallback.roles,
+      form: {
+        intro: form?.intro ?? fallback.form.intro,
+        fields:
+          form?.fields && form.fields.length > 0
+            ? form.fields.map((f) => ({
+                key: f.key,
+                label: f.label,
+                type: (f.type ?? 'text') as ApplicationField['type'],
+                placeholder: f.placeholder ?? undefined,
+                required: Boolean(f.required),
+                options: (f.options ?? [])
+                  .filter((o): o is { label: string; value: string } =>
+                    Boolean(o.label && o.value),
+                  )
+                  .map((o) => ({ label: o.label, value: o.value })),
+              }))
+            : fallback.form.fields,
       },
     }
   } catch {

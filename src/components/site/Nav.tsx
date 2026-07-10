@@ -11,8 +11,8 @@ import monogram from '../../../public/assets/brand/il-monogram-black.png'
 /** Floating glass nav — IL monogram, ink on paper. One CTA; the page is the menu. */
 export function Nav({ contactEmail }: { contactEmail: string }) {
   const pathname = usePathname()
-  // the quiz is a focused surface with its own top bar — no competing chrome
-  if (pathname?.startsWith('/quiz')) return null
+  // the quiz and careers are focused surfaces with their own chrome
+  if (pathname?.startsWith('/quiz') || pathname?.startsWith('/careers')) return null
   return (
     <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main">
       <Link href="/#top" className={styles.brand} aria-label="ISOCODELABS — home">
