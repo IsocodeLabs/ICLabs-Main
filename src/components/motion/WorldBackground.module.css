@@ -6,6 +6,30 @@
   pointer-events: none;
 }
 
+/* ── phone / iPad: one still device-composed image behind the whole page.
+   Fixed + cover + no-repeat → no tiling seam, no crop mismatch with the hero. */
+.sharedPlate {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* paper wash for legibility — light at the top (hero belief), building toward
+   the foot so the scrolling sections below stay readable over the art */
+.sharedScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(245, 241, 234, 0.12) 0%,
+    rgba(245, 241, 234, 0.34) 40%,
+    rgba(245, 241, 234, 0.62) 72%,
+    rgba(245, 241, 234, 0.78) 100%
+  );
+}
+
 /* the one sky plate — reused behind every section, never scrolls off */
 .plate {
   position: absolute;

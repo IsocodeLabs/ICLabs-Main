@@ -2,8 +2,9 @@
 
 .wrap {
   position: relative;
-  /* 100vh on screen + scroll room for the text beats */
-  height: 440vh;
+  /* 100vh on screen + scroll room for the text beats. Kept tight so the
+     journey never leaves a page of dead scroll before the next section. */
+  height: 300vh;
 }
 
 .sticky {
@@ -48,24 +49,26 @@
     transform: scaleY(1);
   }
   50% {
-    transform: scaleY(1.006);
+    transform: scaleY(1.016);
   }
 }
 
-/* grass sways about its roots — bottom-anchored skew, zero at the soil line,
-   widest at the flower tips */
+/* grass sways about its roots — bottom-anchored skew (zero at the soil line,
+   widest at the flower tips) plus a small drift. Slightly overscaled so the
+   horizontal drift never bares an edge over the sky beneath. */
 .floraLayer {
   transform-origin: 50% 100%;
-  animation: heroFloraSway 5.6s ease-in-out infinite alternate;
+  animation: heroFloraSway 5s ease-in-out infinite;
   will-change: transform;
 }
 
 @keyframes heroFloraSway {
-  from {
-    transform: skewX(-0.55deg);
+  0%,
+  100% {
+    transform: scale(1.03) skewX(-1.5deg) translateX(-6px);
   }
-  to {
-    transform: skewX(0.62deg);
+  50% {
+    transform: scale(1.03) skewX(1.6deg) translateX(6px);
   }
 }
 
@@ -82,33 +85,34 @@
   pointer-events: none;
 }
 
-/* the developer's laptop screen, breathing warm light (centre 72% / 67%) */
+/* the developer's laptop screen, breathing warm light (laptop centre ~71/63) */
 .glow {
   position: absolute;
-  left: 65%;
-  top: 59.5%;
-  width: 14%;
-  height: 15%;
+  left: 71%;
+  top: 63%;
+  width: 22%;
+  height: 24%;
+  transform: translate(-50%, -50%);
   background: radial-gradient(
     50% 50% at 50% 50%,
-    rgba(255, 236, 194, 0.55) 0%,
-    rgba(240, 208, 150, 0.2) 40%,
-    rgba(240, 208, 150, 0) 70%
+    rgba(255, 240, 205, 0.85) 0%,
+    rgba(245, 215, 150, 0.34) 45%,
+    rgba(245, 215, 150, 0) 72%
   );
   mix-blend-mode: screen;
-  animation: glowPulse 4.6s ease-in-out infinite;
+  filter: blur(2px);
+  animation: glowPulse 4s ease-in-out infinite;
 }
 
 @keyframes glowPulse {
   0%,
   100% {
-    opacity: 0.55;
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.95);
   }
-  45% {
-    opacity: 0.95;
-  }
-  70% {
-    opacity: 0.7;
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
   }
 }
 
@@ -149,6 +153,13 @@
   }
 }
 
+/* phone / iPad — the hero itself paints nothing; the shared fixed background
+   (WorldBackground) shows through underneath */
+.sharedScene {
+  position: absolute;
+  inset: 0;
+}
+
 /* soft cinematic grade over the scene */
 .grade {
   position: absolute;
@@ -157,6 +168,27 @@
   background:
     radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(18, 22, 28, 0.14) 100%),
     linear-gradient(180deg, rgba(18, 22, 28, 0.05) 0%, transparent 22%);
+}
+
+/* ---- text separation layer ----
+   A soft paper light behind the copy so the ink never merges into a dark
+   patch of the scene (a figure, the laptop). Two diffuse pools — one under
+   the top-anchored belief, one under the centred beats — not a hard card,
+   so the scene still reads through. */
+.textScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(78% 42% at 50% 22%, rgba(245, 241, 234, 0.66) 0%, transparent 62%),
+    radial-gradient(70% 40% at 50% 52%, rgba(245, 241, 234, 0.44) 0%, transparent 66%);
+}
+
+/* phone/iPad: the full meadow sits behind the text (busier than the desktop
+   sky), so the pool is stronger and pulled to the top where the belief sits */
+.textScrimStrong {
+  background:
+    radial-gradient(120% 46% at 50% 20%, rgba(245, 241, 234, 0.86) 0%, rgba(245, 241, 234, 0.4) 46%, transparent 74%);
 }
 
 /* ---- intro text (stage 0) ---- */
@@ -180,7 +212,9 @@
   color: var(--ink);
   max-width: 17ch;
   font-weight: 400;
-  text-shadow: 0 1px 30px rgba(245, 241, 234, 0.6);
+  /* tight paper halo hugs the letters + a wide soft glow — belt and braces
+     with .textScrim so the ink separates on any patch of the scene */
+  text-shadow: 0 0 7px rgba(245, 241, 234, 0.8), 0 1px 30px rgba(245, 241, 234, 0.6);
 }
 
 /* emphasis by a crafted underline, not weight — Anton ships one weight */
@@ -231,7 +265,7 @@
   color: var(--ink);
   max-width: 20ch;
   font-weight: 400;
-  text-shadow: 0 2px 30px rgba(245, 241, 234, 0.7);
+  text-shadow: 0 0 7px rgba(245, 241, 234, 0.8), 0 2px 30px rgba(245, 241, 234, 0.7);
 }
 
 /* beats sit over the sky — keep them legible on the light field */

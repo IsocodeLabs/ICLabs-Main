@@ -1,30 +1,42 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { gsap, ScrollTrigger } from '@/lib/gsap'
-import { useMotionTier } from '@/lib/capability'
+import { ScrollTrigger } from '@/lib/gsap'
+import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
 import styles from './WorldBackground.module.css'
 
 /**
- * The hero's world, everywhere (ui-trial §"section treatment"). ONE fixed
- * painterly stage runs behind every section below the hero: a sky plate up top
- * and a flora band pinned to the bottom of the viewport. Nothing scrolls away —
- * the content scrolls OVER the stage, and the stage evolves *in place*: the sky
- * scrim shifts value/warmth and the flora ebbs (fades + drifts) on scroll, plus
- * a constant gentle sway. Reduced motion → a steady, still stage.
+ * The site's one fixed painterly stage, behind every section including the hero.
+ *
+ * Desktop: a sky plate up top (slow drift + scroll parallax) and a flora band
+ * pinned to the bottom that ebbs on scroll — the scene evolves in place while
+ * content scrolls over it.
+ *
+ * Phone / iPad: no motion, and no separate hero backdrop — a single device-
+ * composed image (the same one the hero sits on) is fixed and cover-fitted
+ * behind the whole page, so the hero and the sections below share one seamless
+ * background with no tiling seam and no crop mismatch. A paper scrim keeps the
+ * scrolling copy legible over it.
  */
 export function WorldBackground() {
   const plateRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
   const floraRef = useRef<HTMLDivElement>(null)
   const tier = useMotionTier()
+  const isPhone = useIsPhone()
+  const isDesktop = useIsDesktop()
+
+  // phone + iPad share one still, cover-fitted image behind the whole page
+  const shared = !isDesktop
+  const sharedSrc = isPhone ? '/assets/hero/hero-phone.jpg' : '/assets/hero/hero-ipad.jpg'
 
   useEffect(() => {
+    // scroll-driven evolution is a desktop, full-motion affair only
+    if (shared || tier === 'static') return
     const plate = plateRef.current
     const scrim = scrimRef.current
     const flora = floraRef.current
     if (!plate || !scrim || !flora) return
-    if (tier === 'static') return
 
     const st = ScrollTrigger.create({
       trigger: document.body,
@@ -44,8 +56,19 @@ export function WorldBackground() {
       },
     })
     return () => st.kill()
-  }, [tier])
+  }, [tier, shared])
 
+  // ── phone / iPad: one still image behind everything, plus a legibility scrim
+  if (shared) {
+    return (
+      <div aria-hidden className={styles.root}>
+        <div className={styles.sharedPlate} style={{ backgroundImage: `url('${sharedSrc}')` }} />
+        <div className={styles.sharedScrim} />
+      </div>
+    )
+  }
+
+  // ── desktop: the living sky + flora stage
   return (
     <div aria-hidden className={styles.root}>
       <div ref={plateRef} className={styles.plate} />

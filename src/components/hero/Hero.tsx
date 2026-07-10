@@ -12,39 +12,42 @@ type HeroProps = {
 }
 
 /**
- * Hero — Curiosity. A pinned scroll-reveal text journey (belief line, then the
- * beats swap in place) over the painterly scene.
+ * Hero — Curiosity.
  *
- * The scene is plain layered images (the same art the poster is composited
- * from) given life with cheap CSS transforms — whole-scene drift, figures
- * breathing from the ground up, grass swaying about its roots, a pulsing
- * laptop glow. No WebGL: the browser composites the PNGs pixel-true (custom
- * GL shaders skipped the linear→sRGB output encode and shifted the colours),
- * and nothing competes with scrolling for the GPU.
+ * Desktop (immersive): a pinned scroll journey — the belief line, then the
+ * beats swap in place — over a living layered scene (sky / figures / flora as
+ * plain images, life via cheap CSS transforms: scene drift, figures breathing
+ * from the ground up, grass swaying about its roots, a pulsing laptop glow).
+ * No WebGL — the browser composites the PNGs pixel-true and nothing competes
+ * with scrolling for the GPU. At the end the whole scene fades out IN PLACE,
+ * dissolving into the site rather than scrolling away.
  *
- * At the end of the journey the scene fades out IN PLACE, revealing the world
- * stage behind — the hero dissolves into the site instead of scrolling away.
- * Phones/tablets/reduced-motion get the static composited frame.
+ * Phone / iPad (still): no motion. A single quiet screen — the belief line
+ * over the SAME fixed background the rest of the site uses (WorldBackground
+ * paints the device-composed image behind everything), so the hero and the
+ * page share one seamless backdrop.
  */
 export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
   const tier = useMotionTier()
   const isDesktop = useIsDesktop()
   const isPhone = useIsPhone()
 
-  // the layered living scene is a desktop treat; smaller screens get the still
-  const layered = tier === 'full' && isDesktop
+  // the pinned journey + layered scene are a desktop, full-motion treat
+  const immersive = tier === 'full' && isDesktop
+  // phone + iPad share the site's fixed background; the hero adds no image
+  const sharedBg = !isDesktop
 
   const wrapRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
   const introRef = useRef<HTMLDivElement>(null)
   const beatRefs = useRef<Array<HTMLDivElement | null>>([])
 
-  // the scroll journey — the belief line, then the beats swap in place. Pure
-  // opacity/nudge on the text; the painterly scene stays put underneath.
+  // the scroll journey — belief line, then the beats swap in place, then the
+  // whole scene fades where it stands. Desktop/full-motion only.
   useEffect(() => {
     const wrap = wrapRef.current
     const sticky = stickyRef.current
-    if (!wrap || !sticky || tier === 'static') return
+    if (!wrap || !sticky || !immersive) return
 
     const beats = beatRefs.current.filter(Boolean) as HTMLDivElement[]
     const n = beats.length
@@ -83,26 +86,31 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
           beat.style.transform = `translateY(${drift}px)`
         })
 
-        // the in-place farewell: over the last stretch the whole scene (and
-        // the final beat) fade where they stand, revealing the world stage
-        // behind — the hero dissolves into the site instead of scrolling off
-        const bye = gsap.utils.clamp(0, 1, (p - 0.9) / 0.1)
+        // the in-place farewell: over the last short stretch the whole sticky
+        // scene fades where it stands, revealing the world stage behind — the
+        // hero dissolves into the site instead of scrolling off
+        const bye = gsap.utils.clamp(0, 1, (p - 0.94) / 0.06)
         sticky.style.opacity = `${1 - bye}`
       },
     })
     return () => st.kill()
-  }, [tier])
+  }, [immersive])
 
-  // phones get the portrait crop; tablets/iPad + desktop get the wide composite
-  const staticSrc = isPhone ? '/assets/hero/hero-mobile.webp' : '/assets/hero/hero-static.webp'
-  const isStatic = tier === 'static'
+  // desktop-but-reduced-motion still needs an image (the site's desktop
+  // backdrop is the sky, not the meadow); phone/iPad get it from WorldBackground
+  const stillSrc = '/assets/hero/hero-static.webp'
   const sceneAlt =
     'A painter at an easel and a developer at a glowing laptop, at work together in a sunlit wildflower meadow.'
 
   return (
-    <div ref={wrapRef} className={styles.wrap} id="top" style={isStatic ? { height: '100svh' } : undefined}>
+    <div
+      ref={wrapRef}
+      className={styles.wrap}
+      id="top"
+      style={!immersive ? { height: '100svh' } : undefined}
+    >
       <div ref={stickyRef} className={styles.sticky}>
-        {layered ? (
+        {immersive ? (
           /* the living scene: sky base, breathing figures, pulsing laptop
              glow, swaying grass — all transforms, all cheap */
           <div className={styles.scene} role="img" aria-label={sceneAlt}>
@@ -121,23 +129,32 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/hero/hero-l3-flora.png" alt="" className={`${styles.layer} ${styles.floraLayer}`} />
           </div>
+        ) : sharedBg ? (
+          /* phone / iPad — no image here; the shared fixed background shows through */
+          <div className={styles.sharedScene} role="img" aria-label={sceneAlt} />
         ) : (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={staticSrc} alt={sceneAlt} className={styles.staticScene} fetchPriority="high" />
+          <img src={stillSrc} alt={sceneAlt} className={styles.staticScene} fetchPriority="high" />
         )}
         <div className={styles.grade} aria-hidden />
+
+        {/* separation layer — a soft paper light behind the text so the ink
+            never merges with a dark patch of the scene (figures, laptop) */}
+        <div className={`${styles.textScrim} ${sharedBg ? styles.textScrimStrong : ''}`} aria-hidden />
 
         <div ref={introRef} className={styles.intro}>
           <h1 className={styles.belief}>{formatBelief(beliefLine)}</h1>
           <p className={styles.subline}>{subline}</p>
-          <span className={`mono-label ${styles.scrollHint}`} aria-hidden>
-            scroll
-          </span>
+          {immersive && (
+            <span className={`mono-label ${styles.scrollHint}`} aria-hidden>
+              scroll
+            </span>
+          )}
         </div>
 
-        {/* at reduced motion the still frame stands alone; the narrative
-            carries on in Problem — no empty scroll theatre */}
-        {!isStatic &&
+        {/* the beat journey is desktop-only; phone/iPad/reduced-motion get the
+            single still screen and the narrative continues in Problem */}
+        {immersive &&
           scrollBeats.map((text, i) => (
             <div
               key={i}
