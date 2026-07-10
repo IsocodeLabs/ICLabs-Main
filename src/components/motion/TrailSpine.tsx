@@ -94,26 +94,33 @@ export function TrailSpine() {
     path.style.strokeDasharray = `${length}`
     path.style.strokeDashoffset = `${length}`
 
-    // path Y is monotonic top→bottom, so binary-search the length at a given Y
-    const lengthAtY = (targetY: number) => {
-      let lo = 0
-      let hi = length
-      for (let i = 0; i < 22; i++) {
-        const mid = (lo + hi) / 2
-        if (path.getPointAtLength(mid).y < targetY) lo = mid
-        else hi = mid
-      }
-      return (lo + hi) / 2
+    // Sample the curve ONCE into a lookup table (y is monotonic top→bottom).
+    // Per scroll frame it's then a pure array binary-search + lerp — zero
+    // geometry calls, so the trail costs nothing while scrolling.
+    const N = 600
+    const xs = new Float32Array(N + 1)
+    const ys = new Float32Array(N + 1)
+    for (let i = 0; i <= N; i++) {
+      const pt = path.getPointAtLength((length * i) / N)
+      xs[i] = pt.x
+      ys[i] = pt.y
     }
 
     const update = () => {
       const targetY = window.scrollY + window.innerHeight * 0.5
-      const at = gsap.utils.clamp(0, length, lengthAtY(targetY))
-      path.style.strokeDashoffset = `${length - at}`
-      const pt = path.getPointAtLength(at)
-      comet.setAttribute('cx', `${pt.x}`)
-      comet.setAttribute('cy', `${pt.y}`)
-      const frac = at / length
+      let lo = 0
+      let hi = N
+      while (hi - lo > 1) {
+        const mid = (lo + hi) >> 1
+        if (ys[mid] < targetY) lo = mid
+        else hi = mid
+      }
+      const span = ys[hi] - ys[lo]
+      const t = gsap.utils.clamp(0, 1, span > 0 ? (targetY - ys[lo]) / span : 0)
+      const frac = (lo + t) / N
+      path.style.strokeDashoffset = `${length * (1 - frac)}`
+      comet.setAttribute('cx', `${xs[lo] + (xs[hi] - xs[lo]) * t}`)
+      comet.setAttribute('cy', `${ys[lo] + (ys[hi] - ys[lo]) * t}`)
       comet.style.opacity = frac > 0.01 && frac < 0.99 ? '1' : '0'
     }
 

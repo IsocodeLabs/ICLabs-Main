@@ -14,18 +14,111 @@
   overflow: hidden;
 }
 
+/* ---- the living scene (desktop) — layered images + CSS life, no WebGL ---- */
+
+/* whole-scene drift, same slow ken-burns the poster fallback gets */
 .scene {
   position: absolute;
   inset: 0;
-  /* held invisible until the scene's first frame paints (JS adds .sceneReady),
-     then it cross-fades in over the static poster — so the handoff lands
-     exactly when the sway begins, never a hard cut or an empty fading canvas */
-  opacity: 0;
-  transition: opacity 0.9s var(--ease-out);
+  overflow: hidden;
+  transform-origin: 58% 62%;
+  animation: heroKenBurns 24s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
-.sceneReady {
-  opacity: 1;
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* figures breathe from the ground up — bottom-anchored scale keeps the feet
+   planted while the upper bodies gently rise and settle */
+.figuresLayer {
+  transform-origin: 50% 100%;
+  animation: figureBreath 6.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes figureBreath {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.006);
+  }
+}
+
+/* grass sways about its roots — bottom-anchored skew, zero at the soil line,
+   widest at the flower tips */
+.floraLayer {
+  transform-origin: 50% 100%;
+  animation: heroFloraSway 5.6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes heroFloraSway {
+  from {
+    transform: skewX(-0.55deg);
+  }
+  to {
+    transform: skewX(0.62deg);
+  }
+}
+
+/* a cover-fitted stand-in for the image box (mirrors object-fit: cover), so
+   the glow sits on the laptop screen at any viewport aspect ratio */
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  aspect-ratio: 1536 / 1024;
+  pointer-events: none;
+}
+
+/* the developer's laptop screen, breathing warm light (centre 72% / 67%) */
+.glow {
+  position: absolute;
+  left: 65%;
+  top: 59.5%;
+  width: 14%;
+  height: 15%;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 236, 194, 0.55) 0%,
+    rgba(240, 208, 150, 0.2) 40%,
+    rgba(240, 208, 150, 0) 70%
+  );
+  mix-blend-mode: screen;
+  animation: glowPulse 4.6s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  45% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .figuresLayer,
+  .floraLayer,
+  .glow {
+    animation: none;
+  }
 }
 
 .staticScene {

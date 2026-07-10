@@ -46,33 +46,6 @@ export function useMotionTier(): MotionTier {
   )
 }
 
-let glOK: boolean | null = null
-
-/**
- * True only when a real, hardware-accelerated WebGL context is available.
- * Software renderers (GPU-blocklisted machines, some VMs) must get the
- * static frame — a janky or hung hero refutes the brand harder than a still.
- */
-export function webglAvailable(): boolean {
-  if (typeof window === 'undefined') return false
-  if (glOK !== null) return glOK
-  try {
-    const canvas = document.createElement('canvas')
-    // Accept any working context — a context-loss handler catches crashes at
-    // runtime, so we don't need to pre-reject on performance caveat.
-    const gl = (canvas.getContext('webgl2') ||
-      canvas.getContext('webgl') ||
-      canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null
-    // Note: do NOT call loseContext() here — explicitly destroying a context
-    // right before R3F creates its own churns GPU state (and on some Macs
-    // nudges a GPU switch that kills the real hero context). Let it GC.
-    glOK = !!gl
-  } catch {
-    glOK = false
-  }
-  return glOK
-}
-
 export function useIsDesktop(): boolean {
   return useSyncExternalStore(
     (cb) => {
