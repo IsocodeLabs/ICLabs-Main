@@ -1,19 +1,52 @@
 /* /about — a content page over the light anchor world. Editorial rhythm,
-   quiet glass, no homepage journey chrome. */
+   lifted glass, panels that fill the column. No homepage journey chrome. */
 
 .page {
   position: relative;
 }
 
-/* first band clears the floating glass nav */
-.introSection {
-  padding-top: clamp(132px, 20vh, 220px);
+/* tighter than the homepage's 15vh band — content page, not a journey */
+.aboutSection {
+  position: relative;
+  padding-block: clamp(32px, 4.5vh, 60px);
 }
 
+.introSection {
+  /* clear the floating glass nav */
+  padding-top: clamp(120px, 18vh, 200px);
+}
+
+.contactSection {
+  padding-bottom: clamp(88px, 14vh, 160px);
+}
+
+/* Lift — a real drop shadow so glass never merges into the sky. Doubled class
+   selector guarantees it beats the base glass box-shadow regardless of CSS
+   import order, while keeping the luminous top hairline. */
+.lift.lift {
+  box-shadow:
+    inset 0 1px 0 var(--glass-line),
+    0 2px 6px rgba(20, 18, 16, 0.06),
+    0 18px 44px rgba(20, 18, 16, 0.16);
+}
+
+/* ── intro ── */
 .introPanel {
   border-radius: var(--r-lg);
-  padding: clamp(var(--sp-32), 5vw, var(--sp-64));
-  max-width: 62ch;
+  padding: clamp(var(--sp-32), 4vw, var(--sp-64));
+}
+
+.introGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(var(--sp-32), 5vw, var(--sp-64));
+  align-items: start;
+}
+
+.introHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-16);
 }
 
 .title {
@@ -24,17 +57,13 @@
   text-transform: uppercase;
   color: var(--ink);
   font-weight: 400;
-  margin-top: var(--sp-16);
-  max-width: 22ch;
-  /* never split a long word like CRAFTSMANSHIP mid-glyph (global heading rule
-     sets break-word); wrap at spaces only */
+  /* never split a long word like CRAFTSMANSHIP mid-glyph */
   overflow-wrap: normal;
   word-break: normal;
   hyphens: none;
 }
 
 .introBody {
-  margin-top: var(--sp-32);
   display: grid;
   gap: var(--sp-24);
 }
@@ -44,7 +73,6 @@
   font-size: var(--text-lead);
   line-height: var(--lh-body);
   color: var(--ink);
-  max-width: 58ch;
 }
 
 .introBody p:not(:first-child) {
@@ -53,7 +81,7 @@
 
 /* ── shared block headers ── */
 .blockHead {
-  margin-bottom: var(--sp-48);
+  margin-bottom: var(--sp-32);
   max-width: 52ch;
 }
 
@@ -80,7 +108,7 @@
 /* ── values ── */
 .valuesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: var(--sp-24);
 }
 
@@ -111,21 +139,22 @@
 /* ── founders ── */
 .foundersGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(var(--sp-24), 4vw, var(--sp-48));
-  max-width: 900px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--sp-24), 3vw, var(--sp-48));
 }
 
 .founderCard {
   border-radius: var(--r-lg);
   padding: var(--sp-24);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--sp-24);
+  align-items: center;
 }
 
 .founderPhoto {
   position: relative;
+  flex: 0 0 40%;
   aspect-ratio: 1 / 1;
   border-radius: var(--r-md);
   overflow: hidden;
@@ -144,6 +173,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-8);
+  min-width: 0;
 }
 
 .founderName {
@@ -193,8 +223,14 @@
 /* ── contact close ── */
 .contactPanel {
   border-radius: var(--r-lg);
-  padding: clamp(var(--sp-32), 5vw, var(--sp-64));
-  max-width: 56ch;
+  padding: clamp(var(--sp-32), 4vw, var(--sp-64));
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(var(--sp-32), 5vw, var(--sp-64));
+  align-items: start;
 }
 
 .contactHeading {
@@ -208,16 +244,43 @@
 }
 
 .contactBody {
-  margin-top: var(--sp-12);
-  margin-bottom: var(--sp-32);
+  margin-top: var(--sp-16);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: var(--text-lead);
+  line-height: var(--lh-body);
   color: var(--grey);
+  max-width: 34ch;
+}
+
+.contactFormWrap {
+  align-self: center;
+}
+
+/* ── responsive ── */
+@media (max-width: 860px) {
+  .introGrid,
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-32);
+  }
 }
 
 @media (max-width: 720px) {
   .foundersGrid {
     grid-template-columns: 1fr;
-    max-width: 420px;
+  }
+  .founderCard {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 420px) {
+  .founderCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .founderPhoto {
+    flex-basis: auto;
+    width: 60%;
   }
 }

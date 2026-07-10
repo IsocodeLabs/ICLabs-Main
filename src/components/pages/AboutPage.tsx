@@ -17,11 +17,13 @@ type FooterContent = {
   copyright: string
 }
 
+/** panel surface: quiet glass + a real lift so cards don't merge into the sky */
+const panel = `${glass.glass} ${glass.strong} ${styles.lift}`
+
 /**
  * The standalone /about page. A content page, not the homepage journey: the
  * anchor world drifts ambiently behind (WorldBackground), content floats on
- * quiet glass. No pinned hero, no scroll beats, no trail spine — those stay
- * homepage-only (design-system experience rules).
+ * lifted glass. No pinned hero, no scroll beats, no trail spine.
  */
 export function AboutPage({
   content,
@@ -38,22 +40,26 @@ export function AboutPage({
       <div style={{ position: 'relative' }}>
         <main className={styles.page}>
           {/* ── Intro ── */}
-          <Section className={`${sections.section} ${styles.introSection}`}>
+          <Section className={`${styles.aboutSection} ${styles.introSection}`}>
             <div className={sections.inner}>
-              <Reveal className={`${glass.glass} ${glass.strong} ${styles.introPanel}`}>
-                <Eyebrow>{page.eyebrow}</Eyebrow>
-                <h1 className={styles.title}>{page.heading}</h1>
-                <div className={styles.introBody}>
-                  {page.intro.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
+              <Reveal className={`${panel} ${styles.introPanel}`}>
+                <div className={styles.introGrid}>
+                  <div className={styles.introHead}>
+                    <Eyebrow>{page.eyebrow}</Eyebrow>
+                    <h1 className={styles.title}>{page.heading}</h1>
+                  </div>
+                  <div className={styles.introBody}>
+                    {page.intro.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
                 </div>
               </Reveal>
             </div>
           </Section>
 
           {/* ── Values ── */}
-          <Section className={sections.section}>
+          <Section className={styles.aboutSection}>
             <div className={sections.inner}>
               <Reveal className={styles.blockHead}>
                 <Eyebrow>{page.valuesEyebrow}</Eyebrow>
@@ -61,7 +67,7 @@ export function AboutPage({
               </Reveal>
               <Reveal stagger="[data-value]" className={styles.valuesGrid}>
                 {values.map((v) => (
-                  <div key={v.title} data-value className={`${glass.glass} ${styles.valueCard}`}>
+                  <div key={v.title} data-value className={`${panel} ${styles.valueCard}`}>
                     <span className={styles.valueTitle}>{v.title}</span>
                     <span className={styles.valueDesc}>{v.description}</span>
                   </div>
@@ -71,7 +77,7 @@ export function AboutPage({
           </Section>
 
           {/* ── Founders ── */}
-          <Section trail="center" className={sections.section}>
+          <Section trail="center" className={styles.aboutSection}>
             <div className={sections.inner}>
               <Reveal className={styles.blockHead}>
                 <Eyebrow>{page.foundersEyebrow}</Eyebrow>
@@ -80,7 +86,7 @@ export function AboutPage({
               </Reveal>
               <Reveal stagger="[data-founder]" className={styles.foundersGrid}>
                 {founders.map((f) => (
-                  <article key={f.name} data-founder className={`${glass.glass} ${styles.founderCard}`}>
+                  <article key={f.name} data-founder className={`${panel} ${styles.founderCard}`}>
                     <div className={styles.founderPhoto}>
                       <Image
                         src={f.photo}
@@ -88,7 +94,7 @@ export function AboutPage({
                         width={1000}
                         height={1000}
                         className={styles.founderImg}
-                        sizes="(max-width: 720px) 90vw, 460px"
+                        sizes="(max-width: 720px) 90vw, 480px"
                       />
                     </div>
                     <div className={styles.founderMeta}>
@@ -119,12 +125,18 @@ export function AboutPage({
           </Section>
 
           {/* ── Contact close ── */}
-          <Section id="contact" className={`${sections.section} ${sections.tailRoom}`}>
+          <Section id="contact" className={`${styles.aboutSection} ${styles.contactSection}`}>
             <div className={sections.inner}>
-              <Reveal className={`${glass.glass} ${glass.strong} ${styles.contactPanel}`}>
-                <h2 className={styles.contactHeading}>{page.contactHeading}</h2>
-                <p className={styles.contactBody}>{page.contactBody}</p>
-                <AboutContact />
+              <Reveal className={`${panel} ${styles.contactPanel}`}>
+                <div className={styles.contactGrid}>
+                  <div className={styles.contactCopy}>
+                    <h2 className={styles.contactHeading}>{page.contactHeading}</h2>
+                    <p className={styles.contactBody}>{page.contactBody}</p>
+                  </div>
+                  <div className={styles.contactFormWrap}>
+                    <AboutContact />
+                  </div>
+                </div>
               </Reveal>
             </div>
           </Section>
@@ -149,7 +161,6 @@ function SocialIcon({ platform }: { platform: string }) {
       </svg>
     )
   }
-  // github / x fall back to a neutral dot until those platforms are used
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
       <circle cx="12" cy="12" r="9" />
