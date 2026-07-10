@@ -3,11 +3,10 @@ import { withPayload } from '@payloadcms/next/withPayload'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  // Off so React's dev-only double-mount doesn't create→destroy the WebGL hero
-  // canvas on every load (the destroy fired a context-loss that dropped us to
-  // the static frame). Production never double-mounts, so this changes only the
-  // dev experience, not shipped behaviour.
-  reactStrictMode: false,
+  // On (React default). It was disabled during the WebGL era because the dev
+  // double-mount create→destroyed the hero's GPU canvas; the hero is now pure
+  // CSS/DOM, so the dev-only safety checks are back on. No shipped impact.
+  reactStrictMode: true,
   images: {
     formats: ['image/avif', 'image/webp'],
   },

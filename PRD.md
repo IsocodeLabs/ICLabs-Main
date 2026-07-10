@@ -271,11 +271,10 @@ Ranked roughly by how load-bearing they are:
    inside software all day / most of it is forgettable / we build the other kind")
    only exists on desktop. Needs a product decision: show as static text on mobile, or
    accept it as desktop-only.
-2. **`three` / `@react-three/fiber` are dead dependencies** — safe to remove from
-   `package.json` now that the WebGL hero is fully gone; shrinks the install and
-   bundle.
-3. **`reactStrictMode: false`** (§11) — re-evaluate now that the reason for disabling
-   it (WebGL context churn) no longer applies.
+2. ~~**`three` / `@react-three/fiber` are dead dependencies**~~ — **done in v3.1.2**:
+   removed from `package.json` (zero code references; no visual/functional change).
+3. ~~**`reactStrictMode: false`**~~ — **done in v3.1.2**: re-enabled (`true`); verified
+   no regression now that the WebGL context-churn reason is gone.
 4. **Long quiz has schema but no route** — `QuizStages`/`QuizQuestions` collections
    exist; the pre-onboarding flow itself was explicitly out of Build 2 and still needs
    building if it's on the roadmap.
