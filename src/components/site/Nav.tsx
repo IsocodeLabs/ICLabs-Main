@@ -11,6 +11,11 @@ import monogram from '../../../public/assets/brand/il-monogram-black.png'
 
 type NavLink = { label: string; href: string; external?: boolean }
 
+// careers.isocodelabs.com is a separate host (middleware rewrites its root to
+// /careers) — link there directly rather than to the shadow /careers path on
+// the main domain, so visitors land on the canonical, live URL.
+const CAREERS_URL = 'https://careers.isocodelabs.com'
+
 /** Floating glass nav — IL monogram, ink on paper. Links collapse into a
  *  left-hand dropdown on phone/iPad; the studio CTA always stays visible. */
 export function Nav({ contactEmail }: { contactEmail: string }) {
@@ -25,7 +30,7 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
 
   const links: NavLink[] = [
     { label: 'Labs', href: '/#labs' },
-    { label: 'Careers', href: '/careers' },
+    { label: 'Careers', href: CAREERS_URL, external: true },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: `mailto:${contactEmail}`, external: true },
   ]
