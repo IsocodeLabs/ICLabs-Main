@@ -5,10 +5,17 @@
   transform: translateX(-50%);
   z-index: 100;
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--sp-24);
   padding: var(--sp-8) var(--sp-24) var(--sp-8) var(--sp-24);
   border-radius: var(--r-pill);
+  /* size to content, not to the 50%-of-viewport that `left:50%` otherwise
+     imposes — otherwise the pill is squeezed and its items wrap into a lumpy
+     multi-line blob in the ~900–1126px band. Capped so it never exceeds the
+     viewport on small screens. */
+  width: max-content;
+  max-width: calc(100vw - var(--sp-24) * 2);
 }
 
 .brand {
@@ -29,6 +36,7 @@
   font-size: var(--fs-14);
   letter-spacing: 0.16em;
   color: var(--paper);
+  white-space: nowrap;
 }
 
 .links {
@@ -44,6 +52,7 @@
   opacity: 0.72;
   transition: opacity var(--dur-fast) var(--ease-out);
   padding: var(--sp-8) var(--sp-4);
+  white-space: nowrap;
 }
 
 .links a:hover {
@@ -55,6 +64,7 @@
   color: var(--paper);
   opacity: 0.6;
   transition: opacity var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
 }
 
 .back:hover {
