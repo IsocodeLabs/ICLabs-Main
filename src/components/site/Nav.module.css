@@ -118,11 +118,17 @@
   background: rgba(20, 18, 16, 0.06);
 }
 
+/* compact mode: links collapse into the left hamburger, and the wordmark drops
+   so the pill is just monogram + CTA — the wordmark would otherwise collide with
+   the button in this band. The monogram carries the brand here. */
 @media (max-width: 1024px) {
   .nav {
     gap: var(--sp-16);
   }
   .links {
+    display: none;
+  }
+  .name {
     display: none;
   }
   .menuMount {
@@ -137,13 +143,6 @@
   .menuMount {
     top: var(--sp-12);
     left: var(--sp-16);
-  }
-}
-
-/* tight phones: drop the wordmark, keep monogram + CTA in the pill */
-@media (max-width: 480px) {
-  .name {
-    display: none;
   }
 }
 
