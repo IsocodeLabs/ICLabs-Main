@@ -12,6 +12,24 @@
   transition: opacity var(--dur-med) var(--ease-out);
 }
 
+/* hamburger — hidden on desktop, shown when the inline links collapse */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.hamburger svg {
+  display: block;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -51,14 +69,59 @@
   opacity: 1;
 }
 
+/* ── mobile dropdown ── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 101;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-8);
+  border-radius: var(--r-lg);
+  /* near-opaque so links never camouflage against the world behind */
+  background: rgba(245, 241, 234, 0.96);
+  -webkit-backdrop-filter: blur(22px) saturate(1.05);
+  backdrop-filter: blur(22px) saturate(1.05);
+  border: 1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-line),
+    0 18px 44px rgba(20, 18, 16, 0.18);
+}
+
+.dropdownItem a {
+  display: block;
+  padding: var(--sp-12) var(--sp-16);
+  font-size: var(--fs-16);
+  color: var(--ink);
+  border-radius: var(--r-sm);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.dropdownItem a:hover {
+  background: rgba(20, 18, 16, 0.06);
+}
+
 @media (max-width: 1024px) {
   .nav {
     gap: var(--sp-12);
-    padding-left: var(--sp-16);
+    padding-left: var(--sp-12);
   }
-
   .links {
     display: none;
+  }
+  .hamburger {
+    display: inline-flex;
   }
 }
 
@@ -69,9 +132,18 @@
   }
 }
 
-/* tight phones: drop the wordmark, keep the monogram + CTA so nothing overlaps */
+/* tight phones: drop the wordmark, keep hamburger + monogram + CTA */
 @media (max-width: 480px) {
   .name {
+    display: none;
+  }
+}
+
+/* safety: the dropdown is mobile-only — never show it on desktop even if
+   the open state lingers after a resize */
+@media (min-width: 1025px) {
+  .dropdown,
+  .backdrop {
     display: none;
   }
 }
