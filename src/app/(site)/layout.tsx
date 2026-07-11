@@ -44,6 +44,16 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="en" className={fontVariables}>
       <body>
+        {/* Pre-paint: on the careers.* subdomain the middleware rewrites / → /careers,
+            so the client URL path stays "/" and the marketing <Nav>'s pathname guard
+            can't detect it — leaving the main nav stacked over the CareersNav. This
+            runs before first paint and flags the host so CSS hides the main nav with
+            no flash and without forcing dynamic rendering. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(location.hostname.indexOf('careers.')===0){document.documentElement.setAttribute('data-careers-host','')}}catch(e){}`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}

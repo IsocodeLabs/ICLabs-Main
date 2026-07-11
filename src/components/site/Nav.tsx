@@ -49,7 +49,7 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
   return (
     <>
       {/* mobile menu — left-mounted, separate from the centred pill */}
-      <div className={styles.menuMount}>
+      <div className={styles.menuMount} data-site-nav>
         <button
           type="button"
           className={`${styles.hamburger} ${glass.glass}`}
@@ -82,7 +82,7 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
       </div>
 
       {/* the centred pill — monogram, desktop links, studio CTA */}
-      <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main">
+      <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main" data-site-nav>
         <Link href="/#top" className={styles.brand} aria-label="ISOCODELABS — home">
           <Image src={monogram} alt="" className={styles.mark} priority />
           <span className={styles.name}>ISOCODELABS</span>

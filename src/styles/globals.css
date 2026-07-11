@@ -124,3 +124,10 @@ html.no-blend [data-bg] {
     scroll-behavior: auto !important;
   }
 }
+
+/* On the careers.* subdomain (middleware rewrites / → /careers), hide the
+   marketing nav so only the page's own CareersNav shows. The flag is set
+   pre-paint by an inline script in the site layout, so there is no flash. */
+html[data-careers-host] [data-site-nav] {
+  display: none !important;
+}
