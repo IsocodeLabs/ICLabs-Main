@@ -12,24 +12,6 @@
   transition: opacity var(--dur-med) var(--ease-out);
 }
 
-/* hamburger — hidden on desktop, shown when the inline links collapse */
-.hamburger {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--ink);
-}
-
-.hamburger svg {
-  display: block;
-}
-
 .brand {
   display: inline-flex;
   align-items: center;
@@ -69,11 +51,35 @@
   opacity: 1;
 }
 
-/* ── mobile dropdown ── */
+/* ── mobile menu — left-mounted, its own floating element ── */
+.menuMount {
+  display: none;
+  position: fixed;
+  top: var(--sp-16);
+  left: var(--gutter);
+  z-index: 101;
+}
+
+.hamburger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.hamburger svg {
+  display: block;
+}
+
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: -1;
   background: transparent;
   border: none;
   cursor: default;
@@ -83,7 +89,7 @@
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  z-index: 101;
+  z-index: 1;
   min-width: 220px;
   display: flex;
   flex-direction: column;
@@ -114,36 +120,36 @@
 
 @media (max-width: 1024px) {
   .nav {
-    gap: var(--sp-12);
-    padding-left: var(--sp-12);
+    gap: var(--sp-16);
   }
   .links {
     display: none;
   }
-  .hamburger {
-    display: inline-flex;
+  .menuMount {
+    display: block;
   }
 }
 
 @media (max-width: 640px) {
   .nav {
     top: var(--sp-12);
-    gap: var(--sp-12);
+  }
+  .menuMount {
+    top: var(--sp-12);
+    left: var(--sp-16);
   }
 }
 
-/* tight phones: drop the wordmark, keep hamburger + monogram + CTA */
+/* tight phones: drop the wordmark, keep monogram + CTA in the pill */
 @media (max-width: 480px) {
   .name {
     display: none;
   }
 }
 
-/* safety: the dropdown is mobile-only — never show it on desktop even if
-   the open state lingers after a resize */
+/* safety: the mobile menu is never shown on desktop */
 @media (min-width: 1025px) {
-  .dropdown,
-  .backdrop {
+  .menuMount {
     display: none;
   }
 }

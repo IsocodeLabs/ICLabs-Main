@@ -42,52 +42,58 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
     )
 
   return (
-    <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main">
-      <button
-        type="button"
-        className={styles.hamburger}
-        aria-label={open ? 'Close menu' : 'Open menu'}
-        aria-expanded={open}
-        aria-controls="nav-menu"
-        onClick={() => setOpen((v) => !v)}
-      >
-        {open ? <CloseIcon /> : <MenuIcon />}
-      </button>
+    <>
+      {/* mobile menu — left-mounted, separate from the centred pill */}
+      <div className={styles.menuMount}>
+        <button
+          type="button"
+          className={`${styles.hamburger} ${glass.glass}`}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="nav-menu"
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </button>
 
-      <Link href="/#top" className={styles.brand} aria-label="ISOCODELABS — home">
-        <Image src={monogram} alt="" className={styles.mark} priority />
-        <span className={styles.name}>ISOCODELABS</span>
-      </Link>
+        {open && (
+          <>
+            <button
+              type="button"
+              className={styles.backdrop}
+              aria-hidden
+              tabIndex={-1}
+              onClick={() => setOpen(false)}
+            />
+            <div id="nav-menu" className={styles.dropdown}>
+              {links.map((l) => (
+                <span key={l.label} className={styles.dropdownItem}>
+                  {renderLink(l, () => setOpen(false))}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
 
-      <ul className={styles.links}>
-        {links.map((l) => (
-          <li key={l.label}>{renderLink(l)}</li>
-        ))}
-      </ul>
+      {/* the centred pill — monogram, desktop links, studio CTA */}
+      <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main">
+        <Link href="/#top" className={styles.brand} aria-label="ISOCODELABS — home">
+          <Image src={monogram} alt="" className={styles.mark} priority />
+          <span className={styles.name}>ISOCODELABS</span>
+        </Link>
 
-      <Button href="/quiz" size="sm">
-        Start a project
-      </Button>
+        <ul className={styles.links}>
+          {links.map((l) => (
+            <li key={l.label}>{renderLink(l)}</li>
+          ))}
+        </ul>
 
-      {open && (
-        <>
-          <button
-            type="button"
-            className={styles.backdrop}
-            aria-hidden
-            tabIndex={-1}
-            onClick={() => setOpen(false)}
-          />
-          <div id="nav-menu" className={styles.dropdown}>
-            {links.map((l) => (
-              <span key={l.label} className={styles.dropdownItem}>
-                {renderLink(l, () => setOpen(false))}
-              </span>
-            ))}
-          </div>
-        </>
-      )}
-    </nav>
+        <Button href="/quiz" size="sm">
+          Start a project
+        </Button>
+      </nav>
+    </>
   )
 }
 

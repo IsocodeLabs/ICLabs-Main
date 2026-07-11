@@ -119,7 +119,7 @@ export const labsContent = {
 }
 
 export const ctaContent = {
-  heading: 'Work with us',
+  heading: 'Start a project',
   body: 'Before we talk price, we’d like to understand your business. We reach out only if we genuinely believe we can build something worth your investment.',
   quizLabel: 'Start the quiz',
   hatchLabel: 'In a hurry? Talk to us directly',
