@@ -115,10 +115,10 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
              glow, swaying grass — all transforms, all cheap */
           <div className={styles.scene} role="img" aria-label={sceneAlt}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/hero/hero-l1-sky.png" alt="" className={styles.layer} fetchPriority="high" />
+            <img src="/assets/hero/hero-l1-sky.webp" alt="" className={styles.layer} fetchPriority="high" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/hero/hero-l2-figures.png"
+              src="/assets/hero/hero-l2-figures.webp"
               alt=""
               className={`${styles.layer} ${styles.figuresLayer}`}
               fetchPriority="high"
@@ -127,7 +127,7 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
               <div className={styles.glow} />
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/hero/hero-l3-flora.png" alt="" className={`${styles.layer} ${styles.floraLayer}`} />
+            <img src="/assets/hero/hero-l3-flora.webp" alt="" className={`${styles.layer} ${styles.floraLayer}`} />
           </div>
         ) : sharedBg ? (
           /* phone / iPad — no image here; the shared fixed background shows through */

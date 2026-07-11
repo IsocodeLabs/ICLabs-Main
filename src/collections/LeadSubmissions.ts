@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, noOne } from '@/access'
+import { leadNotificationHtml, notifyFounders } from '@/lib/notify'
 
 /**
  * Ops — quiz + contact submissions. Admin-only via API; the site creates
@@ -17,6 +18,27 @@ export const LeadSubmissions: CollectionConfig = {
     create: noOne, // site endpoints use overrideAccess server-side
     update: adminOnly,
     delete: adminOnly,
+  },
+  hooks: {
+    afterChange: [
+      ({ doc, operation }) => {
+        if (operation !== 'create') return
+        const contact = (doc.contact ?? {}) as { name?: string; email?: string; company?: string; note?: string }
+        const subject =
+          doc.kind === 'shortQuiz' ? `New quiz submission — ${contact.name ?? 'unnamed'}` : `New enquiry — ${contact.name ?? 'unnamed'}`
+        // fire-and-forget: notification failure must never block the write that already happened
+        void notifyFounders(
+          subject,
+          leadNotificationHtml({
+            kind: doc.kind,
+            name: contact.name ?? '',
+            email: contact.email ?? '',
+            company: contact.company,
+            note: contact.note,
+          }),
+        )
+      },
+    ],
   },
   fields: [
     {

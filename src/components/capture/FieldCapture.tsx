@@ -82,10 +82,17 @@ export function FieldCapture({
     }
 
     setBusy(true)
-    const result = await onSubmit({ ...next, website: honeypotRef.current?.value ?? '' })
-    setBusy(false)
-    if (result.ok) setDone(true)
-    else setError(result.error)
+    try {
+      const result = await onSubmit({ ...next, website: honeypotRef.current?.value ?? '' })
+      if (result.ok) setDone(true)
+      else setError(result.error)
+    } catch {
+      // the network call itself failed (not a graceful {ok:false} — a hard
+      // failure), so show something rather than leaving the button stuck
+      setError('Couldn’t reach the server — check your connection and try again.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   const goBack = () => {

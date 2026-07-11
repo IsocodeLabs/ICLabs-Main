@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, noOne } from '@/access'
+import { applicationNotificationHtml, notifyFounders } from '@/lib/notify'
 
 /**
  * Job applications — submissions store + the v3.5 triage surface. Admin-read
@@ -42,6 +43,22 @@ export const Applications: CollectionConfig = {
           data.duplicateEmail = prior.totalDocs > 0
         }
         return data
+      },
+    ],
+    afterChange: [
+      ({ doc, operation }) => {
+        if (operation !== 'create') return
+        // fire-and-forget: notification failure must never block the write that already happened
+        void notifyFounders(
+          `New application — ${doc.roleTitle || 'Careers'}`,
+          applicationNotificationHtml({
+            name: doc.name,
+            email: doc.email,
+            roleTitle: doc.roleTitle,
+            college: doc.college,
+            portfolioUrl: doc.portfolioUrl,
+          }),
+        )
       },
     ],
   },

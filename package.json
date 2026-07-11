@@ -1,6 +1,6 @@
 {
   "name": "isocodelabs-website",
-  "version": "3.5.4",
+  "version": "3.6.0",
   "private": true,
   "description": "isocodelabs.com — the ISOCODELABS marketing site. v3: craftsmanship studio brand.",
   "type": "module",
@@ -29,6 +29,7 @@
     "payload": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.17.2",
     "sharp": "^0.34.0"
   },
   "devDependencies": {

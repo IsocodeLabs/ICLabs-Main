@@ -37,27 +37,25 @@
   max-width: 46ch;
 }
 
-/* ── role cards ── */
+/* ── role cards — a handful of named roles, sized to fill the section
+   generously rather than packed tight (was designed for 4 cards incl. the
+   open-application entry; that no longer renders here, so these run bigger) */
 .roleGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--sp-24);
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--sp-32);
 }
 
 .roleCard {
   border-radius: var(--r-lg);
-  padding: clamp(var(--sp-24), 3vw, var(--sp-32));
+  padding: clamp(var(--sp-32), 4vw, var(--sp-48));
+  min-height: 280px;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-12);
+  gap: var(--sp-16);
   box-shadow:
     inset 0 1px 0 rgba(245, 241, 234, 0.1),
     0 18px 44px rgba(0, 0, 0, 0.4);
-}
-
-.roleCardOpen {
-  border-style: dashed;
-  border-color: rgba(245, 241, 234, 0.28);
 }
 
 .roleTop {
@@ -69,8 +67,8 @@
 
 .roleTitle {
   font-family: var(--font-display), 'Arial Narrow', sans-serif;
-  font-size: var(--fs-21);
-  line-height: 1.08;
+  font-size: var(--text-title);
+  line-height: 1.05;
   letter-spacing: var(--track-display);
   text-transform: uppercase;
   color: var(--paper);
@@ -84,14 +82,14 @@
 
 .roleMeta {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: var(--fs-12);
+  font-size: var(--fs-14);
   letter-spacing: 0.04em;
   color: #9d968c;
 }
 
 .roleBlurb {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: var(--fs-16);
+  font-size: var(--text-lead);
   line-height: var(--lh-body);
   color: #d8d2c8;
   flex: 1;

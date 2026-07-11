@@ -34,7 +34,7 @@
 .plate {
   position: absolute;
   inset: -6vh 0;
-  background-image: url('/assets/sections/section-bg-sky.png');
+  background-image: url('/assets/sections/section-bg-sky.webp');
   background-size: 120% auto;
   background-position: center top;
   transform: scale(1.06);
@@ -78,7 +78,7 @@
 .floraSway {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/sections/section-flora-edges.png');
+  background-image: url('/assets/sections/section-flora-edges.webp');
   background-size: cover;
   background-position: center bottom;
   transform-origin: bottom center;

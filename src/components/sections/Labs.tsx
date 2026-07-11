@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
@@ -45,8 +46,13 @@ export function Labs({ beliefBeat, heading, body, products, creatorMention }: La
             <a key={p.slug} data-product className={styles.productCard} {...linkProps(p.outboundURL)}>
               {/* the interior world — each product's own brand image */}
               <div className={styles.productImageWrap}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.image} alt={`${p.name}`} loading="lazy" />
+                <Image
+                  src={p.image}
+                  alt={p.name}
+                  fill
+                  sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  style={{ objectFit: 'cover' }}
+                />
               </div>
               {/* the shared outer frame — the leash that keeps four worlds coherent */}
               <div className={styles.productBody}>

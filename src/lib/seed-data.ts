@@ -74,7 +74,7 @@ export const labsContent = {
       statusLabel: '',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://cvbuddy.isocodelabs.com',
-      image: '/assets/labs/labs-cvbuddy.png',
+      image: '/assets/labs/labs-cvbuddy.webp',
       order: 1,
     },
     {
@@ -85,7 +85,7 @@ export const labsContent = {
       statusLabel: '',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://clearquote.isocodelabs.com',
-      image: '/assets/labs/labs-clearquote.png',
+      image: '/assets/labs/labs-clearquote.webp',
       order: 2,
     },
     {
@@ -97,7 +97,7 @@ export const labsContent = {
       statusLabel: '',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://lifetreeos.isocodelabs.com',
-      image: '/assets/labs/labs-lifetreeos.png',
+      image: '/assets/labs/labs-lifetreeos.webp',
       order: 3,
     },
     {
@@ -108,7 +108,7 @@ export const labsContent = {
       statusLabel: '',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://meddesk.isocodelabs.com',
-      image: '/assets/labs/labs-meddesk.png',
+      image: '/assets/labs/labs-meddesk.webp',
       order: 4,
     },
   ],
