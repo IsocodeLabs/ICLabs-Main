@@ -246,8 +246,7 @@ export const contactChannels = {
 
 export const siteSEO = {
   metaTitle: 'ISOCODELABS — Software, made properly.',
-  metaDescription:
-    'A craftsmanship studio that happens to build software. We build public-facing websites and apps the way a hardware company builds a product.',
+  metaDescription: 'We craft software for those who deserve perfection.',
 }
 
 /** SHORT QUIZ — FINAL (5 questions). Q3/Q4 are image questions (tiles pending generation). */
