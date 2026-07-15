@@ -1,10 +1,14 @@
 .root {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: -1;
   overflow: hidden;
   pointer-events: none;
   background: #0d0b0a;
+  /* Force a stable compositor layer so the fixed background keeps painting on
+     scroll (a negative-z fixed layer over an opaque body otherwise drops out
+     mid-scroll in Chrome, revealing the paper backdrop). */
+  transform: translateZ(0);
 }
 
 /* base desk plate — slow ken-burns drift, always-on ambient */

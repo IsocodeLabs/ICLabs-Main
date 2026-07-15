@@ -1,5 +1,14 @@
 .page {
   position: relative;
+  /* Own stacking context + solid dark base. The CareersWorld is a fixed,
+     negative-z layer; without a stacking context here it escapes to the root
+     context and paints *behind* the paper <body> background, which then bleeds
+     through on scroll and swallows the near-white copy (a fixed/composited
+     paint bug). Isolating scopes the world above this base, and the dark
+     background-color is a normal-flow paint that keeps text legible even if the
+     decorative image layer ever fails to composite. */
+  isolation: isolate;
+  background-color: #0d0b0a;
   min-height: 100vh;
   color: var(--paper);
 }

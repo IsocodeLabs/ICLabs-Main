@@ -23,10 +23,13 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (tier === 'static') return
 
-    // lerp-based (not a long duration/easing) so the page tracks the wheel
-    // tightly — precise, not a slow floaty drag. Higher lerp = snappier.
+    // One smoothing pass, done well: Lenis eases the scroll position and every
+    // ScrollTrigger below reads *that* eased value with scrub:true — so motion
+    // is smooth (Lenis) and frame-locked to the scroll (scrub), never floaty.
+    // lerp 0.1 is the buttery glide; 0.24 tracked so tightly it read as abrupt/
+    // rough on a trackpad. Don't add a numeric scrub on top — that double-eases.
     const lenis = new Lenis({
-      lerp: 0.24,
+      lerp: 0.1,
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
     })
