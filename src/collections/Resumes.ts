@@ -2,12 +2,15 @@ import type { CollectionConfig } from 'payload'
 import { adminOnly, noOne } from '@/access'
 
 /**
- * Private résumé store — PDF uploads attached to job applications.
+ * LEGACY (pre-v2) private résumé store — PDF uploads attached to job
+ * applications before the hiring-cycle v2 pipeline. New CVs go straight to the
+ * private GCS bucket (see src/lib/careers/storage.ts); this collection is kept
+ * so old applications keep their résumé link. No new rows are created.
  *
  * Unlike Media (public, image-only, webp-converted), résumés are personal data:
  * admin-read only, never public, PDF only, no image processing. The public site
- * never creates these directly — the submitApplication server action uploads
- * with overrideAccess after validating the file.
+ * never created these directly — the old submitApplication server action
+ * uploaded with overrideAccess after validating the file.
  */
 export const Resumes: CollectionConfig = {
   slug: 'resumes',

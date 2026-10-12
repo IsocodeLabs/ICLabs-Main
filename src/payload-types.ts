@@ -82,6 +82,7 @@ export interface Config {
     'job-openings': JobOpening;
     applications: Application;
     resumes: Resume;
+    'careers-audit-log': CareersAuditLog;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -104,6 +105,7 @@ export interface Config {
     'job-openings': JobOpeningsSelect<false> | JobOpeningsSelect<true>;
     applications: ApplicationsSelect<false> | ApplicationsSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
+    'careers-audit-log': CareersAuditLogSelect<false> | CareersAuditLogSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -483,23 +485,104 @@ export interface JobOpening {
   id: number;
   title: string;
   /**
-   * Stable slug the application form targets, e.g. "swe-intern".
+   * Takes effect on the live site within 60 seconds. No deploy needed.
+   */
+  status: 'open' | 'paused' | 'closed' | 'archived';
+  /**
+   * Optional. When this many applications arrive this cycle, the role auto-pauses.
+   */
+  applicationCap?: number | null;
+  order?: number | null;
+  /**
+   * Public URL: careers.isocodelabs.com/roles/<slug>
+   */
+  slug?: string | null;
+  /**
+   * Stable id applications are filed under. Don’t change once live.
    */
   roleKey: string;
-  type?: ('intern' | 'fullTime' | 'contract') | null;
   /**
-   * e.g. Engineering, Design, Sales.
+   * Decides which extra fields the application form asks for.
    */
+  roleKind: 'growth' | 'pm' | 'sde' | 'open';
+  type?: ('intern' | 'fullTime' | 'contract') | null;
   dept?: string | null;
   location?: string | null;
   /**
-   * e.g. "₹50k / month stipend".
+   * e.g. "6 months"
+   */
+  duration?: string | null;
+  /**
+   * Pay text on the role card.
+   */
+  payLine?: string | null;
+  /**
+   * For Google job search (JSON-LD). Leave empty when pay is performance-linked.
+   */
+  baseSalaryMonthlyINR?: number | null;
+  /**
+   * One line on the role card.
+   */
+  blurb?: string | null;
+  /**
+   * About the role.
+   */
+  about?: string | null;
+  responsibilities?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  lookingFor?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional tool / tech list.
+   */
+  stack?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Shown exactly as written. A blank line starts a new paragraph.
+   */
+  compensation?: string | null;
+  /**
+   * Optional line under Compensation.
+   */
+  footnote?: string | null;
+  /**
+   * The steps shown in the hiring-process stepper, in order.
+   */
+  hiringProcess?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  datePosted?: string | null;
+  /**
+   * Optional application deadline (JSON-LD only).
+   */
+  validThrough?: string | null;
+  /**
+   * Country code applicants must be in (JSON-LD).
+   */
+  applicantLocation?: string | null;
+  /**
+   * Legacy (pre-v2). Not shown on the site; use Pay line.
    */
   stipend?: string | null;
   /**
-   * One or two lines shown on the role card.
+   * Legacy (pre-v2). Not shown on the site.
    */
-  blurb?: string | null;
   description?: {
     root: {
       type: string;
@@ -515,16 +598,20 @@ export interface JobOpening {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Legacy. Derived from Status.
+   */
   active?: boolean | null;
   /**
-   * The evergreen "exceptional / open application" entry.
+   * Legacy. Use Role kind = Open application.
    */
   openApplication?: boolean | null;
-  order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * For fast screening use the Screening view (left nav → Screening).
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "applications".
  */
@@ -532,21 +619,73 @@ export interface Application {
   id: number;
   name: string;
   email: string;
+  phone?: string | null;
   /**
-   * roleKey applied for, or "open" for the open application.
+   * roleKey of the role applied for.
    */
   role?: string | null;
   /**
-   * Human title captured at submit time.
+   * Title captured at submit time.
    */
   roleTitle?: string | null;
-  college?: string | null;
-  year?: string | null;
-  portfolioUrl?: string | null;
-  resume?: (number | null) | Resume;
-  why?: string | null;
   /**
-   * Raw captured field map (key → value), for CMS-added fields.
+   * Hiring cycle, e.g. 2026-10. Pre-v2 rows are "legacy".
+   */
+  cycle?: string | null;
+  stage: 'applied' | 'shortlisted' | 'in_process' | 'offer' | 'hired' | 'rejected' | 'withdrawn';
+  rating?: number | null;
+  tags?: string[] | null;
+  college?: string | null;
+  gradYear?: number | null;
+  startDate?: string | null;
+  linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  portfolioUrl?: string | null;
+  projectUrl?: string | null;
+  pitchNote?: string | null;
+  why?: string | null;
+  interestArea?: ('engineering' | 'product' | 'design' | 'growth' | 'other') | null;
+  commitSixMonths?: boolean | null;
+  consentAt?: string | null;
+  notes?: string | null;
+  /**
+   * Private bucket path of the CV.
+   */
+  objectKey?: string | null;
+  resumeSize?: number | null;
+  submissionId?: string | null;
+  /**
+   * cycle:role:email — one application each.
+   */
+  dedupeKey?: string | null;
+  stageChangedAt?: string | null;
+  stageChangedBy?: (number | null) | User;
+  stageHistory?:
+    | {
+        stage?: string | null;
+        at?: string | null;
+        by?: (number | null) | User;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Legacy (pre-v2) résumé upload.
+   */
+  resume?: (number | null) | Resume;
+  /**
+   * Legacy (pre-v2) status. Use Stage.
+   */
+  status?: ('new' | 'shortlist' | 'interview' | 'offer' | 'rejected') | null;
+  /**
+   * Legacy (pre-v2).
+   */
+  year?: string | null;
+  /**
+   * Legacy (pre-v2) duplicate flag.
+   */
+  duplicateEmail?: boolean | null;
+  /**
+   * Legacy (pre-v2) raw form answers.
    */
   answers?:
     | {
@@ -557,15 +696,6 @@ export interface Application {
     | number
     | boolean
     | null;
-  status: 'new' | 'shortlist' | 'interview' | 'offer' | 'rejected';
-  /**
-   * Auto-flagged when this email had already applied before.
-   */
-  duplicateEmail?: boolean | null;
-  /**
-   * Internal only.
-   */
-  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -592,6 +722,33 @@ export interface Resume {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Read-only record of deletions and bulk actions.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "careers-audit-log".
+ */
+export interface CareersAuditLog {
+  id: number;
+  action: 'applicant_deleted' | 'bulk_stage' | 'csv_export' | 'zip_export';
+  applicationId?: string | null;
+  /**
+   * Salted SHA-256 of the email.
+   */
+  emailHash?: string | null;
+  actor?: (number | null) | User;
+  detail?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -676,6 +833,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resumes';
         value: number | Resume;
+      } | null)
+    | ({
+        relationTo: 'careers-audit-log';
+        value: number | CareersAuditLog;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -949,16 +1110,54 @@ export interface FoundersSelect<T extends boolean = true> {
  */
 export interface JobOpeningsSelect<T extends boolean = true> {
   title?: T;
+  status?: T;
+  applicationCap?: T;
+  order?: T;
+  slug?: T;
   roleKey?: T;
+  roleKind?: T;
   type?: T;
   dept?: T;
   location?: T;
-  stipend?: T;
+  duration?: T;
+  payLine?: T;
+  baseSalaryMonthlyINR?: T;
   blurb?: T;
+  about?: T;
+  responsibilities?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  lookingFor?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  stack?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  compensation?: T;
+  footnote?: T;
+  hiringProcess?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  datePosted?: T;
+  validThrough?: T;
+  applicantLocation?: T;
+  stipend?: T;
   description?: T;
   active?: T;
   openApplication?: T;
-  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -969,17 +1168,45 @@ export interface JobOpeningsSelect<T extends boolean = true> {
 export interface ApplicationsSelect<T extends boolean = true> {
   name?: T;
   email?: T;
+  phone?: T;
   role?: T;
   roleTitle?: T;
+  cycle?: T;
+  stage?: T;
+  rating?: T;
+  tags?: T;
   college?: T;
-  year?: T;
+  gradYear?: T;
+  startDate?: T;
+  linkedinUrl?: T;
+  githubUrl?: T;
   portfolioUrl?: T;
-  resume?: T;
+  projectUrl?: T;
+  pitchNote?: T;
   why?: T;
-  answers?: T;
-  status?: T;
-  duplicateEmail?: T;
+  interestArea?: T;
+  commitSixMonths?: T;
+  consentAt?: T;
   notes?: T;
+  objectKey?: T;
+  resumeSize?: T;
+  submissionId?: T;
+  dedupeKey?: T;
+  stageChangedAt?: T;
+  stageChangedBy?: T;
+  stageHistory?:
+    | T
+    | {
+        stage?: T;
+        at?: T;
+        by?: T;
+        id?: T;
+      };
+  resume?: T;
+  status?: T;
+  year?: T;
+  duplicateEmail?: T;
+  answers?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1000,6 +1227,19 @@ export interface ResumesSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "careers-audit-log_select".
+ */
+export interface CareersAuditLogSelect<T extends boolean = true> {
+  action?: T;
+  applicationId?: T;
+  emailHash?: T;
+  actor?: T;
+  detail?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -280,3 +280,231 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── v2: linked role cards ── */
+.roleCardLinked {
+  position: relative;
+  transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.roleCardLinked:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 241, 234, 0.28);
+}
+
+/* stretched link: the whole card is the click target for the role page */
+.roleCardLink {
+  color: inherit;
+}
+
+.roleCardLink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.roleCardLink:focus-visible {
+  outline: none;
+}
+
+.roleCardLink:focus-visible::after {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+
+/* the Apply link sits above the stretched link */
+.roleCardLinked .roleApply {
+  position: relative;
+  z-index: 1;
+  text-decoration: none;
+}
+
+.pausedBadge {
+  align-self: flex-start;
+  margin-top: var(--sp-8);
+  padding: var(--sp-4) var(--sp-12);
+  border: 1px solid rgba(245, 241, 234, 0.24);
+  border-radius: var(--r-pill);
+  color: #cfc8bd;
+}
+
+.rolesEmpty {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--text-lead);
+  color: #d8d2c8;
+}
+
+/* ── v2: open application section ── */
+.sectionTight {
+  position: relative;
+  padding-block: clamp(8px, 2vh, 32px) clamp(40px, 6vh, 88px);
+}
+
+.openPanel {
+  border-radius: var(--r-lg);
+  padding: clamp(var(--sp-24), 3vw, var(--sp-48));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-24) var(--sp-48);
+  background: rgba(20, 18, 16, 0.28);
+  box-shadow: inset 0 1px 0 rgba(245, 241, 234, 0.08);
+}
+
+.openCopy {
+  max-width: 56ch;
+}
+
+.openHeading {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-title);
+  line-height: 1.05;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  font-weight: 400;
+  margin-top: var(--sp-12);
+}
+
+.openBody {
+  margin-top: var(--sp-12);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  color: #b8b1a8;
+}
+
+.openCta {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  color: var(--paper);
+  white-space: nowrap;
+  padding: var(--sp-12) var(--sp-24);
+  border: 1px solid rgba(245, 241, 234, 0.3);
+  border-radius: var(--r-pill);
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.openCta:hover {
+  background: rgba(245, 241, 234, 0.08);
+  border-color: rgba(245, 241, 234, 0.5);
+}
+
+/* ── v2 form pieces ── */
+.fieldError {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  color: #e8a99a;
+}
+
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'],
+.field textarea[aria-invalid='true'] {
+  border-color: rgba(232, 169, 154, 0.7);
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid rgba(245, 241, 234, 0.6);
+  outline-offset: 2px;
+}
+
+/* dark register: native date picker / number controls follow it */
+.field input {
+  color-scheme: dark;
+}
+
+.counter {
+  align-self: flex-end;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--fs-12);
+  color: #8f887e;
+}
+
+.checkRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--sp-4) var(--sp-12);
+}
+
+.checkRow input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  accent-color: var(--paper);
+  cursor: pointer;
+}
+
+.checkRow input:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+.checkRow label {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  line-height: 1.5;
+  color: #cfc8bd;
+  cursor: pointer;
+}
+
+.checkRow .fieldError {
+  grid-column: 2;
+}
+
+.inlineLink {
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.upload {
+  display: grid;
+  gap: var(--sp-8);
+}
+
+.progress {
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: rgba(245, 241, 234, 0.12);
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--paper);
+  transition: width var(--dur-fast) linear;
+}
+
+.uploadHint {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-12);
+  color: #8f887e;
+}
+
+.uploadDone {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  color: #b9d3be;
+}
+
+.turnstile {
+  grid-column: 1 / -1;
+}
+
+.turnstile:empty {
+  display: none;
+}
+
+.submit:focus-visible,
+.roleApply:focus-visible,
+.openCta:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}

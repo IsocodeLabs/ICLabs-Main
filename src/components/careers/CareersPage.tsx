@@ -1,32 +1,35 @@
 import { CareersWorld } from '@/components/motion/CareersWorld'
 import { CareersNav } from './CareersNav'
 import { CareersRoleProvider } from './CareersRoleContext'
-import { CareersRoles } from './CareersRoles'
-import { CareersApplyForm } from './CareersApplyForm'
+import { RoleCards } from './RoleCards'
+import { OpenApplication } from './OpenApplication'
+import { ApplyForm } from './ApplyForm'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import glass from '@/components/ui/Glass.module.css'
-import type { CareersContent } from '@/lib/content'
+import { applyableRoles, visibleRoleCards, type CareersContent } from '@/lib/careers/content'
 import styles from './CareersPage.module.css'
 
 /**
  * Careers — the dark atelier world. Content page (no scroll journey): the world
- * sways behind, copy sits on white / dark glass.
+ * sways behind, copy sits on dark glass.
  *
- * Order: Hero → Open Roles → The Bar → Apply → quiet close. Roles moved up to
- * sit right after the hero (the hook you land on); Apply stays right before
- * the close, since the close's "send an open application" link is really just
- * a second entry point into the same form. Roles and Apply share a selected-
- * role value via CareersRoleProvider even though they're no longer adjacent.
+ * Order: Hero → Open Roles → Open Application → The Bar → Apply. Role cards link
+ * to their own /roles/<slug> pages (each with the form, role locked); the main
+ * page's form covers every open role plus the open application, which stays
+ * live even when every named role is paused or closed.
  */
 export function CareersPage({ content }: { content: CareersContent }) {
-  const { page, roles, form } = content
+  const { page, roles, formIntro } = content
+  const cards = visibleRoleCards(roles)
+  const formRoles = applyableRoles(roles)
+  const openApp = roles.find((r) => r.roleKind === 'open' && r.status === 'open')
 
   return (
     <div className={`theme-ink ${styles.page}`}>
       <CareersWorld />
       <CareersNav />
 
-      <CareersRoleProvider defaultRole={roles[0]?.roleKey ?? 'open'}>
+      <CareersRoleProvider defaultRole={formRoles[0]?.roleKey ?? ''}>
         <main id="top">
           {/* ── Hero band ── */}
           <section className={styles.hero}>
@@ -41,7 +44,10 @@ export function CareersPage({ content }: { content: CareersContent }) {
           </section>
 
           {/* ── Open roles ── */}
-          <CareersRoles page={page} roles={roles} />
+          <RoleCards page={page} roles={cards} />
+
+          {/* ── Open application ── */}
+          {openApp && <OpenApplication page={page} roleKey={openApp.roleKey} />}
 
           {/* ── The bar ── */}
           <section className={styles.section}>
@@ -67,17 +73,10 @@ export function CareersPage({ content }: { content: CareersContent }) {
           </section>
 
           {/* ── Apply ── */}
-          <CareersApplyForm page={page} roles={roles} form={form} />
-
-          {/* ── Quiet close ── */}
-          <footer className={styles.close}>
-            <div className={styles.inner}>
-              <p className={styles.closeLine}>{page.closeLine}</p>
-              <a href="#apply" className={styles.closeApply}>
-                Send an open application →
-              </a>
-            </div>
-          </footer>
+          {formRoles.length > 0 && (
+            <ApplyForm page={page} roles={formRoles} intro={formIntro} />
+          )}
+          <div className={styles.closeSpacer} aria-hidden />
         </main>
       </CareersRoleProvider>
     </div>

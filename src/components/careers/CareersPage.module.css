@@ -170,3 +170,7 @@
 .closeApply:hover {
   opacity: 0.6;
 }
+
+.closeSpacer {
+  height: clamp(48px, 10vh, 120px);
+}
