@@ -6,6 +6,13 @@
 
 This file is the go-live checklist. Do the steps in order and tick them off. [`docs/careers-runbook.md`](docs/careers-runbook.md) explains how the pipeline works and how to run it day to day. [`.env.example`](.env.example) lists every env var.
 
+> **⚠️ Already merged to `main` (13 Oct 2026, at Aryan's call).** If main auto-deploys, production is running this code **before** its setup, so:
+> - the careers application form fails: uploads return 500 until the GCS bucket and env vars exist, and submits fail until the migration has run;
+> - Payload admin's Applications and Job Openings screens error until the migration adds the new columns;
+> - the careers pages themselves still render (they fall back to the seeded v2 roles).
+>
+> **Do these first, in this order, as soon as possible:** step 1 (values), 2 (Turnstile), 3 (buckets + IAM), 4 (secrets, env, build args), then 7.1–7.4 (backup, sizing, **prod migration**, deploy with env). Rehearsing on staging (step 5) is still recommended before the migration if there's time. The load test (step 6) and smoke test (step 8) still gate announcing. Step 10's "open the PR" no longer applies.
+
 > **Rule from the PRD:** don't share the careers link publicly (LinkedIn, WhatsApp groups) until step 6, the load test, has passed **and** the production smoke test in step 8 is green.
 
 ---
