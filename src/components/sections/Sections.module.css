@@ -237,24 +237,43 @@
   transform: translateY(-4px);
 }
 
-/* the interior world — each product's own brand image, full colour */
-.productImageWrap {
+/* the logo tile — one family: sheared monogram + tracked wordmark, ink on
+   paper, the same lockup as the studio's own mark in the nav */
+.productLogoTile {
   position: relative;
   aspect-ratio: 16 / 10;
-  overflow: hidden;
+  display: grid;
+  place-items: center;
   background: var(--paper);
   border-bottom: 1px solid var(--hairline);
+  color: var(--ink);
 }
 
-.productImageWrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 1.2s var(--ease-out);
+.productLockup {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-16);
+  transition: transform var(--dur-med) var(--ease-out);
 }
 
-.productCard:hover .productImageWrap img {
-  transform: scale(1.035);
+.productCard:hover .productLockup {
+  transform: scale(1.04);
+}
+
+.productMark {
+  height: clamp(80px, 7.6vw, 120px);
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.productWordmark {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.8rem, 1.05vw, 1rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .productBody {
@@ -265,26 +284,19 @@
   flex: 1;
 }
 
-.productHead {
+.productFoot {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-8);
-  flex-wrap: wrap;
+  margin-top: var(--sp-12);
 }
 
 .productStatus {
   color: var(--ink);
   opacity: 0.6;
   font-size: var(--fs-12);
-}
-
-.productName {
-  font-family: var(--font-display), 'Arial Narrow', sans-serif;
-  font-size: var(--fs-21);
-  letter-spacing: var(--track-display);
-  text-transform: uppercase;
-  line-height: 1;
+  text-align: right;
 }
 
 .productBlurb {
@@ -301,7 +313,6 @@
 }
 
 .productFrom {
-  margin-top: var(--sp-12);
   color: var(--ink);
   opacity: 0.55;
   font-size: var(--fs-12);

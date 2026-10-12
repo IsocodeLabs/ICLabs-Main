@@ -1,7 +1,7 @@
-import Image from 'next/image'
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
+import { ProductMark } from './ProductMark'
 import styles from './Sections.module.css'
 
 type Product = {
@@ -42,26 +42,22 @@ export function Labs({ beliefBeat, heading, body, products }: LabsProps) {
         <Reveal stagger="[data-product]" className={styles.labsGrid}>
           {products.map((p) => (
             <a key={p.slug} data-product className={styles.productCard} {...linkProps(p.outboundURL)}>
-              {/* the interior world — each product's own brand image */}
-              <div className={styles.productImageWrap}>
-                <Image
-                  src={p.image}
-                  alt={p.name}
-                  fill
-                  sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  style={{ objectFit: 'cover' }}
-                />
+              {/* one logo family: a sheared monogram + tracked wordmark, the
+                  same lockup as the studio's own — ink on paper */}
+              <div className={styles.productLogoTile}>
+                <div className={styles.productLockup}>
+                  <ProductMark slug={p.slug} name={p.name} className={styles.productMark} />
+                  <span className={styles.productWordmark}>{p.name}</span>
+                </div>
               </div>
-              {/* the shared outer frame — the leash that keeps four worlds coherent */}
               <div className={styles.productBody}>
-                <div className={styles.productHead}>
-                  <span className={styles.productName}>{p.name}</span>
+                <p className={styles.productBlurb}>{p.blurb}</p>
+                <div className={styles.productFoot}>
+                  <span className={`mono-label ${styles.productFrom}`}>Visit →</span>
                   {p.statusLabel && (
                     <span className={`mono-label ${styles.productStatus}`}>{p.statusLabel}</span>
                   )}
                 </div>
-                <p className={styles.productBlurb}>{p.blurb}</p>
-                <span className={`mono-label ${styles.productFrom}`}>Visit →</span>
               </div>
             </a>
           ))}
