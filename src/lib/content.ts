@@ -97,6 +97,8 @@ export async function getSiteContent(): Promise<SiteContent> {
         scrollBeats:
           home.hero?.scrollBeats?.map((b: { text: string }) => b.text) ??
           fallback.hero.scrollBeats,
+        primaryCta: fallback.hero.primaryCta,
+        secondaryCta: fallback.hero.secondaryCta,
       },
       problem: {
         narrative:
@@ -117,6 +119,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         body:
           home.whatWeBuild?.body?.map((p: { text: string }) => p.text) ??
           fallback.whatWeBuild.body,
+        items: fallback.whatWeBuild.items,
       },
       labs: {
         beliefBeat: home.labsIntro?.beliefBeat ?? fallback.labs.beliefBeat,
@@ -182,6 +185,7 @@ export async function getSiteContent(): Promise<SiteContent> {
             href: l.href,
           })) ?? fallback.footer.legalLinks,
         copyright: settings?.footer?.copyright ?? fallback.footer.copyright,
+        hiring: fallback.footer.hiring,
       },
       contact: {
         email: settings?.contactChannels?.email ?? fallback.contact.email,

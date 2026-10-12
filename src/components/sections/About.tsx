@@ -10,14 +10,13 @@ type AboutProps = {
   body: string[]
   teamLine: string
   contactHeading: string
-  values: Array<{ title: string; description: string }>
 }
 
 /**
- * About — values + the quiet team line + "talk to our team".
- * No names, no photos; the values carry it. Content in a glass panel.
+ * About — one line of who, one line of how, then the small way in for a
+ * question. The values live on /about; this is the teaser.
  */
-export function About({ heading, body, teamLine, contactHeading, values }: AboutProps) {
+export function About({ heading, body, teamLine, contactHeading }: AboutProps) {
   return (
     <Section
       id="about"
@@ -46,7 +45,7 @@ export function About({ heading, body, teamLine, contactHeading, values }: About
                   ),
                 )}
               </div>
-              <p className={styles.teamLine}>{teamLine}</p>
+              {teamLine && <p className={styles.teamLine}>{teamLine}</p>}
               <div style={{ marginTop: 'var(--sp-24)' }}>
                 <Button href="/about" variant="ghost" size="sm">
                   More about the studio →
@@ -54,25 +53,14 @@ export function About({ heading, body, teamLine, contactHeading, values }: About
               </div>
             </div>
 
-            <div>
-              <ul className={styles.valuesList}>
-                {values.map((v) => (
-                  <li key={v.title} data-value className={styles.valueItem}>
-                    <span className={styles.valueTitle}>{v.title}</span>
-                    <span className={styles.valueDesc}>{v.description}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div id="contact" style={{ marginTop: 'var(--sp-64)' }}>
-                <h3
-                  className={styles.heading}
-                  style={{ fontSize: 'var(--fs-28)', marginBottom: 'var(--sp-24)' }}
-                >
-                  {contactHeading}
-                </h3>
-                <AboutContact />
-              </div>
+            <div id="contact">
+              <h3
+                className={styles.heading}
+                style={{ fontSize: 'var(--fs-28)', marginBottom: 'var(--sp-24)' }}
+              >
+                {contactHeading}
+              </h3>
+              <AboutContact />
             </div>
           </div>
         </Reveal>

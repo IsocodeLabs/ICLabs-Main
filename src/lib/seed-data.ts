@@ -5,73 +5,64 @@
  */
 
 export const heroContent = {
-  beliefLine:
-    'We craft software with perfection, because the people who use it every day deserve the best.',
-  subline: 'A studio that builds the web experiences people actually remember buying from.',
+  beliefLine: 'Software, made properly.',
+  subline: 'Websites and apps that earn trust on sight.',
+  // four beats — the hero scroll journey is timed for four; keep it at four
   scrollBeats: [
     'You live inside software all day.',
     'So does every customer who buys from you.',
     'Most of it is forgettable. That’s the whole problem.',
     'We build the other kind.',
   ],
+  primaryCta: 'Start a project',
+  secondaryCta: 'See our work',
 }
 
 export const problemContent = {
-  narrative: [
-    'You built the site years ago — back when the job was just to exist online.',
-    'It sells. But a first-time visitor forms their impression of your brand in a blink — and that snap judgment is about design, not what you’re actually selling.',
-    'So every customer you send there is quietly deciding how much to trust you, through something that looks like everyone else’s. And a bad first impression is hard to undo.',
-    'Your product earned better. Your customers should feel the difference the moment they arrive.',
-  ],
+  narrative: ['Customers decide whether to trust you before they read a word.'],
 }
 
 export const statsContent = [
   {
     value: '50 ms',
-    label: 'how long it takes a visitor to form a first impression of your brand.',
-    source: 'Google',
-    sourceNote: 'Google / Lindgaard et al. 2006',
+    label: 'for a visitor to form a first impression of your brand.',
+    source: 'Lindgaard et al.',
+    sourceNote: 'Lindgaard et al., 2006 (cited by Google)',
   },
   {
     value: '94%',
     label: 'of first impressions are design-related.',
-    source: 'Forbes',
-    sourceNote: 'Forbes / Northumbria University',
+    source: 'Northumbria Univ.',
+    sourceNote: 'Northumbria University (via Forbes)',
   },
   {
     value: '75%',
-    label: 'of people judge a company’s credibility on its website design.',
+    label: 'judge a company’s credibility on its website design.',
     source: 'Stanford',
     sourceNote: 'Stanford Web Credibility Research (Fogg)',
-  },
-  {
-    value: '88%',
-    label: 'of consumers won’t return after a bad experience.',
-    source: 'Google',
-    sourceNote: 'Think with Google',
   },
 ]
 
 export const whatWeBuildContent = {
   heading: 'What we build',
   body: [
-    'We build public-facing websites and apps the way a hardware company builds a product — where every moment of buying from you feels considered, intentional, yours.',
-    'Not a template with your logo dropped in. A storefront — or an app — that makes a first-time visitor trust you, and a returning one feel understood.',
-    'The kind of experience that makes ordinary software look like what it is.',
+    'Sites and apps built like products, not templates.',
+    'Every moment of buying from you, considered.',
   ],
+  items: ['Brand sites', 'Storefronts', 'Customer apps'],
 }
 
 export const labsContent = {
-  beliefBeat: 'We don’t just build for others. We build and run our own.',
-  heading: 'Labs & Innovation',
-  body: 'Our own products are the proof — built, launched, and run by the same team that would build yours.',
+  beliefBeat: 'We build our own, too.',
+  heading: 'Labs',
+  body: 'Four products, built and run by the same team that would build yours.',
   products: [
     {
       name: 'CVBuddy',
       slug: 'cvbuddy',
-      blurb: 'The CV tool that ends the formatting nightmare of placement season.',
+      blurb: 'The CV tool that ends the formatting nightmare.',
       status: 'live',
-      statusLabel: '',
+      statusLabel: 'Live',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://cvbuddy.isocodelabs.com',
       image: '/assets/labs/labs-cvbuddy.webp',
@@ -80,9 +71,9 @@ export const labsContent = {
     {
       name: 'ClearQuote',
       slug: 'clearquote',
-      blurb: 'Smart RFQ handling for manufacturers drowning in messy quote requests.',
+      blurb: 'Smart RFQ handling for manufacturers drowning in quote requests.',
       status: 'funded',
-      statusLabel: '',
+      statusLabel: 'Funded',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://clearquote.isocodelabs.com',
       image: '/assets/labs/labs-clearquote.webp',
@@ -91,10 +82,9 @@ export const labsContent = {
     {
       name: 'LifeTreeOS',
       slug: 'lifetreeos',
-      blurb:
-        'A second brain for businesses — an AI that helps run the company and spots what’s breaking before you do.',
+      blurb: 'An AI second brain that helps run the company and flags what’s breaking.',
       status: 'deeptech',
-      statusLabel: '',
+      statusLabel: 'Deep tech',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://lifetreeos.isocodelabs.com',
       image: '/assets/labs/labs-lifetreeos.webp',
@@ -105,7 +95,7 @@ export const labsContent = {
       slug: 'meddesk',
       blurb: 'A customisable ERP built for how clinics actually run.',
       status: 'paying',
-      statusLabel: '',
+      statusLabel: 'Paying customers',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://meddesk.isocodelabs.com',
       image: '/assets/labs/labs-meddesk.webp',
@@ -113,27 +103,26 @@ export const labsContent = {
     },
   ],
   creatorMention: {
-    body: 'We also build and run businesses for creators — so they earn from their audience without the operational headache.',
+    body: 'We also build and run businesses for creators.',
     href: 'https://creator.isocodelabs.com',
   },
 }
 
 export const ctaContent = {
-  heading: 'Start a project',
-  body: 'Before we talk price, we’d like to understand your business. We reach out only if we genuinely believe we can build something worth your investment.',
-  quizLabel: 'Start the quiz',
-  hatchLabel: 'In a hurry? Talk to us directly',
+  heading: 'Tell us what you’re building.',
+  body: 'Five questions, one minute. We reply only if we can do it properly.',
+  quizLabel: 'Start a project',
+  hatchLabel: 'Or email us directly',
 }
 
 export const aboutContent = {
   heading: 'About',
   body: [
-    'Isocode Labs is a craftsmanship studio that happens to build software.',
-    'We believe software you live inside all day deserves to be built like something you’d hold in your hand. “It works” is where we start, not where we stop.',
-    'We’re a small senior team, held to a single bar — craft — and to a top ~0.5% standard in who we let build. We take on the work we know we can make right, and we’re honest when something isn’t for us.',
+    'Small team. One bar: craft.',
+    'We take on only the work we know we can make right — and say so when we can’t.',
   ],
-  teamLine: 'A small senior team, held to a top-0.5% craft bar.',
-  contactHeading: 'Talk to our team',
+  teamLine: '',
+  contactHeading: 'Have a question first?',
   // homepage teaser → links to the full /about page
   moreLink: { label: 'More about the studio', href: '/about' },
 }
@@ -237,6 +226,11 @@ export const footerContent = {
     { label: 'Terms', href: '/terms' },
   ],
   copyright: '© Isocode Labs',
+  hiring: {
+    text: 'We’re hiring engineers, designers and sales. Remote.',
+    label: 'See open roles →',
+    href: 'https://careers.isocodelabs.com',
+  },
 }
 
 export const contactChannels = {

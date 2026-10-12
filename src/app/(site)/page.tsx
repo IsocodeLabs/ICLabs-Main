@@ -26,10 +26,16 @@ export default async function HomePage() {
               beliefLine={content.hero.beliefLine}
               subline={content.hero.subline}
               scrollBeats={content.hero.scrollBeats}
+              primaryCta={content.hero.primaryCta}
+              secondaryCta={content.hero.secondaryCta}
             />
           </div>
           <Problem narrative={content.problem.narrative} stats={content.stats} />
-          <WhatWeBuild heading={content.whatWeBuild.heading} body={content.whatWeBuild.body} />
+          <WhatWeBuild
+            heading={content.whatWeBuild.heading}
+            body={content.whatWeBuild.body}
+            items={content.whatWeBuild.items}
+          />
           <Labs
             beliefBeat={content.labs.beliefBeat}
             heading={content.labs.heading}
@@ -43,14 +49,12 @@ export default async function HomePage() {
             quizLabel={content.cta.quizLabel}
             hatchLabel={content.cta.hatchLabel}
             contactEmail={content.contact.email}
-            quotes={content.quotes}
           />
           <About
             heading={content.about.heading}
             body={content.about.body}
             teamLine={content.about.teamLine}
             contactHeading={content.about.contactHeading}
-            values={content.values}
           />
         </main>
         <Footer
@@ -58,6 +62,7 @@ export default async function HomePage() {
           navLinks={content.footer.navLinks}
           legalLinks={content.footer.legalLinks}
           copyright={content.footer.copyright}
+          hiring={content.footer.hiring}
         />
       </div>
     </>

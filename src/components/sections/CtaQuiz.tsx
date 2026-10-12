@@ -1,7 +1,6 @@
 import { Section } from '@/components/site/Section'
 import { Reveal } from '@/components/motion/Reveal'
 import { Button } from '@/components/ui/Button'
-import { QuoteRotator } from './QuoteRotator'
 import styles from './Sections.module.css'
 
 type CtaQuizProps = {
@@ -10,15 +9,14 @@ type CtaQuizProps = {
   quizLabel: string
   hatchLabel: string
   contactEmail: string
-  quotes: string[]
 }
 
 /**
- * CTA — Confidence → Action. Selectivity said plainly; the quiz is the door,
- * the direct hatch stays prominent (the highest-intent buyers won't quiz).
+ * CTA — Confidence → Action. One headline, one promise, one loud button; the
+ * direct hatch stays beside it (the highest-intent buyers won't quiz).
  * A strong glass panel over the sky; the ink primary button is the loud note.
  */
-export function CtaQuiz({ heading, body, quizLabel, hatchLabel, contactEmail, quotes }: CtaQuizProps) {
+export function CtaQuiz({ heading, body, quizLabel, hatchLabel, contactEmail }: CtaQuizProps) {
   return (
     <Section id="work-with-us" trail="center" flora={{ side: 'both', scale: 1.08 }} className={styles.section}>
       <div className={styles.inner}>
@@ -35,7 +33,6 @@ export function CtaQuiz({ heading, body, quizLabel, hatchLabel, contactEmail, qu
               {hatchLabel}
             </Button>
           </div>
-          <QuoteRotator quotes={quotes} className={styles.ctaQuote} />
         </Reveal>
       </div>
     </Section>

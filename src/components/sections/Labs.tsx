@@ -56,21 +56,23 @@ export function Labs({ beliefBeat, heading, body, products, creatorMention }: La
               </div>
               {/* the shared outer frame — the leash that keeps four worlds coherent */}
               <div className={styles.productBody}>
-                <span className={styles.productName}>{p.name}</span>
+                <div className={styles.productHead}>
+                  <span className={styles.productName}>{p.name}</span>
+                  {p.statusLabel && (
+                    <span className={`mono-label ${styles.productStatus}`}>{p.statusLabel}</span>
+                  )}
+                </div>
                 <p className={styles.productBlurb}>{p.blurb}</p>
-                <span className={`mono-label ${styles.productFrom}`}>{p.badge} →</span>
+                <span className={`mono-label ${styles.productFrom}`}>Visit →</span>
               </div>
             </a>
           ))}
         </Reveal>
 
-        <Reveal className={`theme-ink ${styles.creatorCard}`}>
-          <div className={styles.creatorCopy}>
-            <span className={`mono-label ${styles.creatorTag}`}>For creators</span>
-            <p className={styles.creatorText}>{creatorMention.body}</p>
-          </div>
-          <Button href={creatorMention.href} variant="ghost">
-            Explore the creator studio →
+        <Reveal className={styles.creatorLine}>
+          <p>{creatorMention.body}</p>
+          <Button href={creatorMention.href} variant="quiet" target="_blank">
+            Creator studio →
           </Button>
         </Reveal>
       </div>
@@ -82,9 +84,9 @@ const linkProps = (href: string) => ({ href, target: '_blank', rel: 'noreferrer'
 
 /** Emphasise the second clause with a crafted underline — belief said out loud. */
 function formatBeat(beat: string) {
-  const marker = 'We build and run our own.'
+  const marker = ['our own, too.', 'We build and run our own.'].find((m) => beat.includes(m))
+  if (!marker) return beat
   const idx = beat.indexOf(marker)
-  if (idx === -1) return beat
   return (
     <>
       {beat.slice(0, idx)}

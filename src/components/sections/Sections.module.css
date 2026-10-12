@@ -115,9 +115,9 @@
 }
 
 .statsBand {
-  margin-top: var(--sp-64);
+  margin-top: var(--sp-48);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: var(--sp-16);
 }
 
@@ -126,7 +126,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-12);
-  min-height: 200px;
+  min-height: 160px;
   border-radius: var(--r-md);
 }
 
@@ -149,16 +149,10 @@
   opacity: 0.8;
 }
 
-@media (max-width: 1024px) {
-  .statsBand {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 640px) {
   .statsBand {
     grid-template-columns: 1fr;
-    margin-top: var(--sp-48);
+    margin-top: var(--sp-32);
   }
 }
 
@@ -178,6 +172,24 @@
   font-size: var(--fs-16);
   max-width: 38ch;
   line-height: 1.6;
+}
+
+.chipList {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--sp-24);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-8);
+}
+
+.chip {
+  border: 1px solid var(--ink);
+  border-radius: var(--r-pill);
+  padding: 0.5em 1.1em;
+  font-size: var(--fs-14);
+  font-weight: 500;
+  color: var(--ink);
 }
 
 @media (max-width: 1024px) {
@@ -253,6 +265,20 @@
   flex: 1;
 }
 
+.productHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-8);
+  flex-wrap: wrap;
+}
+
+.productStatus {
+  color: var(--ink);
+  opacity: 0.6;
+  font-size: var(--fs-12);
+}
+
 .productName {
   font-family: var(--font-display), 'Arial Narrow', sans-serif;
   font-size: var(--fs-21);
@@ -269,7 +295,7 @@
   flex: 1;
   /* keep every card the same tight height */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -281,51 +307,16 @@
   font-size: var(--fs-12);
 }
 
-/* Creator program — a full rectangular banner card closing the Labs section */
-.creatorCard {
+/* Creator program — a single quiet line closing the Labs section */
+.creatorLine {
   margin-top: var(--sp-32);
-  background: var(--ink);
-  color: var(--paper);
-  border-radius: var(--r-lg);
-  padding: clamp(28px, 4vw, 48px);
-  box-shadow: var(--e2);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-48);
-}
-
-.creatorCopy {
-  display: grid;
-  gap: var(--sp-12);
-}
-
-.creatorTag {
-  color: var(--paper);
-  opacity: 0.55;
-}
-
-.creatorText {
-  font-family: var(--font-display), 'Arial Narrow', sans-serif;
-  font-size: var(--text-title);
-  line-height: 1.05;
-  letter-spacing: var(--track-display);
-  text-transform: uppercase;
-  color: var(--paper);
-  max-width: 30ch;
-}
-
-/* ghost button sits on ink → paper outline, fills paper on hover */
-.creatorCard :global(a) {
-  flex-shrink: 0;
-}
-
-@media (max-width: 720px) {
-  .creatorCard {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--sp-24);
-  }
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-8) var(--sp-16);
+  color: var(--fg-muted);
+  font-size: var(--text-lead);
 }
 
 @media (max-width: 1024px) {
@@ -364,15 +355,6 @@
   margin-top: var(--sp-16);
 }
 
-.ctaQuote {
-  margin-top: var(--sp-48);
-  color: var(--fg-muted);
-  font-family: var(--font-mono), monospace;
-  font-size: var(--fs-14);
-  letter-spacing: 0.04em;
-  min-height: 1.6em;
-}
-
 /* ---------- About ---------- */
 
 .aboutGrid {
@@ -380,34 +362,6 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--sp-96);
   align-items: start;
-}
-
-.valuesList {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  gap: 0;
-}
-
-.valueItem {
-  padding-block: var(--sp-24);
-  border-top: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: var(--sp-16);
-}
-
-.valueTitle {
-  font-family: var(--font-display), 'Arial Narrow', sans-serif;
-  font-size: var(--fs-21);
-  letter-spacing: var(--track-display);
-  text-transform: uppercase;
-}
-
-.valueDesc {
-  color: var(--fg-muted);
-  font-size: var(--fs-16);
-  line-height: 1.55;
 }
 
 .teamLine {
@@ -422,8 +376,4 @@
     gap: var(--sp-48);
   }
 
-  .valueItem {
-    grid-template-columns: 1fr;
-    gap: var(--sp-4);
-  }
 }

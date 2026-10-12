@@ -44,6 +44,33 @@
   max-width: 18ch;
 }
 
+/* the hiring line — quiet, but the one link in the footer worth a pill */
+.hiring {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-8) var(--sp-16);
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  font-size: var(--fs-16);
+}
+
+.hiring a {
+  color: var(--paper);
+  border: 1px solid rgba(245, 241, 234, 0.4);
+  border-radius: var(--r-pill);
+  padding: 0.6em 1.2em;
+  font-size: var(--fs-14);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.hiring a:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
 .nav {
   display: flex;
   gap: var(--sp-24);

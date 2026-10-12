@@ -16,6 +16,7 @@ type ProblemProps = {
  * sits in a quiet glass panel over the sky; the stats read as a proof row.
  */
 export function Problem({ narrative, stats }: ProblemProps) {
+  const [lead, ...rest] = narrative
   return (
     <Section id="problem" trail="left" flora={{ side: 'left', scale: 1.05 }} className={`${styles.section} ${styles.afterHero}`}>
       <div className={styles.inner}>
@@ -23,11 +24,16 @@ export function Problem({ narrative, stats }: ProblemProps) {
           <div className={styles.eyebrowRow}>
             <Eyebrow>The problem</Eyebrow>
           </div>
-          <div className={styles.problemNarrative}>
-            {narrative.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
+          <h2 className={styles.heading} style={{ maxWidth: '24ch' }}>
+            {lead}
+          </h2>
+          {rest.length > 0 && (
+            <div className={styles.problemNarrative} style={{ marginTop: 'var(--sp-24)' }}>
+              {rest.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          )}
         </Reveal>
 
         <Reveal stagger="[data-stat]" className={styles.statsBand}>

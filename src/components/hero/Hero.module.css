@@ -234,6 +234,15 @@
   text-shadow: 0 1px 20px rgba(245, 241, 234, 0.6);
 }
 
+/* the one decision on the first screen: start, or look around */
+.actions {
+  margin-top: var(--sp-32);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-16);
+  justify-content: center;
+}
+
 .scrollHint {
   position: absolute;
   bottom: max(4vh, 24px);
@@ -290,5 +299,9 @@
 
   .subline {
     max-width: 34ch;
+  }
+
+  .actions {
+    justify-content: flex-start;
   }
 }

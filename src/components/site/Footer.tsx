@@ -9,10 +9,11 @@ type FooterProps = {
   navLinks: Array<{ label: string; href: string }>
   legalLinks: Array<{ label: string; href: string }>
   copyright: string
+  hiring?: { text: string; label: string; href: string }
 }
 
 /** Quiet close — the trail resolves here on ink, the belief restated once. */
-export function Footer({ beliefLine, navLinks, legalLinks, copyright }: FooterProps) {
+export function Footer({ beliefLine, navLinks, legalLinks, copyright, hiring }: FooterProps) {
   const year = new Date().getFullYear()
   return (
     <Section reverse flora={false} trail="center" className={styles.footer}>
@@ -22,6 +23,14 @@ export function Footer({ beliefLine, navLinks, legalLinks, copyright }: FooterPr
           <span className={styles.name}>ISOCODELABS</span>
         </div>
         <p className={styles.belief}>{beliefLine}</p>
+        {hiring && (
+          <p className={styles.hiring}>
+            <span>{hiring.text}</span>
+            <a href={hiring.href} rel="noreferrer">
+              {hiring.label}
+            </a>
+          </p>
+        )}
         <ul className={styles.nav}>
           {navLinks.map((l) => (
             <li key={l.href}>

@@ -3,12 +3,15 @@
 import { useEffect, useRef } from 'react'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
+import { Button } from '@/components/ui/Button'
 import styles from './Hero.module.css'
 
 type HeroProps = {
   beliefLine: string
   subline: string
   scrollBeats: string[]
+  primaryCta?: string
+  secondaryCta?: string
 }
 
 /**
@@ -27,7 +30,7 @@ type HeroProps = {
  * paints the device-composed image behind everything), so the hero and the
  * page share one seamless backdrop.
  */
-export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
+export function Hero({ beliefLine, subline, scrollBeats, primaryCta, secondaryCta }: HeroProps) {
   const tier = useMotionTier()
   const isDesktop = useIsDesktop()
   const isPhone = useIsPhone()
@@ -41,6 +44,7 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
   const stickyRef = useRef<HTMLDivElement>(null)
   const introRef = useRef<HTMLDivElement>(null)
   const beatRefs = useRef<Array<HTMLDivElement | null>>([])
+  const actionsRef = useRef<HTMLDivElement>(null)
 
   // the scroll journey — belief line, then the beats swap in place, then the
   // whole scene fades where it stands. Desktop/full-motion only.
@@ -96,6 +100,25 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
     return () => st.kill()
   }, [immersive])
 
+  // The hero buttons fade with the intro, but a faded button is still
+  // clickable. This is a separate, read-only watcher — it never touches the
+  // journey above — that just switches the buttons' clicks off once the intro
+  // has faded (same 0.2 progress mark the intro fade uses).
+  useEffect(() => {
+    const wrap = wrapRef.current
+    const actions = actionsRef.current
+    if (!wrap || !actions || !immersive) return
+    const st = ScrollTrigger.create({
+      trigger: wrap,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        actions.style.pointerEvents = self.progress < 0.2 ? '' : 'none'
+      },
+    })
+    return () => st.kill()
+  }, [immersive])
+
   // desktop-but-reduced-motion still needs an image (the site's desktop
   // backdrop is the sky, not the meadow); phone/iPad get it from WorldBackground
   const stillSrc = '/assets/hero/hero-static.webp'
@@ -145,6 +168,20 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
         <div ref={introRef} className={styles.intro}>
           <h1 className={styles.belief}>{formatBelief(beliefLine)}</h1>
           <p className={styles.subline}>{subline}</p>
+          {(primaryCta || secondaryCta) && (
+            <div ref={actionsRef} className={styles.actions}>
+              {primaryCta && (
+                <Button href="/quiz" size="lg">
+                  {primaryCta}
+                </Button>
+              )}
+              {secondaryCta && (
+                <Button href="/#labs" variant="ghost" size="lg">
+                  {secondaryCta}
+                </Button>
+              )}
+            </div>
+          )}
           {immersive && (
             <span className={`mono-label ${styles.scrollHint}`} aria-hidden>
               scroll
@@ -175,9 +212,9 @@ export function Hero({ beliefLine, subline, scrollBeats }: HeroProps) {
 
 /** Emphasise the closing clause with a crafted underline (Anton, one weight). */
 function formatBelief(line: string) {
-  const marker = 'deserve the best'
+  const marker = ['made properly', 'deserve the best'].find((m) => line.includes(m))
+  if (!marker) return line
   const idx = line.indexOf(marker)
-  if (idx === -1) return line
   return (
     <>
       {line.slice(0, idx)}
