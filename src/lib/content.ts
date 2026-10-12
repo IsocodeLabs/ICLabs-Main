@@ -55,15 +55,20 @@ function toFounders(
   fallback: Founder[],
 ): Founder[] {
   if (docs.length === 0) return fallback
-  return docs.map((f, i) => ({
-    name: f.name,
-    title: f.title ?? 'Co-founder',
-    photo: mediaURL(f.photo, fallback[i % fallback.length]?.photo ?? ''),
-    eduLine: f.eduLine ?? '',
-    socials: (f.socials ?? [])
+  return docs.map((f, i) => {
+    const cmsSocials = (f.socials ?? [])
       .filter((s) => Boolean(s.url))
-      .map((s) => ({ platform: s.platform, url: s.url as string })),
-  }))
+      .map((s) => ({ platform: s.platform, url: s.url as string }))
+    // a founder with no profile links set in the CMS keeps the ones in the deck
+    const seeded = fallback.find((d) => d.name.toLowerCase() === f.name.toLowerCase())
+    return {
+      name: f.name,
+      title: f.title ?? 'Co-founder',
+      photo: mediaURL(f.photo, fallback[i % fallback.length]?.photo ?? ''),
+      eduLine: f.eduLine ?? '',
+      socials: cmsSocials.length > 0 ? cmsSocials : (seeded?.socials ?? []),
+    }
+  })
 }
 
 const mediaURL = (img: unknown, fallback: string): string => {

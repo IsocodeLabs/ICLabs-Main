@@ -231,7 +231,9 @@ export const foundersContent = [
     title: 'Co-founder',
     photo: '/assets/about/founder-1.jpg',
     eduLine: 'B.Tech, IIT Kharagpur',
-    socials: [] as Array<{ platform: string; url: string }>,
+    socials: [
+      { platform: 'linkedin', url: 'https://www.linkedin.com/in/aryan-malhotra-profile' },
+    ] as Array<{ platform: string; url: string }>,
     order: 1,
   },
   {
@@ -239,7 +241,9 @@ export const foundersContent = [
     title: 'Co-founder',
     photo: '/assets/about/founder-2.webp',
     eduLine: 'B.Tech + M.Tech, IIT Kharagpur',
-    socials: [] as Array<{ platform: string; url: string }>,
+    socials: [
+      { platform: 'linkedin', url: 'https://www.linkedin.com/in/devansh-mishra-673a70261' },
+    ] as Array<{ platform: string; url: string }>,
     order: 2,
   },
 ]

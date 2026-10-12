@@ -167,6 +167,16 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.8s var(--ease-out);
+}
+
+/* the photo is a link to the founder's LinkedIn */
+.founderPhotoLink {
+  display: block;
+}
+
+.founderPhotoLink:hover .founderImg {
+  transform: scale(1.04);
 }
 
 .founderMeta {

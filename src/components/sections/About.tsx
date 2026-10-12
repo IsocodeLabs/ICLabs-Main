@@ -11,7 +11,13 @@ type AboutProps = {
   body: string[]
   teamLine: string
   contactHeading: string
-  founders?: Array<{ name: string; title: string; photo: string; eduLine: string }>
+  founders?: Array<{
+    name: string
+    title: string
+    photo: string
+    eduLine: string
+    socials?: Array<{ platform: string; url: string }>
+  }>
 }
 
 /**
@@ -70,25 +76,41 @@ export function About({ heading, body, teamLine, contactHeading, founders = [] }
             <div className={styles.foundersRow}>
               <span className={`mono-label ${styles.foundersLabel}`}>The people</span>
               <ul className={styles.foundersList}>
-                {founders.map((f) => (
+                {founders.map((f) => {
+                  const linkedin = f.socials?.find((s) => s.platform === 'linkedin')?.url
+                  const photo = (
+                    <Image
+                      src={f.photo}
+                      alt={f.name}
+                      width={352}
+                      height={352}
+                      sizes="176px"
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    />
+                  )
+                  return (
                   <li key={f.name} className={styles.founder}>
-                    <div className={styles.founderPhoto}>
-                      <Image
-                        src={f.photo}
-                        alt={f.name}
-                        width={352}
-                        height={352}
-                        sizes="176px"
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                    </div>
+                    {linkedin ? (
+                      <a
+                        href={linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${f.name} on LinkedIn`}
+                        className={`${styles.founderPhoto} ${styles.founderPhotoLink}`}
+                      >
+                        {photo}
+                      </a>
+                    ) : (
+                      <div className={styles.founderPhoto}>{photo}</div>
+                    )}
                     <div className={styles.founderMeta}>
                       <span className={styles.founderName}>{f.name}</span>
                       <span className={`mono-label ${styles.founderRole}`}>{f.title}</span>
                       {f.eduLine && <span className={styles.founderEdu}>{f.eduLine}</span>}
                     </div>
                   </li>
-                ))}
+                  )
+                })}
               </ul>
             </div>
           )}

@@ -455,6 +455,28 @@
   background: var(--paper);
 }
 
+/* the photo is a link to the founder's LinkedIn */
+.founderPhotoLink {
+  display: block;
+  position: relative;
+  transition:
+    box-shadow var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out);
+}
+
+.founderPhotoLink img {
+  transition: transform 0.8s var(--ease-out);
+}
+
+.founderPhotoLink:hover {
+  box-shadow: var(--e2);
+  transform: translateY(-2px);
+}
+
+.founderPhotoLink:hover img {
+  transform: scale(1.04);
+}
+
 .founderMeta {
   display: flex;
   flex-direction: column;

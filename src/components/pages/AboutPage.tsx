@@ -85,18 +85,33 @@ export function AboutPage({
                 <p className={styles.blockIntro}>{page.foundersIntro}</p>
               </Reveal>
               <Reveal stagger="[data-founder]" className={styles.foundersGrid}>
-                {founders.map((f) => (
+                {founders.map((f) => {
+                  const linkedin = f.socials.find((s) => s.platform === 'linkedin')?.url
+                  const photo = (
+                    <Image
+                      src={f.photo}
+                      alt={f.name}
+                      width={1000}
+                      height={1000}
+                      className={styles.founderImg}
+                      sizes="(max-width: 720px) 90vw, 480px"
+                    />
+                  )
+                  return (
                   <article key={f.name} data-founder className={`${panel} ${styles.founderCard}`}>
-                    <div className={styles.founderPhoto}>
-                      <Image
-                        src={f.photo}
-                        alt={f.name}
-                        width={1000}
-                        height={1000}
-                        className={styles.founderImg}
-                        sizes="(max-width: 720px) 90vw, 480px"
-                      />
-                    </div>
+                    {linkedin ? (
+                      <a
+                        href={linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${f.name} on LinkedIn`}
+                        className={`${styles.founderPhoto} ${styles.founderPhotoLink}`}
+                      >
+                        {photo}
+                      </a>
+                    ) : (
+                      <div className={styles.founderPhoto}>{photo}</div>
+                    )}
                     <div className={styles.founderMeta}>
                       <h3 className={styles.founderName}>{f.name}</h3>
                       <span className={`mono-label ${styles.founderTitle}`}>{f.title}</span>
@@ -119,7 +134,8 @@ export function AboutPage({
                       )}
                     </div>
                   </article>
-                ))}
+                  )
+                })}
               </Reveal>
             </div>
           </Section>
