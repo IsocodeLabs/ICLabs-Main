@@ -6,6 +6,11 @@
 
 This file is the go-live checklist. Do the steps in order and tick them off. [`docs/careers-runbook.md`](docs/careers-runbook.md) explains how the pipeline works and how to run it day to day. [`.env.example`](.env.example) lists every env var.
 
+> **🔴 Production Payload is down (found 13 Oct 2026, 05:05 IST, before careers v2 was deployed).** Every Payload route on isocodelabs.com returns `500 {"message":"There was an error initializing Payload"}`: `/api/*`, `/api/users/me`, and `/admin/login` errors too. Public pages still render only because they fall back to the built-in seed copy and are ISR-cached. **The old careers form, the contact form and the quiz can't save anything while this lasts.** This has to be fixed before any step below. Likely causes, in order:
+> 1. The Cloud SQL instance is stopped or unreachable (check `gcloud sql instances describe $SQL_INSTANCE --format='value(state,settings.activationPolicy)'`; it should be `RUNNABLE` / `ALWAYS`).
+> 2. The service lost its Cloud SQL connection or `DATABASE_URI` (`gcloud run services describe $SERVICE --region $REGION`; check `run.googleapis.com/cloudsql-instances` and the env/secret).
+> 3. The real error is in the logs: `gcloud run services logs read $SERVICE --region $REGION --limit 200 | grep -i -A5 "payload\|error"`.
+
 > **⚠️ Already merged to `main` (13 Oct 2026, at Aryan's call).** If main auto-deploys, production is running this code **before** its setup, so:
 > - the careers application form fails: uploads return 500 until the GCS bucket and env vars exist, and submits fail until the migration has run;
 > - Payload admin's Applications and Job Openings screens error until the migration adds the new columns;
