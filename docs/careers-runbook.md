@@ -1,6 +1,6 @@
 # Careers hiring cycle v2: runbook
 
-This runbook covers how careers.isocodelabs.com's Round 1 pipeline is wired and the one-time setup it needs on GCP and Cloudflare. It also covers how to run the load test and day-to-day operations. Everything runs on GCP except Cloudflare (DNS, proxy, Turnstile) and Resend (email). Both of those stay on their free tiers.
+This runbook covers how careers.isocodelabs.com's Round 1 pipeline is wired and how to run it day to day. Setup and going live are in [`deploy.md`](../deploy.md). Everything runs on GCP except Cloudflare (DNS, proxy, Turnstile) and Resend (email). Both of those stay on their free tiers.
 
 ## How it fits together
 
@@ -26,123 +26,14 @@ Cloud Scheduler ──► POST /api/careers/cron/digest (daily founders' email)
 - **Rate limits** are per IP and kept in Postgres (`careers_ops.rate_limits`, an UNLOGGED table outside Payload's schema). They fail open; Turnstile is the main gate.
 - **Logs** go to Cloud Logging as JSON with no PII. ERROR entries reach Error Reporting automatically.
 
-## One-time setup
+## Setup, deploy and load test
 
-### 1. CV bucket (GCS, Mumbai)
+All of it lives in [`deploy.md`](../deploy.md) as one ordered checklist. That covers Turnstile, the GCS buckets and IAM, secrets and build args, the staging clone, the migration rehearsal, the k6 load test, the production deploy, the smoke test, the daily digest and monitoring.
 
-```bash
-gcloud auth application-default login
-CAREERS_GCS_BUCKET=isocode-careers-cvs \
-CAREERS_ALLOWED_ORIGINS=https://careers.isocodelabs.com,https://isocodelabs.com \
-npx tsx scripts/careers-gcs-setup.ts
-```
+Two rules worth knowing even outside a deploy:
 
-The script creates the bucket in `asia-south1` with uniform access, public access prevention enforced and versioning on, and sets CORS for the careers origins. Its lifecycle rules delete `pending/` objects after 2 days and `exports/` objects after 1 day. **`applications/` never expires.**
-
-Make a separate bucket for staging and load tests, such as `isocode-careers-cvs-staging`.
-
-> GCS keeps deleted objects for 7 days by default (soft delete). If an applicant asks for deletion, their CV is unrecoverable once that window passes. Mention this if anyone asks.
-
-### 2. Service account permissions
-
-The Cloud Run service's runtime service account needs:
-
-- `roles/storage.objectAdmin` **on the bucket only**:
-  `gcloud storage buckets add-iam-policy-binding gs://isocode-careers-cvs --member=serviceAccount:<SA> --role=roles/storage.objectAdmin`
-- `roles/iam.serviceAccountTokenCreator` **on itself**, so it can sign upload policies and download URLs without a key file:
-  `gcloud iam service-accounts add-iam-policy-binding <SA> --member=serviceAccount:<SA> --role=roles/iam.serviceAccountTokenCreator`
-
-### 3. Cloudflare Turnstile
-
-In the Cloudflare dashboard, go to Turnstile and add a site with the domain `careers.isocodelabs.com` (and `isocodelabs.com`) in **Managed** mode. Then:
-
-- Put the site key in `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. **Pass it as a Docker build arg too**: `NEXT_PUBLIC_*` values are compiled into the browser bundle.
-- Put the secret in `TURNSTILE_SECRET_KEY` (Secret Manager).
-
-### 4. Environment (Cloud Run)
-
-| Var | Value |
-|---|---|
-| `NEXT_PUBLIC_CAREERS_URL` | `https://careers.isocodelabs.com` (also a **build arg**) |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | from Cloudflare (also a **build arg**) |
-| `TURNSTILE_SECRET_KEY` | from Cloudflare (Secret Manager) |
-| `CAREERS_STORAGE` | `gcs` |
-| `CAREERS_GCS_BUCKET` | `isocode-careers-cvs` |
-| `CAREERS_CYCLE` | `2026-10` |
-| `CAREERS_SIGNING_SECRET` | long random string (Secret Manager) |
-| `CAREERS_CRON_SECRET` | long random string (Secret Manager) |
-| `DB_POOL_MAX` | see sizing below |
-| `RESEND_API_KEY` | already set; used only for the daily digest |
-
-The Dockerfile already passes `DATABASE_URI`, `PAYLOAD_SECRET` and `NEXT_PUBLIC_SERVER_URL` as build args. Add the two new `NEXT_PUBLIC_*` values the same way: `ARG` plus `ENV` in the builder stage.
-
-### 5. Database: capacity and pooling
-
-Each Cloud Run instance holds one pg pool of `DB_POOL_MAX` connections. Keep this inequality true:
-
-```
-Cloud Run max instances × DB_POOL_MAX  ≤  Cloud SQL max_connections − 10
-```
-
-A sensible burst setting for the 1,000-in-5-minutes target:
-
-- **Cloud Run:** min instances 1 (Payload cold starts take seconds), max instances 4, concurrency 80, 1 vCPU / 1 GiB.
-- **`DB_POOL_MAX=10`**, so at most 40 connections. That fits even small Cloud SQL tiers. Check `max_connections` on the instance (`db-g1-small` allows about 50, `db-custom-1-3840` about 100).
-- Turn on **automated daily backups + point-in-time recovery** on Cloud SQL (PRD §8).
-
-If you'd rather put a pooler in front (Cloud SQL Managed Connection Pooling, or PgBouncer), point `DATABASE_URI` at it and the same rule applies to the pooler's limit.
-
-### 6. Schema migration and roles
-
-This repo has no Payload migrations folder. The schema reaches the DB through Payload's dev-mode push, which runs whenever a script boots Payload outside production. To roll out v2:
-
-1. **Back up the production DB** (take a Cloud SQL on-demand backup).
-2. Run the migration once, from a machine that can reach the DB, in dry-run mode first:
-   ```bash
-   DATABASE_URI=<prod> npm run careers:migrate -- --dry-run
-   DATABASE_URI=<prod> npm run careers:migrate -- --yes
-   ```
-   - Drizzle lists any destructive change and asks before applying it. **Careers v2 only adds columns and tables.** Main also carries an unrelated homepage change: commit `12e1065` ("remove creator studio") removes the `homepage.creator_mention_*` fields. Drizzle will ask to drop those two columns. Back up their values first if you want to keep them (`SELECT creator_mention_body, creator_mention_href FROM homepage;`).
-   - The script then upserts the 3 v2 roles and the open application, and archives Sales Executive and Design Intern (archived, never deleted). Every pre-v2 application gets `cycle = legacy` and a `stage` derived from its old `status`. The old `status` value is kept.
-3. Deploy. Until the migration has run, the site falls back to the seeded v2 roles, so deploy order doesn't matter for the public pages. Submissions need the new columns, though, so **migrate before announcing anything.**
-
-### 7. Daily digest (Cloud Scheduler)
-
-```bash
-gcloud scheduler jobs create http careers-digest \
-  --location=asia-south1 --schedule="0 9 * * *" --time-zone="Asia/Kolkata" \
-  --uri="https://isocodelabs.com/api/careers/cron/digest" --http-method=POST \
-  --headers="Authorization=Bearer <CAREERS_CRON_SECRET>"
-```
-
-The digest is one email to both founders with counts per role and a link to `/admin/screening`. It contains no applicant details. The free Resend plan (100 emails a day) is more than enough for it.
-
-**Applicant confirmation emails are off.** Resend's free plan caps at 100 emails a day and 3,000 a month, which can't cover a 1,000-application burst. The success screen tells applicants what happens next. If you ever want confirmations, you'll need a paid plan plus a queue.
-
-### 8. Monitoring
-
-- **Error Reporting** groups `apply_failed`, `upload_url_failed` and other errors automatically. Turn on notifications in the console.
-- **Alert when the submit error rate is over 2% for 5 minutes.** Create a log-based metric on `jsonPayload.message="apply_failed"`, and a Cloud Monitoring alert on its rate compared with the Cloud Run request count for `/api/careers/apply`. You can also simply alert when it exceeds about 5 per 5 minutes.
-- **Uptime check:** run `GET https://careers.isocodelabs.com/api/careers/health` every 5 minutes. It returns 200 when the DB is reachable and storage and Turnstile are configured.
-
-## Load test (Phase 6, required before announcing)
-
-Run this on **staging**: a separate Cloud Run service, a separate Cloud SQL DB and a separate bucket. Configure staging with:
-`TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA` (Cloudflare's always-pass test secret), `CAREERS_RL_DISABLED=true` and `CAREERS_CYCLE=loadtest-<date>`.
-
-```bash
-brew install k6
-k6 run -e BASE_URL=https://<staging-host> loadtest/careers-burst.js
-```
-
-It passes when the k6 thresholds are green (error rate < 0.5%, `apply_duration` p95 < 1.5 s, zero `apply_fail` and `upload_fail`) **and** there are 0 lost submissions:
-
-```sql
-SELECT count(*) FROM applications WHERE cycle = 'loadtest-<date>';  -- must equal k6's apply_ok
-```
-
-Then check that every row's `object_key` exists in the staging bucket:
-`gsutil ls gs://<staging-bucket>/applications/** | wc -l`.
+- **Connections:** Cloud Run max instances × `DB_POOL_MAX` must be at most Cloud SQL `max_connections` − 10.
+- **Schema changes:** this repo has no Payload migrations folder. The schema is pushed whenever a script boots Payload outside production (e.g. `npm run careers:migrate`). Back up first, and read Drizzle's prompt before answering `y`.
 
 ## Day to day
 
