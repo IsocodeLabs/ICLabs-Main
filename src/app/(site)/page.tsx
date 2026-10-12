@@ -41,7 +41,6 @@ export default async function HomePage() {
             heading={content.labs.heading}
             body={content.labs.body}
             products={content.labs.products}
-            creatorMention={content.labs.creatorMention}
           />
           <CtaQuiz
             heading={content.cta.heading}

@@ -58,14 +58,6 @@ export const Homepage: GlobalConfig = {
       ],
     },
     {
-      name: 'creatorMention',
-      type: 'group',
-      fields: [
-        { name: 'body', type: 'textarea' },
-        { name: 'href', type: 'text' },
-      ],
-    },
-    {
       name: 'cta',
       type: 'group',
       fields: [

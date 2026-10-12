@@ -3,8 +3,14 @@
 import { useEffect, useState } from 'react'
 
 /**
- * Film grain — part of the cinematic grade (CSS-able per the asset manifest;
- * generated once on the client, tiled, screen-blended, never animated).
+ * Film grain — part of the cinematic grade (generated once on the client,
+ * tiled, never animated).
+ *
+ * Plain alpha noise (black and white specks, a few percent opaque) rather than
+ * a `mix-blend-mode` overlay: a full-screen blend layer sits over every glass
+ * panel and forces the browser to re-composite the whole page on each scroll
+ * frame, which on busy GPUs starves tile raster and leaves bands of text
+ * unpainted. This reads the same, and costs nothing.
  */
 export function GrainOverlay() {
   const [url, setUrl] = useState('')
@@ -17,9 +23,9 @@ export function GrainOverlay() {
     if (!ctx) return
     const img = ctx.createImageData(size, size)
     for (let i = 0; i < img.data.length; i += 4) {
-      const v = 118 + Math.random() * 20
+      const v = Math.random() < 0.5 ? 0 : 255
       img.data[i] = img.data[i + 1] = img.data[i + 2] = v
-      img.data[i + 3] = 255
+      img.data[i + 3] = Math.random() * 5
     }
     ctx.putImageData(img, 0, 0)
     setUrl(canvas.toDataURL())
@@ -36,8 +42,6 @@ export function GrainOverlay() {
         pointerEvents: 'none',
         backgroundImage: `url(${url})`,
         backgroundRepeat: 'repeat',
-        mixBlendMode: 'overlay',
-        opacity: 0.05,
       }}
     />
   )

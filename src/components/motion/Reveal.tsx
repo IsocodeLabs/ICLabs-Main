@@ -48,6 +48,10 @@ export function Reveal({
         delay,
         ease: 'power3.out',
         stagger: stagger ? 0.09 : 0,
+        // once settled, drop the leftover inline transform: a resting
+        // `transform` on a backdrop-filter panel is a known source of
+        // half-painted text in Chromium
+        clearProps: 'transform',
         scrollTrigger: {
           trigger: el,
           start: 'top 82%',

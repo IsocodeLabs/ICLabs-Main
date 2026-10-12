@@ -45,7 +45,6 @@ async function run() {
         heading: labsContent.heading,
         body: labsContent.body,
       },
-      creatorMention: labsContent.creatorMention,
       cta: ctaContent,
       about: {
         heading: aboutContent.heading,

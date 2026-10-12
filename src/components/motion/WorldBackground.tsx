@@ -71,7 +71,9 @@ export function WorldBackground() {
   // ── desktop: the living sky + flora stage
   return (
     <div aria-hidden className={styles.root}>
-      <div ref={plateRef} className={styles.plate} />
+      <div ref={plateRef} className={styles.plate}>
+        <div className={styles.plateDrift} />
+      </div>
       <div ref={scrimRef} className={styles.scrim} />
       <div ref={floraRef} className={styles.flora}>
         <div className={styles.floraSway} />

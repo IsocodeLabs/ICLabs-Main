@@ -1155,10 +1155,6 @@ export interface Homepage {
     heading?: string | null;
     body?: string | null;
   };
-  creatorMention?: {
-    body?: string | null;
-    href?: string | null;
-  };
   cta?: {
     heading?: string | null;
     body?: string | null;
@@ -1331,12 +1327,6 @@ export interface HomepageSelect<T extends boolean = true> {
         beliefBeat?: T;
         heading?: T;
         body?: T;
-      };
-  creatorMention?:
-    | T
-    | {
-        body?: T;
-        href?: T;
       };
   cta?:
     | T

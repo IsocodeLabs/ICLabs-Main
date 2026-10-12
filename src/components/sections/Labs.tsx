@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
-import { Button } from '@/components/ui/Button'
 import styles from './Sections.module.css'
 
 type Product = {
@@ -20,14 +19,13 @@ type LabsProps = {
   heading: string
   body: string
   products: Product[]
-  creatorMention: { body: string; href: string }
 }
 
 /**
  * Labs & Innovation — the proof. No case studies; the products are the
  * evidence. Every card must look genuinely crafted.
  */
-export function Labs({ beliefBeat, heading, body, products, creatorMention }: LabsProps) {
+export function Labs({ beliefBeat, heading, body, products }: LabsProps) {
   return (
     <Section id="labs" trail="left" flora={{ side: 'left', flip: true, scale: 1.05 }} className={styles.section}>
       <div className={styles.inner}>
@@ -67,13 +65,6 @@ export function Labs({ beliefBeat, heading, body, products, creatorMention }: La
               </div>
             </a>
           ))}
-        </Reveal>
-
-        <Reveal className={styles.creatorLine}>
-          <p>{creatorMention.body}</p>
-          <Button href={creatorMention.href} variant="quiet" target="_blank">
-            Creator studio →
-          </Button>
         </Reveal>
       </div>
     </Section>

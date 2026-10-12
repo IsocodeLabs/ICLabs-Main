@@ -12,8 +12,8 @@ is rewritten to match the real code. Use this doc as the base to build on.*
 ## 1. What this site is
 
 A marketing site for Isocode, a studio that builds public-facing websites and apps for
-mid-sized businesses, and also builds/runs its own products (Labs) and creator
-businesses. One job: convert a cold, serious visitor into a **qualified quiz completion
+mid-sized businesses, and also builds/runs its own products (Labs).
+One job: convert a cold, serious visitor into a **qualified quiz completion
 or direct-contact inquiry**. The site's own craft is the proof — there are no case
 studies, no client logos; the hero and the Labs section carry the argument.
 
@@ -29,8 +29,9 @@ Unchanged from the original intent doc:
 - **Scale by artifact, not adjective** — no superlatives, no fabricated traction.
 - We market public-facing sites + apps only; internal software (ERP/CRM/AI-OS) is sold
   in person, never on the site.
-- Labs + the creator program *are* the proof, not a sales pitch for those products —
-  each product/creator has its own destination site; this site never sells them inline.
+- Labs *is* the proof, not a sales pitch for those products — each product has its
+  own destination site; this site never sells them inline. (The creator program was
+  removed from the site entirely.)
 
 ## 3. Visual system — monochrome, not copper/Midnight
 
@@ -155,8 +156,7 @@ Hero → Problem (+ stats band) → What We Build → Labs & Innovation (= proof
   → CTA / short quiz → About (+ contact) → Footer
 ```
 
-- Sub-destinations, out of this site: `labs.isocodelabs.com`, `creator.isocodelabs.com`,
-  each product's own site (CVBuddy, ClearQuote, LifeTreeOS, Meddesk).
+- Sub-destinations, out of this site: `labs.isocodelabs.com`, each product's own site (CVBuddy, ClearQuote, LifeTreeOS, Meddesk).
 - Explicitly out of scope: case studies/client logos, any "how we work" process
   section, pricing, blog, client portal, investor material.
 - Routes actually shipped (`src/app/(site)/`):

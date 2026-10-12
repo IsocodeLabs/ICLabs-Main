@@ -145,10 +145,6 @@ export async function getSiteContent(): Promise<SiteContent> {
                 order: p.order ?? i,
               }))
             : fallback.labs.products,
-        creatorMention: {
-          body: home.creatorMention?.body ?? fallback.labs.creatorMention.body,
-          href: home.creatorMention?.href ?? fallback.labs.creatorMention.href,
-        },
       },
       cta: {
         heading: home.cta?.heading ?? fallback.cta.heading,
@@ -175,10 +171,13 @@ export async function getSiteContent(): Promise<SiteContent> {
       footer: {
         beliefLine: settings?.footer?.beliefLine ?? fallback.footer.beliefLine,
         navLinks:
-          settings?.footer?.navLinks?.map((l: { label: string; href: string }) => ({
-            label: l.label,
-            href: l.href,
-          })) ?? fallback.footer.navLinks,
+          settings?.footer?.navLinks
+            // the creator program is retired — drop it even if the CMS still has the link
+            ?.filter((l: { href: string }) => !/creator/i.test(l.href))
+            .map((l: { label: string; href: string }) => ({
+              label: l.label,
+              href: l.href,
+            })) ?? fallback.footer.navLinks,
         legalLinks:
           settings?.footer?.legalLinks?.map((l: { label: string; href: string }) => ({
             label: l.label,

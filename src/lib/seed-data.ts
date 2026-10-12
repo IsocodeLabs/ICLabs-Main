@@ -102,10 +102,6 @@ export const labsContent = {
       order: 4,
     },
   ],
-  creatorMention: {
-    body: 'We also build and run businesses for creators.',
-    href: 'https://creator.isocodelabs.com',
-  },
 }
 
 export const ctaContent = {
@@ -218,7 +214,6 @@ export const footerContent = {
     { label: 'Home', href: '#top' },
     { label: 'What We Build', href: '#what-we-build' },
     { label: 'Labs', href: 'https://labs.isocodelabs.com' },
-    { label: 'Creators', href: 'https://creator.isocodelabs.com' },
     { label: 'Contact', href: '#contact' },
   ],
   legalLinks: [

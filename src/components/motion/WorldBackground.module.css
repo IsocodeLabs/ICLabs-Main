@@ -34,22 +34,35 @@
 .plate {
   position: absolute;
   inset: -6vh 0;
-  background-image: url('/assets/sections/section-bg-sky.webp');
-  background-size: 120% auto;
-  background-position: center top;
+  overflow: hidden;
   transform: scale(1.06);
-  will-change: transform, background-position;
-  /* slow cloud drift — always-on ambient motion (transform stays free for the
-     JS parallax; only background-position animates) */
+  will-change: transform;
+}
+
+/* slow cloud drift — always-on ambient motion. The image sits on a child 120%
+   as wide as the plate and slides by the same 20% the old background-position
+   animation covered, so it looks identical — but it moves by transform on the
+   compositor instead of repainting a full-viewport image on every frame (the
+   transform on .plate stays free for the JS parallax). */
+.plateDrift {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 120%;
+  background-image: url('/assets/sections/section-bg-sky.webp');
+  background-size: 100% auto;
+  background-position: left top;
+  will-change: transform;
   animation: skyDrift 48s ease-in-out infinite alternate;
 }
 
 @keyframes skyDrift {
   from {
-    background-position: 0% top;
+    transform: translateX(0);
   }
   to {
-    background-position: 100% top;
+    transform: translateX(-16.6667%);
   }
 }
 
@@ -108,7 +121,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .floraSway,
-  .plate {
+  .plateDrift {
     animation: none;
   }
   .plate {
