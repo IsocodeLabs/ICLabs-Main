@@ -11,7 +11,6 @@ type HeroProps = {
   subline: string
   scrollBeats: string[]
   primaryCta?: string
-  secondaryCta?: string
 }
 
 /**
@@ -30,7 +29,7 @@ type HeroProps = {
  * paints the device-composed image behind everything), so the hero and the
  * page share one seamless backdrop.
  */
-export function Hero({ beliefLine, subline, scrollBeats, primaryCta, secondaryCta }: HeroProps) {
+export function Hero({ beliefLine, subline, scrollBeats, primaryCta }: HeroProps) {
   const tier = useMotionTier()
   const isDesktop = useIsDesktop()
   const isPhone = useIsPhone()
@@ -168,18 +167,11 @@ export function Hero({ beliefLine, subline, scrollBeats, primaryCta, secondaryCt
         <div ref={introRef} className={styles.intro}>
           <h1 className={styles.belief}>{formatBelief(beliefLine)}</h1>
           <p className={styles.subline}>{subline}</p>
-          {(primaryCta || secondaryCta) && (
+          {primaryCta && (
             <div ref={actionsRef} className={styles.actions}>
-              {primaryCta && (
-                <Button href="/quiz" size="lg">
-                  {primaryCta}
-                </Button>
-              )}
-              {secondaryCta && (
-                <Button href="/#labs" variant="ghost" size="lg">
-                  {secondaryCta}
-                </Button>
-              )}
+              <Button href="/quiz" size="lg">
+                {primaryCta}
+              </Button>
             </div>
           )}
           {immersive && (

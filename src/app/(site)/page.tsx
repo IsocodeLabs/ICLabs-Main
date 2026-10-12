@@ -29,7 +29,6 @@ export default async function HomePage() {
               subline={content.hero.subline}
               scrollBeats={content.hero.scrollBeats}
               primaryCta={content.hero.primaryCta}
-              secondaryCta={content.hero.secondaryCta}
             />
           </div>
           <Problem narrative={content.problem.narrative} stats={content.stats} />

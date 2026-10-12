@@ -124,7 +124,6 @@ export async function getSiteContent(): Promise<SiteContent> {
           home.hero?.scrollBeats?.map((b: { text: string }) => b.text) ??
           fallback.hero.scrollBeats,
         primaryCta: fallback.hero.primaryCta,
-        secondaryCta: fallback.hero.secondaryCta,
       },
       problem: {
         narrative:
@@ -162,7 +161,12 @@ export async function getSiteContent(): Promise<SiteContent> {
                   fallback.labs.products.find((f) => f.slug === p.slug)?.statusLabel ??
                   p.status,
                 badge: p.badge ?? 'from ISOCODELABS',
-                outboundURL: p.outboundURL ?? '#',
+                // link targets live in code (like image + status): a launched
+                // product's address changes here, not in a stale CMS row
+                outboundURL:
+                  fallback.labs.products.find((f) => f.slug === p.slug)?.outboundURL ??
+                  p.outboundURL ??
+                  '#',
                 image: mediaURL(
                   p.previewImage,
                   fallback.labs.products.find((f) => f.slug === p.slug)?.image ??

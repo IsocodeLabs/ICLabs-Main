@@ -15,7 +15,6 @@ export const heroContent = {
     'We build the other kind.',
   ],
   primaryCta: 'Start a project',
-  secondaryCta: 'See our work',
 }
 
 export const problemContent = {
@@ -75,7 +74,7 @@ export const labsContent = {
       status: 'funded',
       statusLabel: 'Funded',
       badge: 'from ISOCODELABS',
-      outboundURL: 'https://clearquote.isocodelabs.com',
+      outboundURL: 'https://clearquote.dev',
       image: '/assets/labs/labs-clearquote.webp',
       order: 2,
     },
@@ -84,7 +83,7 @@ export const labsContent = {
       slug: 'lifetreeos',
       blurb: 'An AI second brain that helps run the company and flags what’s breaking.',
       status: 'deeptech',
-      statusLabel: 'Deep tech',
+      statusLabel: 'Coming soon',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://lifetreeos.isocodelabs.com',
       image: '/assets/labs/labs-lifetreeos.webp',
@@ -95,13 +94,45 @@ export const labsContent = {
       slug: 'meddesk',
       blurb: 'A customisable ERP built for how clinics actually run.',
       status: 'paying',
-      statusLabel: 'Paying customers',
+      statusLabel: 'Coming soon',
       badge: 'from ISOCODELABS',
       outboundURL: 'https://meddesk.isocodelabs.com',
       image: '/assets/labs/labs-meddesk.webp',
       order: 4,
     },
   ],
+}
+
+/**
+ * "Coming soon" pages — one per product that hasn't launched. Served at
+ * <slug>.isocodelabs.com by the host rewrite in src/middleware.ts (and at
+ * /coming-soon/<slug> on the main domain). Remove a product from here, and
+ * from the middleware list, the day it launches.
+ */
+export const comingSoonContent: Record<
+  string,
+  { name: string; tagline: string; body: string; canonical: string }
+> = {
+  lifetreeos: {
+    name: 'LifeTreeOS',
+    tagline: 'A second brain for your business.',
+    body: 'An AI that helps run the company — and flags what’s breaking before you do. We’re building it carefully, and we won’t release it until it’s right.',
+    canonical: 'https://lifetreeos.isocodelabs.com',
+  },
+  meddesk: {
+    name: 'Meddesk',
+    tagline: 'The ERP built for how clinics actually run.',
+    body: 'A customisable system shaped around your clinic, not the other way round. We’re building it with care, and we’ll open the doors soon.',
+    canonical: 'https://meddesk.isocodelabs.com',
+  },
+}
+
+export const comingSoonCopy = {
+  badge: 'Coming soon',
+  notifyHeading: 'Get a note when it opens.',
+  doneHeading: 'You’re on the list.',
+  doneNote: 'One email, when it’s ready. Nothing else.',
+  backLabel: '← isocodelabs.com',
 }
 
 export const ctaContent = {

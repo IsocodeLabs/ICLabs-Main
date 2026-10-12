@@ -26,7 +26,13 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
   useEffect(() => setOpen(false), [pathname])
 
   // the quiz and careers are focused surfaces with their own chrome
-  if (pathname?.startsWith('/quiz') || pathname?.startsWith('/careers')) return null
+  if (
+    pathname?.startsWith('/quiz') ||
+    pathname?.startsWith('/careers') ||
+    pathname?.startsWith('/coming-soon')
+  ) {
+    return null
+  }
 
   const links: NavLink[] = [
     { label: 'Labs', href: '/#labs' },

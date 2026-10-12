@@ -53,7 +53,9 @@ export function Labs({ beliefBeat, heading, body, products }: LabsProps) {
               <div className={styles.productBody}>
                 <p className={styles.productBlurb}>{p.blurb}</p>
                 <div className={styles.productFoot}>
-                  <span className={`mono-label ${styles.productFrom}`}>Visit →</span>
+                  <span className={`mono-label ${styles.productFrom}`}>
+                    {/coming soon/i.test(p.statusLabel) ? 'Notify me →' : 'Visit →'}
+                  </span>
                   {p.statusLabel && (
                     <span className={`mono-label ${styles.productStatus}`}>{p.statusLabel}</span>
                   )}

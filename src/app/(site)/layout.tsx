@@ -51,7 +51,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
             no flash and without forcing dynamic rendering. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(location.hostname.indexOf('careers.')===0){document.documentElement.setAttribute('data-careers-host','')}}catch(e){}`,
+            __html: `try{var h=location.hostname;if(h.indexOf('careers.')===0){document.documentElement.setAttribute('data-careers-host','')}else if(h.indexOf('lifetreeos.')===0||h.indexOf('meddesk.')===0){document.documentElement.setAttribute('data-product-host','')}}catch(e){}`,
           }}
         />
         <script
