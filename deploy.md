@@ -11,7 +11,7 @@ This file is the go-live checklist. Do the steps in order and tick them off. [`d
 > 2. The service lost its Cloud SQL connection or `DATABASE_URI` (`gcloud run services describe $SERVICE --region $REGION`; check `run.googleapis.com/cloudsql-instances` and the env/secret).
 > 3. The real error is in the logs: `gcloud run services logs read $SERVICE --region $REGION --limit 200 | grep -i -A5 "payload\|error"`.
 
-> **⚠️ Already merged to `main` (13 Oct 2026, at Aryan's call).** If main auto-deploys, production is running this code **before** its setup, so:
+> **⚠️ Already merged to `main` (13 Oct 2026, at Aryan's call). Pushing to `main` auto-deploys (confirmed: live about 4.5 min after the push).** Production is running this code **before** its setup, and `/api/careers/health` reports `db:false, storage:false, turnstile:false`. Until then:
 > - the careers application form fails: uploads return 500 until the GCS bucket and env vars exist, and submits fail until the migration has run;
 > - Payload admin's Applications and Job Openings screens error until the migration adds the new columns;
 > - the careers pages themselves still render (they fall back to the seeded v2 roles).
