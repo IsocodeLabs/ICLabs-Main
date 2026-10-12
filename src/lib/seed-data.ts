@@ -589,8 +589,10 @@ export const legalPages: LegalPage[] = [
 ]
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Careers (v3.4) — the dark "craftsmanship at work" world. Evergreen hiring
-   surface for all of Isocode. Copy is seed-fallback-safe; CMS wins once set.
+   Careers — the dark "craftsmanship at work" world (v3.4), Oct 2026 hiring
+   cycle (v2). Copy is seed-fallback-safe; the CMS wins once roles exist there.
+   Role copy is transcribed exactly from the hiring-cycle PRD — in particular the
+   Business Growth pay text must never be shortened anywhere.
    ──────────────────────────────────────────────────────────────────────────── */
 
 export const careersContent = {
@@ -598,6 +600,8 @@ export const careersContent = {
   heading: 'For the few who’d rather build things properly.',
   pitch:
     'Isocode is a small, senior studio held to a single bar — craft. If “good enough” has never once sat right with you, this is where that instinct is the job, not a liability.',
+  metaDescription:
+    'Isocode is hiring remote interns in business growth, product, and engineering, plus an always open application.',
   barEyebrow: 'The bar',
   barHeading: 'What we hire for.',
   barBody: [
@@ -611,99 +615,220 @@ export const careersContent = {
   ],
   rolesEyebrow: 'Open roles',
   rolesHeading: 'Where we’re hiring.',
-  rolesNote: 'Remote. We hire the person first, then shape the role around them.',
+  rolesNote: 'Remote internships, six months each. We hire the person first, then shape the role around them.',
+  rolesEmpty: 'No open roles right now.',
+  openEyebrow: 'Open application',
+  openHeading: 'Don’t see your role?',
+  openBody:
+    'If you are exceptional at something we haven’t listed, tell us. Every open application is read by a founder.',
+  openCta: 'Send an open application →',
   formEyebrow: 'Apply',
   formHeading: 'Tell us who you are.',
-  formIntro: 'One form. Pick the role, tell us a little, and show us something you’ve made.',
-  closeLine: 'Don’t see your role? The open application is always read by a person.',
+  formIntro: 'Round 1 is short: your CV and a few basic details.',
+  successMessage: 'Thanks, your application is in. If you’re shortlisted, we’ll email you the next steps.',
   backLabel: '← isocodelabs.com',
 }
 
-export type JobOpeningSeed = {
+export type RoleKind = 'growth' | 'pm' | 'sde' | 'open'
+export type RoleStatus = 'open' | 'paused' | 'closed' | 'archived'
+
+export type CareerRoleSeed = {
   title: string
+  slug: string
   roleKey: string
+  order: number
+  status: RoleStatus
+  roleKind: RoleKind
   type: 'intern' | 'fullTime' | 'contract'
   dept: string
   location: string
-  stipend: string
+  duration: string
+  payLine: string
+  baseSalaryMonthlyINR: number | null
   blurb: string
-  active: boolean
-  openApplication: boolean
-  order: number
+  about: string
+  responsibilities: string[]
+  lookingFor: string[]
+  stack: string[]
+  compensation: string
+  footnote: string
+  hiringProcess: { title: string; description: string }[]
+  datePosted: string
+  validThrough: string | null
+  applicationCap: number | null
 }
 
-export const jobOpenings: JobOpeningSeed[] = [
+const CYCLE_POSTED = '2026-10-13T12:00:00.000Z' // midday UTC so no timezone shifts the day
+
+export const careerRoles: CareerRoleSeed[] = [
+  {
+    title: 'Business Growth Intern',
+    slug: 'business-growth-intern',
+    roleKey: 'business-growth-intern',
+    order: 1,
+    status: 'open',
+    roleKind: 'growth',
+    type: 'intern',
+    dept: 'Growth',
+    location: 'Remote',
+    duration: '6 months',
+    payLine: '₹1,00,000/month at target + 20% commission beyond',
+    baseSalaryMonthlyINR: null,
+    blurb: 'Find the businesses that need what we build, and bring them on board.',
+    about:
+      'You will own our pipeline in one industry, from the first call to an agreed price. We hand you a detailed proposal for the software we are taking to that industry. You find the right companies, start the conversation, and bring them to the table. The founders join you at the final meeting to sign.',
+    responsibilities: [
+      'Study the proposal document for your assigned industry until you can pitch it cold',
+      'Find and qualify leads yourself',
+      'Reach out by phone, email, WhatsApp and LinkedIn',
+      'Run discovery calls and take serious leads to an agreed price (projects start at ₹1.2 lakh)',
+      'Hand the client over to the founders at the final meeting for signing',
+    ],
+    lookingFor: [
+      'You are comfortable calling people you have never met',
+      'You understand software products well enough to explain one to a business owner in plain words',
+      'You follow up relentlessly and keep your pipeline organised',
+      'Bonus: you have sold, pitched or launched something before',
+    ],
+    stack: [],
+    compensation:
+      '₹1,00,000 per month on reaching the monthly target of 3 closed deals, plus 20% commission on every deal beyond that. Full terms, including pay below target, are shared with shortlisted candidates before any offer.',
+    footnote: '',
+    hiringProcess: [
+      { title: 'Apply', description: 'Your CV and a few basic details' },
+      { title: 'Written round', description: 'Shortlisted candidates receive it by email' },
+      { title: 'Interview', description: '' },
+      { title: 'Founder interview', description: '' },
+    ],
+    datePosted: CYCLE_POSTED,
+    validThrough: null,
+    applicationCap: null,
+  },
+  {
+    title: 'Product Manager Intern',
+    slug: 'product-manager-intern',
+    roleKey: 'product-manager-intern',
+    order: 2,
+    status: 'open',
+    roleKind: 'pm',
+    type: 'intern',
+    dept: 'Product',
+    location: 'Remote',
+    duration: '6 months',
+    payLine: '₹50,000/month',
+    baseSalaryMonthlyINR: 50000,
+    blurb: 'Turn what a client says into software our engineers can build.',
+    about:
+      'You will sit between our clients and our engineers. You take a client’s requirements, turn them into a clear product spec, and see the project through to delivery. You also design and spec the internal tools we build for ourselves.',
+    responsibilities: [
+      'Run requirement discussions with onboarded clients and write the PRD for each project',
+      'Own around 3 client projects a month alongside our engineers: scope, priorities, timelines and changes',
+      'Write PRDs and create mockups for our internal tools and products',
+      'Keep every client clear on what is being built and when',
+    ],
+    lookingFor: [
+      'You understand software deeply enough to write a spec an engineer can build from without guessing',
+      'You can turn a messy request into a clear scope, and say no to the rest',
+      'You can produce clean mockups (Figma or similar)',
+      'You write clearly and keep many threads organised',
+    ],
+    stack: [],
+    compensation: '₹50,000 per month, fixed.',
+    footnote: 'Start dates are confirmed at the offer stage.',
+    hiringProcess: [
+      { title: 'Apply', description: 'Your CV and a few basic details' },
+      {
+        title: 'Case assignment',
+        description: 'A short PRD and mockup task, sent by email to shortlisted candidates',
+      },
+      { title: 'Interview', description: '' },
+      { title: 'Founder interview', description: '' },
+    ],
+    datePosted: CYCLE_POSTED,
+    validThrough: null,
+    applicationCap: null,
+  },
   {
     title: 'Software Engineering Intern',
-    roleKey: 'swe-intern',
+    slug: 'software-engineering-intern',
+    roleKey: 'swe-intern', // pre-v2 key — existing applications are filed under it
+    order: 3,
+    status: 'open',
+    roleKind: 'sde',
     type: 'intern',
     dept: 'Engineering',
     location: 'Remote',
-    stipend: '₹50k / month stipend',
+    duration: '6 months',
+    payLine: '₹50,000/month',
+    baseSalaryMonthlyINR: 50000,
     blurb:
       'Build production software to a craft bar most places only talk about — and have it reviewed like it matters.',
-    active: true,
-    openApplication: false,
-    order: 1,
+    about:
+      'You will build the software we take on for our clients, from the first screen to production. Real projects, real users, and every pull request reviewed like it matters.',
+    responsibilities: [
+      'Build client projects end to end: frontend, backend and deployment',
+      'Work from PRDs written by our product team, alongside the founders',
+      'Ship to production and own what you ship',
+    ],
+    lookingFor: [
+      'Things you have actually built and shipped, with links',
+      'Clean, readable code and good judgement about trade offs',
+      'You use AI tools well and still understand every line you ship',
+    ],
+    stack: ['Next.js', 'React', 'TypeScript', 'Node.js', 'Python', 'FastAPI', 'AWS', 'Docker'],
+    compensation: '₹50,000 per month, fixed.',
+    footnote: 'Start dates are confirmed at the offer stage.',
+    hiringProcess: [
+      { title: 'Apply', description: 'Send us your CV' },
+      { title: 'Technical interview', description: '' },
+      {
+        title: 'Build test',
+        description: 'Build a small piece of software in a fixed time window, AI tools allowed',
+      },
+      { title: 'HR interview', description: '' },
+    ],
+    datePosted: CYCLE_POSTED,
+    validThrough: null,
+    applicationCap: null,
   },
   {
-    title: 'Design Intern',
-    roleKey: 'design-intern',
-    type: 'intern',
-    dept: 'Design',
-    location: 'Remote',
-    stipend: '₹50k / month stipend',
-    blurb:
-      'Design interfaces people feel, not just use. Every surface considered, every interaction intentional.',
-    active: true,
-    openApplication: false,
-    order: 2,
-  },
-  {
-    title: 'Sales Executive',
-    roleKey: 'sales-exec',
-    type: 'fullTime',
-    dept: 'Sales',
-    location: 'Remote',
-    stipend: '₹20–50k / month',
-    blurb:
-      'Bring the right clients to a studio that only takes work it can make right. Consultative, never pushy.',
-    active: true,
-    openApplication: false,
-    order: 3,
-  },
-  {
-    title: 'Exceptional / open application',
-    roleKey: 'open',
+    title: 'Open application',
+    slug: 'open-application',
+    roleKey: 'open', // pre-v2 key
+    order: 99,
+    status: 'open',
+    roleKind: 'open',
     type: 'fullTime',
     dept: 'Any',
     location: 'Remote',
-    stipend: 'By fit',
+    duration: '',
+    payLine: '',
+    baseSalaryMonthlyINR: null,
     blurb:
-      'Don’t see your role? If you’re exceptional at what you do, tell us. We hire the person, then find the shape.',
-    active: true,
-    openApplication: true,
-    order: 99,
+      'If you are exceptional at something we haven’t listed, tell us. Every open application is read by a founder.',
+    about: '',
+    responsibilities: [],
+    lookingFor: [],
+    stack: [],
+    compensation: '',
+    footnote: '',
+    hiringProcess: [],
+    datePosted: CYCLE_POSTED,
+    validThrough: null,
+    applicationCap: null,
   },
 ]
 
-export type ApplicationFieldSeed = {
-  key: string
-  label: string
-  type: 'text' | 'email' | 'url' | 'textarea' | 'select' | 'file'
-  placeholder?: string
-  required: boolean
-  options?: { label: string; value: string }[]
-}
+/** Pre-v2 roles the migration archives (never deletes). */
+export const archivedRoleKeys = ['sales-exec', 'design-intern']
+/** v1-PRD roles, archived if they were ever created. Matched by roleKey or slug. */
+export const archivedV1RoleKeys = [
+  'business-development-product-manager-intern',
+  'bd-pm-intern',
+  'bdpm-intern',
+]
 
+/** Intro line above the form — still CMS-editable via the Application Form global. */
 export const applicationForm = {
-  intro: 'Everything here stays private — read only by the team, never sold or shared.',
-  // name / email / role are always rendered first; these follow, in order.
-  fields: [
-    { key: 'college', label: 'College / University', type: 'text', placeholder: 'Where you study or studied', required: false },
-    { key: 'year', label: 'Year / graduation', type: 'text', placeholder: 'e.g. 3rd year, or 2027', required: false },
-    { key: 'portfolioUrl', label: 'GitHub or portfolio URL', type: 'url', placeholder: 'https://', required: false },
-    { key: 'resume', label: 'Résumé (PDF)', type: 'file', required: true },
-    { key: 'why', label: 'Why Isocode?', type: 'textarea', placeholder: 'A few honest lines — what draws you here, and what you’ve made.', required: false },
-  ] as ApplicationFieldSeed[],
+  intro: 'Everything here stays private — read only by the founders, never sold or shared.',
 }
