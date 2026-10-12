@@ -119,6 +119,44 @@ export const ctaContent = {
   ],
 }
 
+/**
+ * FAQ — the objections a serious buyer has before they write in. Answers are
+ * commitments, so keep them true: edit here (code-side, not in the CMS).
+ */
+export const faqContent = {
+  eyebrow: 'Questions',
+  heading: 'Before you ask.',
+  intro: 'The short answers. For anything else, ask us directly.',
+  askLabel: 'Ask us directly',
+  items: [
+    {
+      q: 'What does a project cost?',
+      a: 'It depends on scope, so there is no price list. Once we understand your business, you get a clear written estimate before any work begins.',
+    },
+    {
+      q: 'How long does it take?',
+      a: 'It depends on the scope. We agree the timeline in writing before we start, and tell you early if anything shifts.',
+    },
+    {
+      q: 'Who owns the code and the design?',
+      a: 'You do. Everything we build for you — code, design and content — is yours, handed over at launch.',
+    },
+    {
+      q: 'Who will I actually work with?',
+      a: 'The founders and a small team, directly. No account managers, no hand-offs — you talk to the people building it.',
+    },
+    {
+      q: 'What if we disagree on something in the final product?',
+      a: 'We make sure it never comes to that. You’re kept informed at every stage — from design to choosing features — so you shape each decision, everyone stays on the same page, and the final product holds no surprises.',
+    },
+    {
+      q: 'Is the information I share kept private?',
+      a: 'Yes. We use what you send only to reply to you. No ad tracking, no cookies, nothing sold or shared.',
+      link: { label: 'Read the privacy policy', href: '/privacy' },
+    },
+  ] as Array<{ q: string; a: string; link?: { label: string; href: string } }>,
+}
+
 export const aboutContent = {
   heading: 'About',
   body: [

@@ -5,7 +5,9 @@ import { Hero } from '@/components/hero/Hero'
 import { Problem } from '@/components/sections/Problem'
 import { WhatWeBuild } from '@/components/sections/WhatWeBuild'
 import { Labs } from '@/components/sections/Labs'
+import { Faq } from '@/components/sections/Faq'
 import { CtaQuiz } from '@/components/sections/CtaQuiz'
+import { faqContent } from '@/lib/seed-data'
 import { About } from '@/components/sections/About'
 import { Footer } from '@/components/site/Footer'
 
@@ -42,6 +44,7 @@ export default async function HomePage() {
             body={content.labs.body}
             products={content.labs.products}
           />
+          <Faq {...faqContent} contactEmail={content.contact.email} />
           <CtaQuiz
             heading={content.cta.heading}
             body={content.cta.body}
