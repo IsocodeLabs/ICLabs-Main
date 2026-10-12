@@ -18,6 +18,7 @@ import { Founders } from '@/collections/Founders'
 import { JobOpenings } from '@/collections/JobOpenings'
 import { Applications } from '@/collections/Applications'
 import { Resumes } from '@/collections/Resumes'
+import { CareersAuditLog } from '@/collections/CareersAuditLog'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { Homepage } from '@/globals/Homepage'
 import { ApplicationForm } from '@/globals/ApplicationForm'
@@ -31,6 +32,17 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: {
       titleSuffix: ' — ISOCODELABS Admin',
+    },
+    components: {
+      // careers screening desk (hiring cycle v2)
+      views: {
+        screening: {
+          Component: '/components/admin/screening/ScreeningView#ScreeningView',
+          path: '/screening',
+        },
+      },
+      beforeNavLinks: ['/components/admin/screening/ScreeningNavLink#ScreeningNavLink'],
+      beforeDashboard: ['/components/admin/screening/CareersDashboard#CareersDashboard'],
     },
   },
   collections: [
@@ -49,6 +61,7 @@ export default buildConfig({
     JobOpenings,
     Applications,
     Resumes,
+    CareersAuditLog,
   ],
   globals: [SiteSettings, Homepage, ApplicationForm],
   editor: lexicalEditor(),
@@ -57,8 +70,14 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
+    // One pool per Cloud Run instance (Payload caches the instance across
+    // requests). Keep DB_POOL_MAX × Cloud Run max instances under Cloud SQL's
+    // max_connections — see docs/careers-runbook.md.
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      max: Number(process.env.DB_POOL_MAX) || 10,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
     },
   }),
   sharp,
