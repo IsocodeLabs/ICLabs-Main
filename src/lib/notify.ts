@@ -1,8 +1,8 @@
 import { Resend } from 'resend'
 
 /**
- * Founder notification emails — fired from collection afterChange hooks when a
- * new lead or application comes in. Best-effort only: a failed send must never
+ * Founder notification emails — contact/quiz leads (afterChange hooks) and the
+ * daily careers digest (cron). Best-effort only: a failed send must never
  * fail the actual DB write, so every call site wraps this and swallows errors.
  *
  * Needs RESEND_API_KEY in the environment; sends nothing (silently, by design)
@@ -63,19 +63,26 @@ export function leadNotificationHtml(opts: {
     <p style="font-family:sans-serif;font-size:13px;color:#888">Full detail — including quiz answers — is in the admin under Ops → Lead Submissions.</p>`
 }
 
-export function applicationNotificationHtml(opts: {
-  name: string
-  email: string
-  roleTitle: string
-  college?: string
-  portfolioUrl?: string
+/** Founders' daily careers digest — counts only (no applicant PII in email). */
+export function careersDigestHtml(opts: {
+  since: string
+  rows: { title: string; last24h: number; total: number; shortlisted: number; status: string }[]
+  adminUrl: string
 }): string {
-  return `<h2 style="font-family:sans-serif">New application — ${escapeHtml(opts.roleTitle || 'Careers')}</h2>
-    <table style="font-family:sans-serif;font-size:14px">
-      ${row('Name', opts.name)}
-      ${row('Email', opts.email)}
-      ${row('College', opts.college ?? '')}
-      ${row('Portfolio', opts.portfolioUrl ?? '')}
+  const total24 = opts.rows.reduce((s, r) => s + r.last24h, 0)
+  const cells = opts.rows
+    .map(
+      (r) =>
+        `<tr><td style="padding:6px 16px 6px 0">${escapeHtml(r.title)}</td><td style="padding:6px 16px 6px 0;color:#666">${escapeHtml(
+          r.status,
+        )}</td><td style="padding:6px 16px 6px 0;text-align:right"><b>${r.last24h}</b></td><td style="padding:6px 16px 6px 0;text-align:right">${r.total}</td><td style="padding:6px 0;text-align:right">${r.shortlisted}</td></tr>`,
+    )
+    .join('')
+  return `<h2 style="font-family:sans-serif">Careers — ${total24} new application${total24 === 1 ? '' : 's'} in the last 24 hours</h2>
+    <table style="font-family:sans-serif;font-size:14px;border-collapse:collapse">
+      <tr style="color:#888;font-size:12px;text-align:left"><th style="padding:0 16px 6px 0">Role</th><th style="padding:0 16px 6px 0">Status</th><th style="padding:0 16px 6px 0">Last 24h</th><th style="padding:0 16px 6px 0">This cycle</th><th style="padding:0 0 6px">Shortlisted</th></tr>
+      ${cells}
     </table>
-    <p style="font-family:sans-serif;font-size:13px;color:#888">Résumé and full detail are in the admin under Careers → Applications.</p>`
+    <p style="font-family:sans-serif;font-size:14px"><a href="${escapeHtml(opts.adminUrl)}">Open the screening view →</a></p>
+    <p style="font-family:sans-serif;font-size:12px;color:#888">Since ${escapeHtml(opts.since)}. Applicant details stay in the admin.</p>`
 }

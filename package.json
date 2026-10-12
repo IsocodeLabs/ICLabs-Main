@@ -14,14 +14,17 @@
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",
     "seed": "tsx --env-file=.env scripts/seed.ts",
-    "prep:assets": "node scripts/prep-assets.mjs"
+    "prep:assets": "node scripts/prep-assets.mjs",
+    "careers:migrate": "tsx --env-file=.env scripts/careers-v2-migrate.ts"
   },
   "dependencies": {
+    "@google-cloud/storage": "^8.4.0",
     "@payloadcms/db-postgres": "^3.0.0",
     "@payloadcms/next": "^3.0.0",
     "@payloadcms/plugin-seo": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
     "cross-env": "^7.0.3",
+    "fflate": "^0.8.3",
     "graphql": "^16.9.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.17",

@@ -31,6 +31,11 @@ export function CareersRoleProvider({
 
   const chooseRole = (roleKey: string) => {
     setRole(roleKey)
+    try {
+      history.replaceState(null, '', '#apply')
+    } catch {
+      // ignore
+    }
     applyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -39,6 +44,11 @@ export function CareersRoleProvider({
       {children}
     </CareersRoleContext.Provider>
   )
+}
+
+/** For components that also render outside the provider (the role pages' locked form). */
+export function useOptionalCareersRole() {
+  return useContext(CareersRoleContext)
 }
 
 export function useCareersRole() {
