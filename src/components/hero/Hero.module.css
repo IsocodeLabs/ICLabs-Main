@@ -179,7 +179,7 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(78% 42% at 50% 22%, rgba(245, 241, 234, 0.66) 0%, transparent 62%),
+    radial-gradient(78% 42% at 50% 40%, rgba(245, 241, 234, 0.66) 0%, transparent 62%),
     radial-gradient(70% 40% at 50% 52%, rgba(245, 241, 234, 0.44) 0%, transparent 66%);
 }
 
@@ -195,10 +195,11 @@
   position: absolute;
   inset: 0;
   display: grid;
-  align-content: start;
+  /* centred in the screen — the copy is short enough to sit in the middle */
+  align-content: center;
   justify-items: center;
   text-align: center;
-  padding-top: max(14vh, 96px);
+  padding-block: max(10vh, 80px);
   padding-inline: var(--gutter);
 }
 
@@ -287,7 +288,8 @@
   }
 
   .intro {
-    padding-top: max(11vh, 72px);
+    align-content: start;
+    padding-block: max(11vh, 72px) 0;
     justify-items: start;
     text-align: left;
   }
