@@ -48,12 +48,15 @@ export default async function HomePage() {
             quizLabel={content.cta.quizLabel}
             hatchLabel={content.cta.hatchLabel}
             contactEmail={content.contact.email}
+            stepsLabel={content.cta.stepsLabel}
+            steps={content.cta.steps}
           />
           <About
             heading={content.about.heading}
             body={content.about.body}
             teamLine={content.about.teamLine}
             contactHeading={content.about.contactHeading}
+            founders={content.founders}
           />
         </main>
         <Footer

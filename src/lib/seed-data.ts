@@ -109,6 +109,14 @@ export const ctaContent = {
   body: 'Five questions, one minute. We reply only if we can do it properly.',
   quizLabel: 'Start a project',
   hatchLabel: 'Or email us directly',
+  // what happens after you submit — the promise, in order. The response window
+  // (2 working days) is a commitment: change it here and only here.
+  stepsLabel: 'What happens next',
+  steps: [
+    { title: 'We read it', body: 'A person on the team reads every submission.' },
+    { title: 'We reply in 2 working days', body: 'If it’s a fit, you hear from us.' },
+    { title: 'A call, no pitch', body: 'A conversation about your business, not a script.' },
+  ],
 }
 
 export const aboutContent = {
@@ -160,7 +168,7 @@ export const foundersContent = [
   {
     name: 'Devansh Mishra',
     title: 'Co-founder',
-    photo: '/assets/about/founder-2.jpg',
+    photo: '/assets/about/founder-2.webp',
     eduLine: 'B.Tech + M.Tech, IIT Kharagpur',
     socials: [] as Array<{ platform: string; url: string }>,
     order: 2,

@@ -40,6 +40,30 @@ export type SiteContent = {
   footer: typeof footerContent
   contact: typeof contactChannels
   seo: typeof siteSEO
+  founders: Founder[]
+}
+
+/** CMS founder docs → render shape, falling back per-field to the seed deck. */
+function toFounders(
+  docs: Array<{
+    name: string
+    title?: string | null
+    photo?: unknown
+    eduLine?: string | null
+    socials?: Array<{ platform: string; url?: string | null }> | null
+  }>,
+  fallback: Founder[],
+): Founder[] {
+  if (docs.length === 0) return fallback
+  return docs.map((f, i) => ({
+    name: f.name,
+    title: f.title ?? 'Co-founder',
+    photo: mediaURL(f.photo, fallback[i % fallback.length]?.photo ?? ''),
+    eduLine: f.eduLine ?? '',
+    socials: (f.socials ?? [])
+      .filter((s) => Boolean(s.url))
+      .map((s) => ({ platform: s.platform, url: s.url as string })),
+  }))
 }
 
 const mediaURL = (img: unknown, fallback: string): string => {
@@ -63,11 +87,12 @@ export async function getSiteContent(): Promise<SiteContent> {
     footer: footerContent,
     contact: contactChannels,
     seo: siteSEO,
+    founders: foundersContent,
   }
 
   try {
     const payload = await getPayload({ config })
-    const [home, settings, products, stats, values, quotes] = await Promise.all([
+    const [home, settings, products, stats, values, quotes, founders] = await Promise.all([
       payload.findGlobal({ slug: 'homepage' }),
       payload.findGlobal({ slug: 'site-settings' }),
       payload.find({
@@ -85,6 +110,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         sort: 'order',
         limit: 50,
       }),
+      payload.find({ collection: 'founders', sort: 'order', depth: 1, limit: 12 }),
     ])
 
     const seeded = Boolean(home?.hero?.beliefLine)
@@ -151,6 +177,8 @@ export async function getSiteContent(): Promise<SiteContent> {
         body: home.cta?.body ?? fallback.cta.body,
         quizLabel: home.cta?.quizLabel ?? fallback.cta.quizLabel,
         hatchLabel: home.cta?.hatchLabel ?? fallback.cta.hatchLabel,
+        stepsLabel: fallback.cta.stepsLabel,
+        steps: fallback.cta.steps,
       },
       about: {
         heading: home.about?.heading ?? fallback.about.heading,
@@ -194,6 +222,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         metaTitle: settings?.defaultSEO?.metaTitle ?? fallback.seo.metaTitle,
         metaDescription: settings?.defaultSEO?.metaDescription ?? fallback.seo.metaDescription,
       },
+      founders: toFounders(founders.docs, fallback.founders),
     }
   } catch {
     return fallback
@@ -246,21 +275,7 @@ export async function getAboutPageContent(): Promise<AboutPageContent> {
               order: v.order ?? i,
             }))
           : fallback.values,
-      founders:
-        founders.docs.length > 0
-          ? founders.docs.map((f, i) => ({
-              name: f.name,
-              title: f.title ?? 'Co-founder',
-              photo: mediaURL(f.photo, fallback.founders[i % fallback.founders.length]?.photo ?? ''),
-              eduLine: f.eduLine ?? '',
-              socials: (f.socials ?? [])
-                .filter((s: { url?: string }) => Boolean(s.url))
-                .map((s: { platform: string; url: string }) => ({
-                  platform: s.platform,
-                  url: s.url,
-                })),
-            }))
-          : fallback.founders,
+      founders: toFounders(founders.docs, fallback.founders),
       contact: {
         email: settings?.contactChannels?.email ?? fallback.contact.email,
         phone: settings?.contactChannels?.phone ?? fallback.contact.phone,

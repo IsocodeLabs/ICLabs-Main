@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Section } from '@/components/site/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
@@ -10,13 +11,14 @@ type AboutProps = {
   body: string[]
   teamLine: string
   contactHeading: string
+  founders?: Array<{ name: string; title: string; photo: string; eduLine: string }>
 }
 
 /**
- * About — one line of who, one line of how, then the small way in for a
- * question. The values live on /about; this is the teaser.
+ * About — one line of who, one line of how, the people behind it, then the
+ * small way in for a question. The values live on /about; this is the teaser.
  */
-export function About({ heading, body, teamLine, contactHeading }: AboutProps) {
+export function About({ heading, body, teamLine, contactHeading, founders = [] }: AboutProps) {
   return (
     <Section
       id="about"
@@ -63,6 +65,33 @@ export function About({ heading, body, teamLine, contactHeading }: AboutProps) {
               <AboutContact />
             </div>
           </div>
+
+          {founders.length > 0 && (
+            <div className={styles.foundersRow}>
+              <span className={`mono-label ${styles.foundersLabel}`}>The people</span>
+              <ul className={styles.foundersList}>
+                {founders.map((f) => (
+                  <li key={f.name} className={styles.founder}>
+                    <div className={styles.founderPhoto}>
+                      <Image
+                        src={f.photo}
+                        alt={f.name}
+                        width={352}
+                        height={352}
+                        sizes="176px"
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    </div>
+                    <div className={styles.founderMeta}>
+                      <span className={styles.founderName}>{f.name}</span>
+                      <span className={`mono-label ${styles.founderRole}`}>{f.title}</span>
+                      {f.eduLine && <span className={styles.founderEdu}>{f.eduLine}</span>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </Reveal>
       </div>
     </Section>

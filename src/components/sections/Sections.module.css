@@ -354,6 +354,60 @@
   margin-top: var(--sp-16);
 }
 
+/* what happens after you submit */
+.ctaSteps {
+  width: 100%;
+  margin-top: var(--sp-32);
+  padding-top: var(--sp-32);
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: var(--sp-24);
+  text-align: left;
+}
+
+.ctaStepsLabel {
+  color: var(--fg-muted);
+  text-align: center;
+}
+
+.ctaStepList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-24) var(--sp-32);
+}
+
+.ctaStep {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+}
+
+.ctaStepNum {
+  color: var(--fg-muted);
+}
+
+.ctaStepTitle {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-21);
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+
+.ctaStepBody {
+  color: var(--fg-muted);
+  font-size: var(--fs-14);
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .ctaStepList {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- About ---------- */
 
 .aboutGrid {
@@ -361,6 +415,75 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--sp-96);
   align-items: start;
+}
+
+/* the people behind it — two founders, quietly, inside the About panel */
+.foundersRow {
+  margin-top: var(--sp-48);
+  padding-top: var(--sp-32);
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: var(--sp-24);
+}
+
+.foundersLabel {
+  color: var(--fg-muted);
+}
+
+.foundersList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-24) var(--sp-48);
+}
+
+.founder {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-24);
+  min-width: 0;
+}
+
+.founderPhoto {
+  flex: 0 0 clamp(120px, 12vw, 176px);
+  width: clamp(120px, 12vw, 176px);
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+}
+
+.founderMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  min-width: 0;
+}
+
+.founderName {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-title);
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.founderRole {
+  color: var(--fg-muted);
+}
+
+.founderEdu {
+  font-size: var(--fs-16);
+  color: var(--fg);
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .foundersList {
+    grid-template-columns: 1fr;
+  }
 }
 
 .teamLine {
