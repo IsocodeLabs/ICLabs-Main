@@ -598,9 +598,10 @@ export const legalPages: LegalPage[] = [
 /* ────────────────────────────────────────────────────────────────────────────
    Careers — the dark "craftsmanship at work" world (v3.4), Oct 2026 hiring
    cycle (v2). Copy is seed-fallback-safe; the CMS wins once roles exist there.
-   Role copy is transcribed exactly from the hiring-cycle PRD. The Business
-   Growth pay text stays in full here and on the role page; only the role card
-   shows a short form (cardPayLine in lib/careers/content.ts).
+   Public copy states no percentages, targets or conditions for pay, and the
+   PM / SDE descriptions stay generic (exact work is discussed in interviews).
+   The Business Growth pay line stays in full here and on the role page; only
+   the role card shows a short form (cardPayLine in lib/careers/content.ts).
    ──────────────────────────────────────────────────────────────────────────── */
 
 export const careersContent = {
@@ -678,7 +679,7 @@ export const careerRoles: CareerRoleSeed[] = [
     dept: 'Growth',
     location: 'Remote',
     duration: '6 months',
-    payLine: '₹1,00,000/month at target + 20% commission beyond',
+    payLine: 'Up to ₹1,00,000 per month + uncapped commissions',
     baseSalaryMonthlyINR: null,
     blurb: 'Find clients for our software and take them to an agreed price.',
     about:
@@ -687,7 +688,7 @@ export const careerRoles: CareerRoleSeed[] = [
       'Study the proposal document for your assigned industry until you can pitch it cold',
       'Find and qualify leads yourself',
       'Reach out by phone, email, WhatsApp and LinkedIn',
-      'Run discovery calls and take serious leads to an agreed price (projects start at ₹1.2 lakh)',
+      'Run discovery calls and take serious leads to an agreed price',
       'Hand the client over to the founders at the final meeting for signing',
     ],
     lookingFor: [
@@ -697,8 +698,7 @@ export const careerRoles: CareerRoleSeed[] = [
       'Bonus: you have sold, pitched or launched something before',
     ],
     stack: [],
-    compensation:
-      '₹1,00,000 per month on reaching the monthly target of 3 closed deals, plus 20% commission on every deal beyond that. Full terms, including pay below target, are shared with shortlisted candidates before any offer.',
+    compensation: 'Up to ₹1,00,000 per month + uncapped commissions',
     footnote: '',
     hiringProcess: [
       { title: 'Apply', description: 'Your CV and a few basic details' },
@@ -723,14 +723,14 @@ export const careerRoles: CareerRoleSeed[] = [
     duration: '6 months',
     payLine: '₹50,000/month',
     baseSalaryMonthlyINR: 50000,
-    blurb: 'Turn client requirements into specs our engineers can build.',
+    blurb: 'Help shape what we build and how it gets built.',
     about:
-      'You will sit between our clients and our engineers. You take a client’s requirements, turn them into a clear product spec, and see the project through to delivery. You also design and spec the internal tools we build for ourselves.',
+      'You will work with the founders and our engineers to shape products, from the first idea to delivery. The exact scope of the work is discussed during the interviews.',
     responsibilities: [
-      'Run requirement discussions with onboarded clients and write the PRD for each project',
-      'Own around 3 client projects a month alongside our engineers: scope, priorities, timelines and changes',
-      'Write PRDs and create mockups for our internal tools and products',
-      'Keep every client clear on what is being built and when',
+      'Turn ideas and requirements into clear product direction',
+      'Write specs and create mockups',
+      'Set priorities and keep work moving on schedule',
+      'Work closely with engineering and the founders',
     ],
     lookingFor: [
       'You understand software deeply enough to write a spec an engineer can build from without guessing',
@@ -767,12 +767,12 @@ export const careerRoles: CareerRoleSeed[] = [
     duration: '6 months',
     payLine: '₹50,000/month',
     baseSalaryMonthlyINR: 50000,
-    blurb: 'Build production software for clients. Every pull request is reviewed.',
+    blurb: 'Build and ship software end to end. Every pull request is reviewed.',
     about:
-      'You will build the software we take on for our clients, from the first screen to production. Real projects with real users, and every pull request is reviewed.',
+      'You will build and ship software end to end, from the first screen to production, and own what you ship. The exact scope of the work is discussed during the interviews.',
     responsibilities: [
-      'Build client projects end to end: frontend, backend and deployment',
-      'Work from PRDs written by our product team, alongside the founders',
+      'Build features end to end: frontend, backend and deployment',
+      'Work from clear specs, alongside product and the founders',
       'Ship to production and own what you ship',
     ],
     lookingFor: [

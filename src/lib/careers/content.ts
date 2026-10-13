@@ -96,11 +96,12 @@ export async function getCareerRole(slug: string): Promise<CareerRole | null> {
 }
 
 /**
- * The pay line on a role card. Business Growth's full line (target + commission
- * terms) stays on its role page and in the data; the card carries a short form.
+ * The pay line on a role card. Business Growth's full line stays on its role
+ * page and in the data; the card carries a short form. Public pay copy never
+ * states percentages, targets or other conditions.
  */
 export const cardPayLine = (role: CareerRole) =>
-  role.roleKind === 'growth' ? '₹1 lakh/month + commission' : role.payLine
+  role.roleKind === 'growth' ? 'Up to ₹1 lakh/month + commissions' : role.payLine
 
 /** Named roles that show a card: open + paused (closed/archived are hidden). */
 export const visibleRoleCards = (roles: CareerRole[]) =>
