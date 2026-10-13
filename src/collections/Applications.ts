@@ -34,7 +34,7 @@ export const Applications: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Careers',
-    defaultColumns: ['name', 'roleTitle', 'college', 'gradYear', 'rating', 'stage', 'createdAt'],
+    defaultColumns: ['name', 'email', 'phone', 'roleTitle', 'college', 'gradYear', 'rating', 'stage', 'createdAt'],
     listSearchableFields: ['name', 'email', 'college'],
     pagination: { defaultLimit: 50 },
     description: 'For fast screening use the Screening view (left nav → Screening).',
