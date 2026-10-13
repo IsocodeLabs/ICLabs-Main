@@ -12,10 +12,13 @@ COPY . .
 # pass them as build args / Cloud Build substitutions.
 ARG DATABASE_URI
 ARG PAYLOAD_SECRET
-ARG NEXT_PUBLIC_SERVER_URL
-# careers: compiled into the browser bundle, so they must be present at build
-ARG NEXT_PUBLIC_CAREERS_URL
-ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+# NEXT_PUBLIC_* are compiled into the browser bundle, so they must be present at
+# build. They are public by design (the Turnstile *site* key is meant to be in
+# the page), and the Cloud Build trigger passes no build args, so the production
+# values are the defaults here. Override with --build-arg for staging.
+ARG NEXT_PUBLIC_SERVER_URL=https://isocodelabs.com
+ARG NEXT_PUBLIC_CAREERS_URL=https://careers.isocodelabs.com
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAFVJZSS5aBTwz70g
 ENV DATABASE_URI=$DATABASE_URI \
     PAYLOAD_SECRET=$PAYLOAD_SECRET \
     NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL \
