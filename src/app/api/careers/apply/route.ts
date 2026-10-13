@@ -31,13 +31,27 @@ async function findExisting(payload: Payload, submissionId: string, dedupeKey?: 
     limit: 2,
     depth: 0,
     overrideAccess: true,
-    select: { submissionId: true, dedupeKey: true },
+    select: { submissionId: true, dedupeKey: true, role: true },
   })
+  const same = res.docs.find((d) => d.submissionId === submissionId)
   return {
-    sameSubmission: res.docs.some((d) => d.submissionId === submissionId),
+    sameSubmission: Boolean(same),
+    /** the role that submission id was recorded against */
+    submissionRole: same?.role ?? null,
     duplicate: res.docs.some((d) => dedupeKey && d.dedupeKey === dedupeKey),
   }
 }
+
+/** A submission id that was made for another role is never "received" for this one. */
+const submissionConflict = () =>
+  json(
+    {
+      ok: false,
+      code: 'submission_conflict',
+      error: 'Your form was out of date. Please refresh the page and send your application again.',
+    },
+    409,
+  )
 
 /**
  * Step 2: the application itself. Does only: validate → check the uploaded
@@ -92,8 +106,11 @@ export async function POST(req: Request) {
     }
 
     // a resend of a submission that already went through → original success
-    if ((await findExisting(payload, submissionId)).sameSubmission) {
-      return json({ ok: true, repeat: true })
+    const prior = await findExisting(payload, submissionId)
+    if (prior.sameSubmission) {
+      return prior.submissionRole === String(body.role || '')
+        ? json({ ok: true, repeat: true })
+        : submissionConflict()
     }
 
     const { role, error: roleError } = await findOpenRole(payload, String(body.role || ''))
@@ -165,7 +182,9 @@ export async function POST(req: Request) {
     } catch (err) {
       // lost a race with a concurrent identical request? resolve by what's stored
       const existing = await findExisting(payload, submissionId, dedupeKey)
-      if (existing.sameSubmission) return json({ ok: true, repeat: true })
+      if (existing.sameSubmission) {
+        return existing.submissionRole === role.roleKey ? json({ ok: true, repeat: true }) : submissionConflict()
+      }
       if (existing.duplicate) {
         // the copied CV belongs to no application — remove it again
         void storage.remove(finalKey).catch(() => {})

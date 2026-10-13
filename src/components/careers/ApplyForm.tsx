@@ -42,7 +42,7 @@ type UploadState =
   | { status: 'done'; fileName: string; objectKey: string; ticket: string }
   | { status: 'error'; fileName: string; message: string }
 
-type Saved = { fields: ApplicationInput; submissionId?: string }
+type Saved = { fields: ApplicationInput; submissionId?: string; role?: string }
 
 function loadSaved(): Saved | null {
   try {
@@ -133,7 +133,8 @@ export function ApplyForm({
   const [done, setDone] = useState(false)
   const [announce, setAnnounce] = useState('')
 
-  const submissionIdRef = useRef<string | undefined>(undefined)
+  // a submission id is only ever reused for the role it was created for
+  const submissionIdRef = useRef<{ id: string; role: string } | undefined>(undefined)
   const submittingRef = useRef(false) // state lags a fast double click; the ref doesn't
   const uploadPromiseRef = useRef<Promise<UploadState> | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -148,14 +149,16 @@ export function ApplyForm({
     const saved = loadSaved()
     if (saved) {
       setFields(saved.fields ?? {})
-      submissionIdRef.current = saved.submissionId
+      if (saved.submissionId && saved.role) {
+        submissionIdRef.current = { id: saved.submissionId, role: saved.role }
+      }
     }
   }, [])
 
   // persist answers (never the file)
   useEffect(() => {
     if (!restoredRef.current || done) return
-    save({ fields, submissionId: submissionIdRef.current })
+    save({ fields, submissionId: submissionIdRef.current?.id, role: submissionIdRef.current?.role })
   }, [fields, done])
 
   const set = (key: keyof ApplicationInput, value: string | boolean) => {
@@ -266,9 +269,13 @@ export function ApplyForm({
         return
       }
 
-      if (!submissionIdRef.current) {
-        submissionIdRef.current = uuid()
-        save({ fields, submissionId: submissionIdRef.current })
+      // a draft made for another role (the role was switched, or an earlier attempt
+      // went to a different role) gets a fresh id, so it can't collide with that one
+      let current = submissionIdRef.current
+      if (current?.role !== roleKey) {
+        current = { id: uuid(), role: roleKey }
+        submissionIdRef.current = current
+        save({ fields, submissionId: current.id, role: roleKey })
       }
       const honeypot = (formRef.current?.elements.namedItem('website') as HTMLInputElement | null)?.value ?? ''
 
@@ -276,7 +283,7 @@ export function ApplyForm({
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          submissionId: submissionIdRef.current,
+          submissionId: current.id,
           role: roleKey,
           objectKey: up.objectKey,
           ticket: up.ticket,
@@ -303,6 +310,10 @@ export function ApplyForm({
       }
       if (data.code === 'duplicate') {
         clearSaved()
+        submissionIdRef.current = undefined
+      }
+      if (data.code === 'submission_conflict') {
+        // our saved id is from another role: start over with a new one next time
         submissionIdRef.current = undefined
       }
       setFormError(data.error || 'Something went wrong on our side — your answers are saved. Please try again.')
