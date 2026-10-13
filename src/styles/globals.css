@@ -71,8 +71,20 @@ button {
   padding: 0;
 }
 
+/* Text selection: a solid, unmistakable highlight in the house monochrome —
+   ink on the paper pages, paper on dark (.theme-ink) surfaces like careers and
+   the footer. (Was ink at 16% alpha: faint on paper, invisible on dark.) */
 ::selection {
-  background: rgba(20, 18, 16, 0.16);
+  background: var(--ink);
+  color: var(--paper);
+  text-shadow: none;
+}
+
+.theme-ink ::selection,
+.theme-midnight ::selection {
+  background: var(--paper);
+  color: var(--ink);
+  text-shadow: none;
 }
 
 :focus-visible {
