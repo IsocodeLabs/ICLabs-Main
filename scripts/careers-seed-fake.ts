@@ -55,7 +55,7 @@ async function run() {
        'qa' || g || '@example.test',
        '+9190000' || lpad(g::text, 5, '0'),
        (ARRAY['business-growth-intern','product-manager-intern','swe-intern','open'])[1 + g % 4],
-       (ARRAY['Business Growth Intern','Product Manager Intern','Software Engineering Intern','Open application'])[1 + g % 4],
+       (ARRAY['Business Growth Intern','Product Management Intern','Software Engineering Intern','Open application'])[1 + g % 4],
        'qa-fake',
        (ARRAY['applied','applied','applied','applied','shortlisted','rejected','in_process'])[1 + g % 7]::enum_applications_stage,
        CASE WHEN g % 3 = 0 THEN 1 + g % 5 ELSE NULL END,

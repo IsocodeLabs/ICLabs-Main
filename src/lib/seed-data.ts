@@ -305,7 +305,7 @@ export const footerContent = {
   copyright: '© Isocode Labs',
   hiring: {
     // keep in step with careerRoles below (the open named roles)
-    text: 'We’re hiring a Business Growth Intern, a Product Manager Intern and a Software Engineering Intern. Remote.',
+    text: 'We’re hiring a Business Growth Intern, a Product Management Intern and a Software Engineering Intern. Remote.',
     label: 'See open roles →',
     href: 'https://careers.isocodelabs.com',
   },
@@ -711,7 +711,7 @@ export const careerRoles: CareerRoleSeed[] = [
     applicationCap: null,
   },
   {
-    title: 'Product Manager Intern',
+    title: 'Product Management Intern',
     slug: 'product-manager-intern',
     roleKey: 'product-manager-intern',
     order: 2,
