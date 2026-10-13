@@ -22,6 +22,19 @@ This file is the go-live checklist. Do the steps in order and tick them off. [`d
 
 ---
 
+## Image caching: one Cloudflare setting
+
+The site's art is served from content-hashed URLs under `/_next/static/media/` with `Cache-Control: public, max-age=31536000, immutable`. Browsers keep these files for a year and never re-request them. Optimized photos and logos (`/_next/image?...`) are cached for 30 days, and plain `/public` files for 7 days.
+
+Cloudflare only edge-caches URLs it treats as static, and `/_next/image?...` has no file extension. Today it shows `cf-cache-status: DYNAMIC`, so every Cloud Run instance re-encodes those images. Add one **Cache Rule** in the Cloudflare dashboard (Caching → Cache Rules) for isocodelabs.com:
+
+- **When:** URI Path starts with `/_next/image` **or** URI Path starts with `/_next/static/`
+- **Then:** Eligible for cache. Edge TTL: use the cache-control header from the origin. Browser TTL: respect origin.
+
+Check it afterwards: `curl -sI "https://isocodelabs.com/_next/static/media/<any art file>"` should show `cf-cache-status: HIT` on the second request.
+
+---
+
 ## 0. Where things stand
 
 **Done and verified locally (dev server + local Postgres):**
@@ -258,7 +271,7 @@ gcloud storage rm -r "gs://isocode-careers-cvs-staging/**"  # keep the empty buc
 
 Use a real browser on careers.isocodelabs.com, preferably one desktop and one phone.
 
-- [ ] `/` shows 3 role cards in order (Business Growth, Product Manager, Software Engineering), the Open Application section below them, and no Sales Executive or Design Intern
+- [ ] `/` shows 3 role cards in order (Business Growth, Product Management, Software Engineering), the Open Application section below them, and no Sales Executive or Design Intern
 - [ ] The Business Growth card reads **"₹1 lakh/month + commission"**, and its role page shows the full line **"₹1,00,000/month at target + 20% commission beyond"** (cards are short on purpose: title, pay, one fact row)
 - [ ] Each `/roles/<slug>` page loads with About, What you'll do, What we look for, Compensation and the hiring stepper; `/roles/sales-exec` returns 404
 - [ ] Submit one real test application per kind (growth, pm, sde, open) with a real PDF. You get the success message, and a second try with the same email + role gets the "You've already applied…" message

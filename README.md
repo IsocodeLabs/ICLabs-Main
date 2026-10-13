@@ -65,6 +65,13 @@ get the still with no scroll theatre.
   builds the static/mobile composites. Source art is never modified.
 - `scripts/gen-placeholders.py` — placeholder quiz tiles + OG image.
 
+### Images (keep the site fast)
+
+- **Big art** (hero layers, page backgrounds) is pre-encoded by `node scripts/build-art.mjs` into `src/assets/art/` as AVIF plus a WebP fallback. Components import it, so it's served content-hashed and cached for a year. To change art, replace the master under `public/assets/...`, re-run the script, and commit both.
+- **Device-specific art** is chosen in CSS (media queries on `display`) or with a `<picture>` `media` source, never in JS. That way a phone never downloads desktop art, and the reverse.
+- **Photos and logos** go through `next/image` with a correct `sizes` prop. The optimized copies are cached for 30 days.
+- **Files served straight from `/public`** are cached for 7 days. When you replace one, give it a new filename so it rolls out immediately.
+
 ## Still to generate (placeholders in place)
 
 Per `isocodelabs-asset-manifest.md` / `isocodelabs-asset-prompts.md`:

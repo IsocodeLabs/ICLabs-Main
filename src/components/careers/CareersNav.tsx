@@ -20,7 +20,7 @@ export function CareersNav() {
   return (
     <nav className={`${styles.nav} ${glass.glass} ${glass.dark}`} aria-label="Careers">
       <a href={careersHref('/')} className={styles.brand} aria-label="Isocode Careers">
-        <Image src={monogram} alt="" className={styles.mark} priority />
+        <Image src={monogram} alt="" className={styles.mark} sizes="20px" priority />
         <span className={styles.name}>ISOCODE · CAREERS</span>
       </a>
       <ul className={styles.links}>

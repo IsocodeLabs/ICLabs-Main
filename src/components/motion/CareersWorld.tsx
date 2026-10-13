@@ -1,7 +1,12 @@
 'use client'
 
 import { useIsDesktop, useMotionTier } from '@/lib/capability'
+import { artVars } from '@/lib/art'
+import baseAvif from '@/assets/art/careers-base.avif'
+import baseWebp from '@/assets/art/careers-base.webp'
 import styles from './CareersWorld.module.css'
+
+const ART = artVars({ 'careers-base': { avif: baseAvif, webp: baseWebp } })
 
 /**
  * The Careers world — the dark "craftsmanship at work" atelier. Same anchor-world
@@ -18,7 +23,7 @@ export function CareersWorld() {
   const still = tier === 'static' || !isDesktop
 
   return (
-    <div aria-hidden className={`${styles.root} ${still ? styles.still : ''}`}>
+    <div aria-hidden className={`${styles.root} ${still ? styles.still : ''}`} style={ART}>
       <div className={styles.plate} />
       <div className={styles.scrim} />
     </div>

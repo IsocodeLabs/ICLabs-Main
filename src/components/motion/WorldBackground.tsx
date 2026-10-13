@@ -3,7 +3,25 @@
 import { useEffect, useRef } from 'react'
 import { ScrollTrigger } from '@/lib/gsap'
 import { useIsDesktop, useMotionTier } from '@/lib/capability'
+import { artVars } from '@/lib/art'
+import skyAvif from '@/assets/art/world-sky.avif'
+import skyWebp from '@/assets/art/world-sky.webp'
+import floraAvif from '@/assets/art/world-flora.avif'
+import floraWebp from '@/assets/art/world-flora.webp'
+import ipadAvif from '@/assets/art/world-ipad.avif'
+import ipadWebp from '@/assets/art/world-ipad.webp'
+import phoneAvif from '@/assets/art/world-phone.avif'
+import phoneWebp from '@/assets/art/world-phone.webp'
 import styles from './WorldBackground.module.css'
+
+// hashed AVIF/WebP art as CSS variables (see lib/art.ts); CSS still decides
+// which layer shows, so each device downloads only its own image
+const ART = artVars({
+  'world-sky': { avif: skyAvif, webp: skyWebp },
+  'world-flora': { avif: floraAvif, webp: floraWebp },
+  'world-ipad': { avif: ipadAvif, webp: ipadWebp },
+  'world-phone': { avif: phoneAvif, webp: phoneWebp },
+})
 
 /**
  * The site's one fixed painterly stage, behind every section including the hero.
@@ -60,7 +78,7 @@ export function WorldBackground() {
   }, [tier, isDesktop])
 
   return (
-    <div aria-hidden className={styles.root}>
+    <div aria-hidden className={styles.root} style={ART}>
       {/* desktop: the living sky + flora stage */}
       <div className={styles.desktopStage}>
         <div ref={plateRef} className={styles.plate}>

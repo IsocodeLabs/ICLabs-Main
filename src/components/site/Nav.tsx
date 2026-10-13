@@ -97,7 +97,7 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
       {/* the centred pill — monogram, desktop links, studio CTA */}
       <nav className={`${styles.nav} ${glass.glass}`} aria-label="Main" data-site-nav>
         <Link href="/#top" className={styles.brand} aria-label="ISOCODELABS — home">
-          <Image src={monogram} alt="" className={styles.mark} priority />
+          <Image src={monogram} alt="" className={styles.mark} sizes="20px" priority />
           <span className={styles.name}>ISOCODELABS</span>
         </Link>
 

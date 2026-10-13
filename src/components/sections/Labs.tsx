@@ -38,7 +38,7 @@ export function Labs({ beliefBeat, heading, body, products }: LabsProps) {
         <div className={styles.labsFrame}>
           <div className={`theme-ink ${styles.labsMasthead}`}>
             <span className={styles.labsLockup}>
-              <Image src={monogramWhite} alt="" className={styles.labsMark} />
+              <Image src={monogramWhite} alt="" className={styles.labsMark} sizes="24px" />
               <span className={styles.labsName}>{heading}</span>
             </span>
             <span className={`mono-label ${styles.labsParent}`}>by ISOCODELABS</span>

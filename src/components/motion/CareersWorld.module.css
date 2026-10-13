@@ -15,7 +15,7 @@
 .plate {
   position: absolute;
   inset: -4%;
-  background-image: url('/assets/careers/careers-base.jpg');
+  background-image: var(--careers-base);
   background-size: cover;
   background-position: center 42%;
   transform: scale(1.06);
@@ -70,5 +70,13 @@
   }
   .plate {
     transform: scale(1.03);
+  }
+}
+
+/* The plate comes in as CSS variables from CareersWorld.tsx (content-hashed,
+   cached for a year): WebP everywhere, AVIF where image-set() type() works. */
+@supports (background-image: image-set("data:image/gif;base64,R0lGODlhAQABAAAAACw=" type("image/avif"))) {
+  .plate {
+    background-image: var(--careers-base-set);
   }
 }

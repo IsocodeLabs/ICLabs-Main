@@ -33,11 +33,11 @@
 }
 
 .sharedPhone {
-  background-image: url('/assets/hero/hero-phone.webp');
+  background-image: var(--world-phone);
 }
 
 .sharedIpad {
-  background-image: url('/assets/hero/hero-ipad.webp');
+  background-image: var(--world-ipad);
 }
 
 @media (max-width: 767px) {
@@ -93,7 +93,7 @@
   bottom: 0;
   left: 0;
   width: 120%;
-  background-image: url('/assets/sections/section-bg-sky.webp');
+  background-image: var(--world-sky);
   background-size: 100% auto;
   background-position: left top;
   will-change: transform;
@@ -134,7 +134,7 @@
 .floraSway {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/sections/section-flora-edges.webp');
+  background-image: var(--world-flora);
   background-size: cover;
   background-position: center bottom;
   transform-origin: bottom center;
@@ -172,5 +172,26 @@
   }
   .scrim {
     opacity: 0.38;
+  }
+}
+
+/* Art comes in as CSS variables from WorldBackground.tsx (content-hashed
+   src/assets/art files, cached for a year): WebP everywhere, AVIF where the
+   browser supports image-set() with type(). */
+@supports (background-image: image-set("data:image/gif;base64,R0lGODlhAQABAAAAACw=" type("image/avif"))) {
+  .sharedPhone {
+    background-image: var(--world-phone-set);
+  }
+
+  .sharedIpad {
+    background-image: var(--world-ipad-set);
+  }
+
+  .plateDrift {
+    background-image: var(--world-sky-set);
+  }
+
+  .floraSway {
+    background-image: var(--world-flora-set);
   }
 }
