@@ -5,7 +5,7 @@
  */
 
 export const heroContent = {
-  beliefLine: 'Software, made properly.',
+  beliefLine: 'Software, crafted with perfection.',
   subline: 'Websites and apps that earn trust on sight.',
   // four beats — the hero scroll journey is timed for four; keep it at four
   scrollBeats: [
@@ -277,7 +277,7 @@ export const valuesContent = [
 ]
 
 export const valueQuotes = [
-  'Software, made properly.',
+  'Software, crafted with perfection.',
   '“It works” is where we start, not where we stop.',
   'Built for the person on the other side of the screen.',
   'Care is a design decision.',
@@ -290,7 +290,7 @@ export const valueQuotes = [
 ]
 
 export const footerContent = {
-  beliefLine: 'Software, made properly.',
+  beliefLine: 'Software, crafted with perfection.',
   navLinks: [
     { label: 'Home', href: '#top' },
     { label: 'What We Build', href: '#what-we-build' },
@@ -304,7 +304,8 @@ export const footerContent = {
   ],
   copyright: '© Isocode Labs',
   hiring: {
-    text: 'We’re hiring interns in business growth, product and engineering. Remote.',
+    // keep in step with careerRoles below (the open named roles)
+    text: 'We’re hiring a Business Growth Intern, a Product Manager Intern and a Software Engineering Intern. Remote.',
     label: 'See open roles →',
     href: 'https://careers.isocodelabs.com',
   },
@@ -316,7 +317,7 @@ export const contactChannels = {
 }
 
 export const siteSEO = {
-  metaTitle: 'ISOCODELABS — Software, made properly.',
+  metaTitle: 'ISOCODELABS — Software, crafted with perfection.',
   metaDescription: 'We craft software for those who deserve perfection.',
 }
 
@@ -461,6 +462,7 @@ export const legalPages: LegalPage[] = [
         heading: 'Information we do not collect',
         body: [
           'This website sets no cookies, runs no analytics, and embeds no advertising or third-party tracking pixels. We do not build a profile of your browsing, and we do not fingerprint your device. Our hosting provider may process standard technical information (such as your IP address in server logs) purely to deliver and secure the site; we do not use that information to identify or track you.',
+          'To make the next page open faster, the site notes in your browser’s session storage where you arrived from (for example, a link on LinkedIn) and uses that to load the pages you are most likely to open next. This stays on your device, is not sent to us, and is cleared when you close the tab.',
         ],
       },
       {

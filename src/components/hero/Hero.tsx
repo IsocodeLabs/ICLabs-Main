@@ -1,10 +1,17 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { preload } from 'react-dom'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
 import { Button } from '@/components/ui/Button'
 import styles from './Hero.module.css'
+
+/** 1×1 transparent GIF — what a <picture> falls back to where the layer isn't wanted */
+const BLANK =
+  'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+/** below this the hero is the still phone / iPad composition (see useIsDesktop) */
+const NOT_DESKTOP = '(max-width: 1024px)'
 
 type HeroProps = {
   beliefLine: string
@@ -38,6 +45,20 @@ export function Hero({ beliefLine, subline, scrollBeats, primaryCta }: HeroProps
   const immersive = tier === 'full' && isDesktop
   // phone + iPad share the site's fixed background; the hero adds no image
   const sharedBg = !isDesktop
+
+  // The server always renders the desktop scene (it can't know the device), so
+  // hint the two above-the-fold layers for desktop widths only. React dedupes
+  // this across renders.
+  preload('/assets/hero/hero-l1-sky.webp', {
+    as: 'image',
+    fetchPriority: 'high',
+    media: '(min-width: 1025px)',
+  })
+  preload('/assets/hero/hero-l2-figures.webp', {
+    as: 'image',
+    fetchPriority: 'high',
+    media: '(min-width: 1025px)',
+  })
 
   const wrapRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
@@ -136,20 +157,31 @@ export function Hero({ beliefLine, subline, scrollBeats, primaryCta }: HeroProps
           /* the living scene: sky base, breathing figures, pulsing laptop
              glow, swaying grass — all transforms, all cheap */
           <div className={styles.scene} role="img" aria-label={sceneAlt}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/hero/hero-l1-sky.webp" alt="" className={styles.layer} fetchPriority="high" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/hero/hero-l2-figures.webp"
-              alt=""
-              className={`${styles.layer} ${styles.figuresLayer}`}
-              fetchPriority="high"
-            />
+            {/* each layer sits in a <picture> whose narrow-screen source is a
+                blank pixel: phones and tablets never fetch the desktop art */}
+            <picture>
+              <source media={NOT_DESKTOP} srcSet={BLANK} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/hero/hero-l1-sky.webp" alt="" className={styles.layer} fetchPriority="high" />
+            </picture>
+            <picture>
+              <source media={NOT_DESKTOP} srcSet={BLANK} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/hero/hero-l2-figures.webp"
+                alt=""
+                className={`${styles.layer} ${styles.figuresLayer}`}
+                fetchPriority="high"
+              />
+            </picture>
             <div className={styles.frame} aria-hidden>
               <div className={styles.glow} />
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/hero/hero-l3-flora.webp" alt="" className={`${styles.layer} ${styles.floraLayer}`} />
+            <picture>
+              <source media={NOT_DESKTOP} srcSet={BLANK} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/hero/hero-l3-flora.webp" alt="" className={`${styles.layer} ${styles.floraLayer}`} />
+            </picture>
           </div>
         ) : sharedBg ? (
           /* phone / iPad — no image here; the shared fixed background shows through */
@@ -204,7 +236,9 @@ export function Hero({ beliefLine, subline, scrollBeats, primaryCta }: HeroProps
 
 /** Emphasise the closing clause with a crafted underline (Anton, one weight). */
 function formatBelief(line: string) {
-  const marker = ['made properly', 'deserve the best'].find((m) => line.includes(m))
+  const marker = ['crafted with perfection', 'made properly', 'deserve the best'].find((m) =>
+    line.includes(m),
+  )
   if (!marker) return line
   const idx = line.indexOf(marker)
   return (

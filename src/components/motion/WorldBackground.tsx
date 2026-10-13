@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { ScrollTrigger } from '@/lib/gsap'
-import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
+import { useIsDesktop, useMotionTier } from '@/lib/capability'
 import styles from './WorldBackground.module.css'
 
 /**
@@ -17,22 +17,23 @@ import styles from './WorldBackground.module.css'
  * behind the whole page, so the hero and the sections below share one seamless
  * background with no tiling seam and no crop mismatch. A paper scrim keeps the
  * scrolling copy legible over it.
+ *
+ * Which of these a visitor sees is decided in CSS (media queries), not in JS:
+ * the server can't know the device, and swapping after hydration made phones
+ * download the desktop sky and flora first and the phone image only afterwards.
+ * Every variant is in the markup; the ones that don't match are display:none,
+ * which browsers don't fetch background images for.
  */
 export function WorldBackground() {
   const plateRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
   const floraRef = useRef<HTMLDivElement>(null)
   const tier = useMotionTier()
-  const isPhone = useIsPhone()
   const isDesktop = useIsDesktop()
-
-  // phone + iPad share one still, cover-fitted image behind the whole page
-  const shared = !isDesktop
-  const sharedSrc = isPhone ? '/assets/hero/hero-phone.jpg' : '/assets/hero/hero-ipad.jpg'
 
   useEffect(() => {
     // scroll-driven evolution is a desktop, full-motion affair only
-    if (shared || tier === 'static') return
+    if (!isDesktop || tier === 'static') return
     const plate = plateRef.current
     const scrim = scrimRef.current
     const flora = floraRef.current
@@ -56,28 +57,25 @@ export function WorldBackground() {
       },
     })
     return () => st.kill()
-  }, [tier, shared])
+  }, [tier, isDesktop])
 
-  // ── phone / iPad: one still image behind everything, plus a legibility scrim
-  if (shared) {
-    return (
-      <div aria-hidden className={styles.root}>
-        <div className={styles.sharedPlate} style={{ backgroundImage: `url('${sharedSrc}')` }} />
-        <div className={styles.sharedScrim} />
-      </div>
-    )
-  }
-
-  // ── desktop: the living sky + flora stage
   return (
     <div aria-hidden className={styles.root}>
-      <div ref={plateRef} className={styles.plate}>
-        <div className={styles.plateDrift} />
+      {/* desktop: the living sky + flora stage */}
+      <div className={styles.desktopStage}>
+        <div ref={plateRef} className={styles.plate}>
+          <div className={styles.plateDrift} />
+        </div>
+        <div ref={scrimRef} className={styles.scrim} />
+        <div ref={floraRef} className={styles.flora}>
+          <div className={styles.floraSway} />
+        </div>
       </div>
-      <div ref={scrimRef} className={styles.scrim} />
-      <div ref={floraRef} className={styles.flora}>
-        <div className={styles.floraSway} />
-      </div>
+
+      {/* phone / iPad: one still image behind everything, plus a legibility scrim */}
+      <div className={`${styles.sharedPlate} ${styles.sharedPhone}`} />
+      <div className={`${styles.sharedPlate} ${styles.sharedIpad}`} />
+      <div className={styles.sharedScrim} />
     </div>
   )
 }

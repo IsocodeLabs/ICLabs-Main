@@ -34,7 +34,13 @@ export function TrailSpine() {
       const anchors = Array.from(document.querySelectorAll<HTMLElement>('[data-trail]'))
       if (anchors.length < 2) return
       const w = document.documentElement.clientWidth
-      const h = document.documentElement.scrollHeight
+      // Height of the content this trail sits in — NOT documentElement.scrollHeight.
+      // The SVG below is absolutely positioned, so it counts toward the
+      // document's scroll height itself: measuring that could only ever grow
+      // (open a FAQ, resize, late images) and left blank page under the footer.
+      // The host's own offsetHeight is its in-flow content only.
+      const host = svgRef.current?.parentElement
+      const h = host ? host.offsetHeight : document.documentElement.scrollHeight
       const pts: Pt[] = anchors.map((el) => {
         const rect = el.getBoundingClientRect()
         const top = rect.top + window.scrollY
@@ -56,7 +62,9 @@ export function TrailSpine() {
         const c2y = p2.y - (p3.y - p1.y) / 6
         d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`
       }
-      setGeom({ w, h, d })
+      // identical curve (e.g. a layout change that moved nothing it follows):
+      // keep the same object so the sampling effect below doesn't re-run
+      setGeom((prev) => (prev && prev.d === d && prev.w === w && prev.h === h ? prev : { w, h, d }))
     }
 
     // wait for fonts/images to settle layout, then build; rebuild on resize
@@ -66,13 +74,22 @@ export function TrailSpine() {
     if (document.readyState === 'complete') start()
     else window.addEventListener('load', start, { once: true })
 
+    // Rebuild only once the page has stopped changing size. An accordion (the
+    // FAQ) animates the document height for ~0.5s; rebuilding on every one of
+    // those frames re-sampled the whole curve (~50ms each) and made every click
+    // stutter. The trail simply catches up when the layout settles.
+    let settle = 0
     const ro = new ResizeObserver(() => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(build)
+      window.clearTimeout(settle)
+      settle = window.setTimeout(() => {
+        cancelAnimationFrame(raf)
+        raf = requestAnimationFrame(build)
+      }, 160)
     })
     ro.observe(document.body)
 
     return () => {
+      window.clearTimeout(settle)
       cancelAnimationFrame(raf)
       window.removeEventListener('load', start)
       ro.disconnect()
@@ -96,8 +113,10 @@ export function TrailSpine() {
 
     // Sample the curve ONCE into a lookup table (y is monotonic top→bottom).
     // Per scroll frame it's then a pure array binary-search + lerp — zero
-    // geometry calls, so the trail costs nothing while scrolling.
-    const N = 600
+    // geometry calls, so the trail costs nothing while scrolling. 300 samples
+    // is ~30px of path per step: the comet's position is interpolated between
+    // them, and it halves the cost of every rebuild.
+    const N = 300
     const xs = new Float32Array(N + 1)
     const ys = new Float32Array(N + 1)
     for (let i = 0; i <= N; i++) {
@@ -145,15 +164,18 @@ export function TrailSpine() {
       ref={svgRef}
       aria-hidden
       width={geom.w}
-      height={geom.h}
       viewBox={`0 0 ${geom.w} ${geom.h}`}
+      preserveAspectRatio="none"
       style={{
         position: 'absolute',
         top: 0,
         left: 0,
+        // always exactly the host's height: it can follow the content down as
+        // well as up, and can never push the page taller than its content
+        height: '100%',
         zIndex: 0,
         pointerEvents: 'none',
-        overflow: 'visible',
+        overflow: 'hidden',
       }}
     >
       <defs>

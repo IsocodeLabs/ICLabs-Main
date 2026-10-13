@@ -7,14 +7,17 @@ import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import glass from '@/components/ui/Glass.module.css'
 import styles from './Nav.module.css'
+import { careersHref } from '@/lib/careers/urls'
 import monogram from '../../../public/assets/brand/il-monogram-black.png'
 
 type NavLink = { label: string; href: string; external?: boolean; newTab?: boolean }
 
 // careers.isocodelabs.com is a separate host (middleware rewrites its root to
-// /careers) — link there directly rather than to the shadow /careers path on
-// the main domain, so visitors land on the canonical, live URL.
-const CAREERS_URL = 'https://careers.isocodelabs.com'
+// /careers). careersHref() links there directly in production (the host is baked
+// in at build) rather than to the shadow /careers path on the main domain, so
+// visitors land on the canonical, live URL — and it's the same address the
+// background warm-up prefetches (components/site/Warmup.tsx).
+const CAREERS_URL = careersHref('/')
 
 /** Floating glass nav — IL monogram, ink on paper. Links collapse into a
  *  left-hand dropdown on phone/iPad; the studio CTA always stays visible. */

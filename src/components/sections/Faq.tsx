@@ -29,6 +29,8 @@ const pad = (n: number) => String(n).padStart(2, '0')
  */
 export function Faq({ eyebrow, heading, intro, askLabel, items, contactEmail }: FaqProps) {
   const [open, setOpen] = useState<number>(0)
+  // nothing open: show how many questions there are instead of a position
+  const noneOpen = open < 0
 
   return (
     <Section id="faq" className={styles.section}>
@@ -42,9 +44,11 @@ export function Faq({ eyebrow, heading, intro, askLabel, items, contactEmail }: 
 
               <div className={styles.counter} aria-hidden>
                 <span key={open} className={styles.counterNum}>
-                  {open >= 0 ? pad(open + 1) : '··'}
+                  {pad(noneOpen ? items.length : open + 1)}
                 </span>
-                <span className={styles.counterTotal}>/ {pad(items.length)}</span>
+                <span className={styles.counterTotal}>
+                  {noneOpen ? 'questions' : `/ ${pad(items.length)}`}
+                </span>
               </div>
 
               <div className={styles.ask}>

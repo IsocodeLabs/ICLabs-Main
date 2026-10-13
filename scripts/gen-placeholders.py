@@ -135,6 +135,6 @@ except OSError:
     font_big = font_small = None
 d = ImageDraw.Draw(og)
 d.text((90, 240), 'ISOCODELABS', fill=PAPER, font=font_big)
-d.text((92, 340), 'Software, made properly.', fill=COPPER_LIT, font=font_small)
+d.text((92, 340), 'Software, crafted with perfection.', fill=COPPER_LIT, font=font_small)
 og.save('public/og.png')
 print('og.png')

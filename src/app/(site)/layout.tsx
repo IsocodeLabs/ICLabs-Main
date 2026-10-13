@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { fontVariables } from '@/lib/fonts'
 import { getSiteContent } from '@/lib/content'
+import { getCareerRoles } from '@/lib/careers/content'
 import { LenisProvider } from '@/components/motion/LenisProvider'
 import { GrainOverlay } from '@/components/ui/GrainOverlay'
 import { Nav } from '@/components/site/Nav'
+import { Warmup } from '@/components/site/Warmup'
 import '@/styles/globals.css'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,8 +31,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SiteLayout({ children }: { children: ReactNode }) {
-  const { contact, footer } = await getSiteContent()
+  const [{ contact, footer }, roles] = await Promise.all([getSiteContent(), getCareerRoles()])
   const url = process.env.NEXT_PUBLIC_SERVER_URL || 'https://isocodelabs.com'
+  // the open named roles, in display order — what the background warm-up fetches
+  const roleSlugs = roles
+    .filter((r) => r.roleKind !== 'open' && r.status === 'open')
+    .map((r) => r.slug)
 
   const orgJsonLd = {
     '@context': 'https://schema.org',
@@ -62,6 +68,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
           <Nav contactEmail={contact.email} />
           {children}
           <GrainOverlay />
+          <Warmup roleSlugs={roleSlugs} />
         </LenisProvider>
       </body>
     </html>

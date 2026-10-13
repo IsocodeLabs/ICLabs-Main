@@ -57,7 +57,7 @@ export default function DesignPage() {
                 margin: '10px 0',
               }}
             >
-              {s} — Software, made properly.
+              {s} — Software, crafted with perfection.
             </p>
           ))}
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: 18, marginTop: 20, maxWidth: 620 }}>

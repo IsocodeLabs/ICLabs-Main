@@ -83,6 +83,15 @@ function withCareersLink(
   return at === -1 ? [...links, careers] : [...links.slice(0, at), careers, ...links.slice(at)]
 }
 
+/**
+ * The tagline changed from "Software, made properly." to "Software, crafted
+ * with perfection." The CMS wins over seed copy once seeded, so rows saved
+ * before the change still carry the old line; rewrite it on read. Drop this
+ * once the Homepage / Site Settings rows have been edited in the admin.
+ */
+const taglineFix = (s: string): string =>
+  s.replace(/Software,\s*made properly\.?/gi, 'Software, crafted with perfection.')
+
 const mediaURL = (img: unknown, fallback: string): string => {
   if (img && typeof img === 'object' && 'url' in img && typeof img.url === 'string') {
     return img.url
@@ -135,7 +144,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
     return {
       hero: {
-        beliefLine: home.hero?.beliefLine ?? fallback.hero.beliefLine,
+        beliefLine: taglineFix(home.hero?.beliefLine ?? fallback.hero.beliefLine),
         subline: home.hero?.subline ?? fallback.hero.subline,
         scrollBeats:
           home.hero?.scrollBeats?.map((b: { text: string }) => b.text) ??
@@ -216,9 +225,10 @@ export async function getSiteContent(): Promise<SiteContent> {
               order: v.order ?? i,
             }))
           : fallback.values,
-      quotes: quotes.docs.length > 0 ? quotes.docs.map((q) => q.quote) : fallback.quotes,
+      quotes:
+        quotes.docs.length > 0 ? quotes.docs.map((q) => taglineFix(q.quote)) : fallback.quotes,
       footer: {
-        beliefLine: settings?.footer?.beliefLine ?? fallback.footer.beliefLine,
+        beliefLine: taglineFix(settings?.footer?.beliefLine ?? fallback.footer.beliefLine),
         navLinks: withCareersLink(
           settings?.footer?.navLinks
             // the creator program is retired — drop it even if the CMS still has the link
@@ -242,7 +252,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         phone: settings?.contactChannels?.phone ?? fallback.contact.phone,
       },
       seo: {
-        metaTitle: settings?.defaultSEO?.metaTitle ?? fallback.seo.metaTitle,
+        metaTitle: taglineFix(settings?.defaultSEO?.metaTitle ?? fallback.seo.metaTitle),
         metaDescription: settings?.defaultSEO?.metaDescription ?? fallback.seo.metaDescription,
       },
       founders: toFounders(founders.docs, fallback.founders),
