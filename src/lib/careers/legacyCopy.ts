@@ -53,6 +53,7 @@ const LEGACY: LegacyCopy = {
     ]
   },
   "business-growth-intern": {
+    "title": "Business Growth Intern",
     "payLine": "₹1,00,000/month at target + 20% commission beyond",
     "blurb": "Find the businesses that need what we build, and bring them on board.",
     "about": "You will own our pipeline in one industry, from the first call to an agreed price. We hand you a detailed proposal for the software we are taking to that industry. You find the right companies, start the conversation, and bring them to the table. The founders join you at the final meeting to sign.",

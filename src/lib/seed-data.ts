@@ -305,7 +305,7 @@ export const footerContent = {
   copyright: '© Isocode Labs',
   hiring: {
     // keep in step with careerRoles below (the open named roles)
-    text: 'We’re hiring a Business Growth Intern, a Product Management Intern and a Software Engineering Intern. Remote.',
+    text: 'We’re hiring a Business Growth Intern (Sales), a Product Management Intern and a Software Engineering Intern. Remote.',
     label: 'See open roles →',
     href: 'https://careers.isocodelabs.com',
   },
@@ -669,7 +669,7 @@ const CYCLE_POSTED = '2026-10-13T12:00:00.000Z' // midday UTC so no timezone shi
 
 export const careerRoles: CareerRoleSeed[] = [
   {
-    title: 'Business Growth Intern',
+    title: 'Business Growth Intern (Sales)',
     slug: 'business-growth-intern',
     roleKey: 'business-growth-intern',
     order: 1,
