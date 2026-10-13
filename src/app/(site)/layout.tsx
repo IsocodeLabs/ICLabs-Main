@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url,
       siteName: 'ISOCODELABS',
       type: 'website',
-      images: ['/og.png'],
+      images: [{ url: '/og.png', width: 1200, height: 630, alt: 'ISOCODELABS — Software, crafted with perfection.' }],
     },
   }
 }

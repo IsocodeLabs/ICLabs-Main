@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { getCareersContent } from '@/lib/careers/content'
 import { canonicalCareersUrl } from '@/lib/careers/urls'
 import { careersContent } from '@/lib/seed-data'
+import { CAREERS_OG_IMAGE } from '@/lib/careers/og'
 import { CareersPage } from '@/components/careers/CareersPage'
 
 export const metadata: Metadata = {
@@ -14,6 +15,15 @@ export const metadata: Metadata = {
     title: 'Careers — ISOCODELABS',
     description: careersContent.metaDescription,
     url: canonicalCareersUrl('/'),
+    siteName: 'ISOCODELABS',
+    type: 'website',
+    images: [CAREERS_OG_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Careers — ISOCODELABS',
+    description: careersContent.metaDescription,
+    images: [CAREERS_OG_IMAGE.url],
   },
 }
 

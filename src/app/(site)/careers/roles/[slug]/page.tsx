@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { RoleDetail } from '@/components/careers/RoleDetail'
 import { getCareerRole, getCareerRoles, getCareersContent, type CareerRole } from '@/lib/careers/content'
 import { canonicalCareersUrl } from '@/lib/careers/urls'
+import { CAREERS_OG_IMAGE } from '@/lib/careers/og'
 
 // Status changes revalidate on demand; 60 s is the cross-instance backstop.
 export const revalidate = 60
@@ -37,9 +38,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url,
       type: 'website',
       siteName: 'ISOCODELABS',
-      images: ['/og.png'],
+      images: [CAREERS_OG_IMAGE],
     },
-    twitter: { card: 'summary_large_image', title: `${role.title} — ISOCODELABS`, description },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${role.title} — ISOCODELABS`,
+      description,
+      images: [CAREERS_OG_IMAGE.url],
+    },
   }
 }
 

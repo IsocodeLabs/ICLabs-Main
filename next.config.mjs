@@ -21,7 +21,7 @@ const nextConfig = {
   // visitors get the new file within a week; rename it to roll out immediately.
   async headers() {
     const week = 'public, max-age=604800, stale-while-revalidate=86400'
-    return ['/assets/:path*', '/quiz/:path*', '/labs/:path*', '/hero/:path*', '/og.png', '/logo.webp'].map(
+    return ['/assets/:path*', '/quiz/:path*', '/labs/:path*', '/hero/:path*', '/og.png', '/og-careers.png', '/logo.webp'].map(
       (source) => ({ source, headers: [{ key: 'Cache-Control', value: week }] }),
     )
   },
