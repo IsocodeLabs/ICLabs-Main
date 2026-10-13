@@ -217,7 +217,7 @@ export const aboutPageContent = {
   valuesEyebrow: 'What we hold to',
   valuesHeading: 'Five things that don’t bend.',
   foundersEyebrow: 'The people',
-  foundersHeading: 'Two people, one bar.',
+  foundersHeading: 'Founders',
   foundersIntro:
     'We started Isocode to build the software we kept wishing existed — held to a standard we couldn’t find anywhere else.',
   contactHeading: 'Talk to our team',
@@ -295,6 +295,7 @@ export const footerContent = {
     { label: 'Home', href: '#top' },
     { label: 'What We Build', href: '#what-we-build' },
     { label: 'Labs', href: 'https://labs.isocodelabs.com' },
+    { label: 'Careers', href: 'https://careers.isocodelabs.com' },
     { label: 'Contact', href: '#contact' },
   ],
   legalLinks: [
@@ -303,7 +304,7 @@ export const footerContent = {
   ],
   copyright: '© Isocode Labs',
   hiring: {
-    text: 'We’re hiring engineers, designers and sales. Remote.',
+    text: 'We’re hiring interns in business growth, product and engineering. Remote.',
     label: 'See open roles →',
     href: 'https://careers.isocodelabs.com',
   },
@@ -595,41 +596,40 @@ export const legalPages: LegalPage[] = [
 /* ────────────────────────────────────────────────────────────────────────────
    Careers — the dark "craftsmanship at work" world (v3.4), Oct 2026 hiring
    cycle (v2). Copy is seed-fallback-safe; the CMS wins once roles exist there.
-   Role copy is transcribed exactly from the hiring-cycle PRD — in particular the
-   Business Growth pay text must never be shortened anywhere.
+   Role copy is transcribed exactly from the hiring-cycle PRD. The Business
+   Growth pay text stays in full here and on the role page; only the role card
+   shows a short form (cardPayLine in lib/careers/content.ts).
    ──────────────────────────────────────────────────────────────────────────── */
 
 export const careersContent = {
   eyebrow: 'Careers',
-  heading: 'For the few who’d rather build things properly.',
+  heading: 'Join Isocode.',
   pitch:
-    'Isocode is a small, senior studio held to a single bar — craft. If “good enough” has never once sat right with you, this is where that instinct is the job, not a liability.',
+    'Isocode is a small software studio. We are hiring remote interns in business growth, product and engineering.',
   metaDescription:
     'Isocode is hiring remote interns in business growth, product, and engineering, plus an always open application.',
-  barEyebrow: 'The bar',
-  barHeading: 'What we hire for.',
+  barEyebrow: 'Hiring',
+  barHeading: 'What we look for.',
   barBody: [
-    'We are not hiring seat-fillers. We hire people who are in the top fraction of their craft — engineers, designers, and operators who care how a thing is made, not only that it ships.',
-    'The team stays small on purpose. That means real ownership from week one, work reviewed like it matters, and no hiding behind process. It also means the bar to get in is high, and we keep it there.',
+    'We hire few people and hold a high standard. You will own your work from the first week.',
   ],
   barPoints: [
-    { title: 'Craft over credentials', body: 'Show us something you made. A repo, a design, a deal you closed — proof beats a résumé line.' },
-    { title: 'Ownership, not tickets', body: 'You’ll own outcomes end to end, with the seniority around you to learn fast.' },
-    { title: 'Remote, senior, quiet', body: 'Work from anywhere, on your own clock. We optimise for deep work, not presence theatre.' },
+    { title: 'Proof of work', body: 'Show us something you built, designed or sold.' },
+    { title: 'Ownership', body: 'You own outcomes end to end.' },
+    { title: 'Remote', body: 'Work from anywhere. Roles are six months.' },
   ],
-  rolesEyebrow: 'Open roles',
-  rolesHeading: 'Where we’re hiring.',
-  rolesNote: 'Remote internships, six months each. We hire the person first, then shape the role around them.',
+  rolesEyebrow: 'Hiring',
+  rolesHeading: 'Open roles',
+  rolesNote: 'All roles are remote six-month internships.',
   rolesEmpty: 'No open roles right now.',
   openEyebrow: 'Open application',
-  openHeading: 'Don’t see your role?',
-  openBody:
-    'If you are exceptional at something we haven’t listed, tell us. Every open application is read by a founder.',
+  openHeading: 'Role not listed?',
+  openBody: 'Tell us what you are good at. A founder reads every application.',
   openCta: 'Send an open application →',
-  formEyebrow: 'Apply',
-  formHeading: 'Tell us who you are.',
-  formIntro: 'Round 1 is short: your CV and a few basic details.',
-  successMessage: 'Thanks, your application is in. If you’re shortlisted, we’ll email you the next steps.',
+  formEyebrow: 'Application',
+  formHeading: 'Apply',
+  formIntro: 'Round 1 is your CV and a few basic details.',
+  successMessage: 'Application received. If you are shortlisted, we will email you the next steps.',
   backLabel: '← isocodelabs.com',
 }
 
@@ -678,7 +678,7 @@ export const careerRoles: CareerRoleSeed[] = [
     duration: '6 months',
     payLine: '₹1,00,000/month at target + 20% commission beyond',
     baseSalaryMonthlyINR: null,
-    blurb: 'Find the businesses that need what we build, and bring them on board.',
+    blurb: 'Find clients for our software and take them to an agreed price.',
     about:
       'You will own our pipeline in one industry, from the first call to an agreed price. We hand you a detailed proposal for the software we are taking to that industry. You find the right companies, start the conversation, and bring them to the table. The founders join you at the final meeting to sign.',
     responsibilities: [
@@ -721,7 +721,7 @@ export const careerRoles: CareerRoleSeed[] = [
     duration: '6 months',
     payLine: '₹50,000/month',
     baseSalaryMonthlyINR: 50000,
-    blurb: 'Turn what a client says into software our engineers can build.',
+    blurb: 'Turn client requirements into specs our engineers can build.',
     about:
       'You will sit between our clients and our engineers. You take a client’s requirements, turn them into a clear product spec, and see the project through to delivery. You also design and spec the internal tools we build for ourselves.',
     responsibilities: [
@@ -765,10 +765,9 @@ export const careerRoles: CareerRoleSeed[] = [
     duration: '6 months',
     payLine: '₹50,000/month',
     baseSalaryMonthlyINR: 50000,
-    blurb:
-      'Build production software to a craft bar most places only talk about — and have it reviewed like it matters.',
+    blurb: 'Build production software for clients. Every pull request is reviewed.',
     about:
-      'You will build the software we take on for our clients, from the first screen to production. Real projects, real users, and every pull request reviewed like it matters.',
+      'You will build the software we take on for our clients, from the first screen to production. Real projects with real users, and every pull request is reviewed.',
     responsibilities: [
       'Build client projects end to end: frontend, backend and deployment',
       'Work from PRDs written by our product team, alongside the founders',
@@ -808,8 +807,7 @@ export const careerRoles: CareerRoleSeed[] = [
     duration: '',
     payLine: '',
     baseSalaryMonthlyINR: null,
-    blurb:
-      'If you are exceptional at something we haven’t listed, tell us. Every open application is read by a founder.',
+    blurb: 'Tell us what you are good at. A founder reads every application.',
     about: '',
     responsibilities: [],
     lookingFor: [],

@@ -201,6 +201,58 @@
 
 /* ---------- Labs ---------- */
 
+/* Labs is a sub-entity of the studio: one framed block with its own ink
+   masthead, holding the intro and the products. */
+.labsFrame {
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--r-lg);
+  box-shadow:
+    inset 0 1px 0 var(--glass-line),
+    var(--e2);
+  overflow: hidden;
+}
+
+.labsMasthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-8) var(--sp-24);
+  padding: var(--sp-16) clamp(28px, 4vw, 56px);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.labsLockup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-12);
+}
+
+.labsMark {
+  height: 30px;
+  width: auto;
+}
+
+.labsName {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--fs-28);
+  line-height: 1;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+}
+
+.labsParent {
+  color: rgba(245, 241, 234, 0.62);
+}
+
+.labsBody {
+  padding: clamp(28px, 4vw, 56px);
+}
+
 .beliefBeat {
   font-family: var(--font-display), 'Arial Narrow', sans-serif;
   font-size: var(--text-display-md);

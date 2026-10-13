@@ -14,6 +14,9 @@ export function careersHref(path = '/'): string {
   return `/careers${p}`
 }
 
+/** True for a link that leaves for the careers site (it opens in a new tab). */
+export const isCareersUrl = (href: string) => /^https?:\/\/careers\./i.test(href)
+
 /** Canonical absolute URL (SEO, JSON-LD, sitemap) — always the live subdomain. */
 export const CAREERS_CANONICAL = CAREERS_URL || 'https://careers.isocodelabs.com'
 export const canonicalCareersUrl = (path = '/') =>

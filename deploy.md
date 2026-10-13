@@ -259,7 +259,7 @@ gcloud storage rm -r "gs://isocode-careers-cvs-staging/**"  # keep the empty buc
 Use a real browser on careers.isocodelabs.com, preferably one desktop and one phone.
 
 - [ ] `/` shows 3 role cards in order (Business Growth, Product Manager, Software Engineering), the Open Application section below them, and no Sales Executive or Design Intern
-- [ ] The Business Growth card reads exactly **"₹1,00,000/month at target + 20% commission beyond"**
+- [ ] The Business Growth card reads **"₹1 lakh/month + commission"**, and its role page shows the full line **"₹1,00,000/month at target + 20% commission beyond"** (cards are short on purpose: title, pay, one fact row)
 - [ ] Each `/roles/<slug>` page loads with About, What you'll do, What we look for, Compensation and the hiring stepper; `/roles/sales-exec` returns 404
 - [ ] Submit one real test application per kind (growth, pm, sde, open) with a real PDF. You get the success message, and a second try with the same email + role gets the "You've already applied…" message
 - [ ] Those rows appear in `/admin/screening`, the CV renders inline, and rating, shortlist, tag and notes save

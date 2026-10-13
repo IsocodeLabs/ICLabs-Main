@@ -5,6 +5,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import glass from '@/components/ui/Glass.module.css'
 import type { CareerRole, CareersContent } from '@/lib/careers/content'
 import { careersHref } from '@/lib/careers/urls'
+import { contactChannels } from '@/lib/seed-data'
 import {
   fieldsFor,
   INTEREST_AREAS,
@@ -124,6 +125,9 @@ export function ApplyForm({
   const [fields, setFields] = useState<ApplicationInput>({})
   const [errors, setErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
+  // set when the failure is ours (server/network), not something the applicant
+  // can fix in the form: we then offer email as a way through
+  const [offerEmail, setOfferEmail] = useState(false)
   const [upload, setUpload] = useState<UploadState>({ status: 'idle' })
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
@@ -237,6 +241,7 @@ export function ApplyForm({
     e.preventDefault()
     if (submittingRef.current) return
     setFormError(null)
+    setOfferEmail(false)
 
     const checked = validateApplication(fields, kind)
     const nextErrors: FieldErrors = checked.ok ? {} : { ...checked.errors }
@@ -301,8 +306,10 @@ export function ApplyForm({
         submissionIdRef.current = undefined
       }
       setFormError(data.error || 'Something went wrong on our side — your answers are saved. Please try again.')
+      if (!data.fieldErrors && data.code !== 'duplicate') setOfferEmail(true)
     } catch {
       setFormError('Couldn’t reach the server — check your connection and try again. Your answers are saved.')
+      setOfferEmail(true)
     } finally {
       submittingRef.current = false
       setSubmitting(false)
@@ -403,6 +410,7 @@ export function ApplyForm({
                 {f.linkedin && (
                   <TextField
                     k="linkedinUrl"
+                    wide
                     label="LinkedIn URL"
                     type="url"
                     placeholder="https://linkedin.com/in/…"
@@ -416,6 +424,7 @@ export function ApplyForm({
                 {f.github && (
                   <TextField
                     k="githubUrl"
+                    wide
                     label="GitHub URL"
                     type="url"
                     placeholder="https://github.com/…"
@@ -429,6 +438,7 @@ export function ApplyForm({
                 {f.portfolio && (
                   <TextField
                     k="portfolioUrl"
+                    wide
                     label={kind === 'pm' ? 'Portfolio, or a sample PRD / mockup link' : 'Portfolio URL'}
                     type="url"
                     placeholder="https://"
@@ -442,6 +452,7 @@ export function ApplyForm({
                 {f.project && (
                   <TextField
                     k="projectUrl"
+                    wide
                     label="Best shipped project"
                     type="url"
                     placeholder="https://"
@@ -459,7 +470,7 @@ export function ApplyForm({
                 )}
 
                 {f.interestArea && (
-                  <Field label="Area of interest" id="app-interestArea" error={errors.interestArea}>
+                  <Field label="Area of interest" id="app-interestArea" wide error={errors.interestArea}>
                     <select
                       id="app-interestArea"
                       data-field="interestArea"
@@ -550,6 +561,16 @@ export function ApplyForm({
                 {formError && (
                   <p className={styles.error} role="alert">
                     {formError}
+                    {offerEmail && (
+                      <>
+                        {' '}
+                        Still stuck? Email your CV and details to{' '}
+                        <a href={`mailto:${contactChannels.email}`} className={styles.inlineLink}>
+                          {contactChannels.email}
+                        </a>
+                        .
+                      </>
+                    )}
                   </p>
                 )}
 
@@ -615,6 +636,7 @@ function TextField({
   errors,
   set,
   optional,
+  wide,
   placeholder,
   autoComplete,
   inputMode,
@@ -629,6 +651,7 @@ function TextField({
   errors: FieldErrors
   set: SetFn
   optional?: boolean
+  wide?: boolean
   placeholder?: string
   autoComplete?: string
   inputMode?: 'numeric'
@@ -639,7 +662,7 @@ function TextField({
   const id = `app-${k}`
   const error = errors[k]
   return (
-    <Field label={label} id={id} error={error} optional={optional}>
+    <Field label={label} id={id} error={error} optional={optional} wide={wide}>
       <input
         id={id}
         data-field={k}

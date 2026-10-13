@@ -1,6 +1,6 @@
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import glass from '@/components/ui/Glass.module.css'
-import type { CareerRole, CareersContent } from '@/lib/careers/content'
+import { cardPayLine, type CareerRole, type CareersContent } from '@/lib/careers/content'
 import { careersHref } from '@/lib/careers/urls'
 import styles from './CareersApply.module.css'
 
@@ -11,9 +11,11 @@ const TYPE_LABEL: Record<string, string> = {
 }
 
 /**
- * Open Roles — open + paused named roles. The whole card links to the role's
- * page (a stretched link); "Apply →" jumps straight to that page's form.
- * Paused roles keep their card with a badge so people know to check back.
+ * Open Roles — open + paused named roles. Each card is deliberately short:
+ * title, pay, a one-line fact row, and the apply link. The role's description
+ * lives on its own page; the whole card links there (a stretched link) and
+ * "Apply →" jumps straight to that page's form. Paused roles keep their card
+ * with a badge so people know to check back.
  */
 export function RoleCards({ page, roles }: { page: CareersContent['page']; roles: CareerRole[] }) {
   return (
@@ -32,25 +34,24 @@ export function RoleCards({ page, roles }: { page: CareersContent['page']; roles
             {roles.map((r) => {
               const href = careersHref(`/roles/${r.slug}`)
               const paused = r.status === 'paused'
+              const pay = cardPayLine(r)
+              const facts = [TYPE_LABEL[r.type] ?? r.type, r.duration, r.location].filter(Boolean)
               return (
                 <article
                   key={r.roleKey}
                   className={`${glass.glass} ${glass.dark} ${styles.roleCard} ${styles.roleCardLinked}`}
                 >
-                  <div className={styles.roleTop}>
-                    <h3 className={styles.roleTitle}>
-                      <a href={href} className={styles.roleCardLink}>
-                        {r.title}
-                      </a>
-                    </h3>
-                    <span className={`mono-label ${styles.roleType}`}>
-                      {TYPE_LABEL[r.type] ?? r.type}
-                    </span>
-                  </div>
-                  <p className={styles.roleMeta}>
-                    {[r.duration, r.payLine, r.location].filter(Boolean).join('  ·  ')}
-                  </p>
-                  <p className={styles.roleBlurb}>{r.blurb}</p>
+                  <h3 className={styles.roleTitle}>
+                    <a href={href} className={styles.roleCardLink}>
+                      {r.title}
+                    </a>
+                  </h3>
+                  {pay && <p className={styles.rolePay}>{pay}</p>}
+                  <ul className={styles.roleFacts}>
+                    {facts.map((f) => (
+                      <li key={f}>{f}</li>
+                    ))}
+                  </ul>
                   {paused ? (
                     <span className={`mono-label ${styles.pausedBadge}`}>Applications paused</span>
                   ) : (

@@ -9,7 +9,7 @@ import glass from '@/components/ui/Glass.module.css'
 import styles from './Nav.module.css'
 import monogram from '../../../public/assets/brand/il-monogram-black.png'
 
-type NavLink = { label: string; href: string; external?: boolean }
+type NavLink = { label: string; href: string; external?: boolean; newTab?: boolean }
 
 // careers.isocodelabs.com is a separate host (middleware rewrites its root to
 // /careers) — link there directly rather than to the shadow /careers path on
@@ -36,14 +36,18 @@ export function Nav({ contactEmail }: { contactEmail: string }) {
 
   const links: NavLink[] = [
     { label: 'Labs', href: '/#labs' },
-    { label: 'Careers', href: CAREERS_URL, external: true },
+    { label: 'Careers', href: CAREERS_URL, external: true, newTab: true },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: `mailto:${contactEmail}`, external: true },
   ]
 
   const renderLink = (l: NavLink, onClick?: () => void) =>
     l.external ? (
-      <a href={l.href} onClick={onClick}>
+      <a
+        href={l.href}
+        onClick={onClick}
+        {...(l.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      >
         {l.label}
       </a>
     ) : (

@@ -96,7 +96,7 @@
 /* ── the bar ── */
 .barBody {
   display: grid;
-  gap: var(--sp-20);
+  gap: var(--sp-24);
   max-width: 62ch;
   margin-bottom: var(--sp-48);
 }

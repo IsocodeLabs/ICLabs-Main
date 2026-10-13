@@ -21,16 +21,24 @@ function getClient(): Resend | null {
   return client
 }
 
-export async function notifyFounders(subject: string, html: string): Promise<void> {
+/** Resolves true only if the email was accepted for delivery; never throws. */
+export async function notifyFounders(subject: string, html: string): Promise<boolean> {
   const resend = getClient()
   if (!resend) {
     console.warn('[notify] RESEND_API_KEY not set — skipping notification:', subject)
-    return
+    return false
   }
   try {
-    await resend.emails.send({ from: FROM, to: NOTIFY_RECIPIENTS, subject, html })
+    // the Resend SDK reports API failures in `error` rather than throwing
+    const { error } = await resend.emails.send({ from: FROM, to: NOTIFY_RECIPIENTS, subject, html })
+    if (error) {
+      console.error('[notify] Resend rejected the notification email:', error)
+      return false
+    }
+    return true
   } catch (err) {
     console.error('[notify] failed to send notification email:', err)
+    return false
   }
 }
 
@@ -51,16 +59,28 @@ export function leadNotificationHtml(opts: {
   email: string
   company?: string
   note?: string
+  /** quiz answers — only listed when the lead could not be saved to the admin */
+  answers?: Array<{ prompt: string; optionLabel: string }>
+  /** true when the database write failed and this email is the only record */
+  unsaved?: boolean
 }): string {
   const kindLabel = opts.kind === 'shortQuiz' ? 'Quiz submission' : 'Contact enquiry'
-  return `<h2 style="font-family:sans-serif">${escapeHtml(kindLabel)}</h2>
+  const banner = opts.unsaved
+    ? `<p style="font-family:sans-serif;font-size:14px;background:#fff4e5;border:1px solid #f0c27b;padding:10px 12px;border-radius:6px"><b>Not saved to the admin.</b> The database was unreachable when this came in, so this email is the only copy. Reply to the visitor and keep it.</p>`
+    : ''
+  const answers = (opts.answers ?? []).map((a) => row(a.prompt, a.optionLabel)).join('')
+  const footer = opts.unsaved
+    ? ''
+    : `<p style="font-family:sans-serif;font-size:13px;color:#888">Full detail — including quiz answers — is in the admin under Ops → Lead Submissions.</p>`
+  return `${banner}<h2 style="font-family:sans-serif">${escapeHtml(kindLabel)}</h2>
     <table style="font-family:sans-serif;font-size:14px">
       ${row('Name', opts.name)}
       ${row('Email', opts.email)}
       ${row('Company', opts.company ?? '')}
       ${row('Note', opts.note ?? '')}
+      ${answers}
     </table>
-    <p style="font-family:sans-serif;font-size:13px;color:#888">Full detail — including quiz answers — is in the admin under Ops → Lead Submissions.</p>`
+    ${footer}`
 }
 
 /** Founders' daily careers digest — counts only (no applicant PII in email). */

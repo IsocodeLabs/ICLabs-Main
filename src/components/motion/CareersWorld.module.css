@@ -32,29 +32,6 @@
   }
 }
 
-/* foreground botanical vignette — gentle sway (alpha center shows the desk) */
-.layer {
-  position: absolute;
-  inset: -3%;
-  background-image: url('/assets/careers/careers-layer.webp');
-  background-size: cover;
-  background-position: center;
-  transform-origin: 50% 62%;
-  opacity: 0.9;
-  will-change: transform;
-  animation: careersSway 9.5s ease-in-out infinite;
-}
-
-@keyframes careersSway {
-  0%,
-  100% {
-    transform: rotate(-0.6deg) translateX(-8px) scale(1.02);
-  }
-  50% {
-    transform: rotate(0.7deg) translateX(10px) scale(1.04);
-  }
-}
-
 /* ink veil — keep the scene visible up top, deepen toward the foot where the
    form sits, so white copy stays legible everywhere */
 .scrim {
@@ -63,47 +40,32 @@
   background:
     linear-gradient(
       180deg,
-      rgba(13, 11, 10, 0.3) 0%,
-      rgba(13, 11, 10, 0.12) 26%,
-      rgba(13, 11, 10, 0.44) 68%,
-      rgba(13, 11, 10, 0.74) 100%
+      rgba(13, 11, 10, 0.34) 0%,
+      rgba(13, 11, 10, 0.26) 26%,
+      rgba(13, 11, 10, 0.5) 68%,
+      rgba(13, 11, 10, 0.76) 100%
     ),
     radial-gradient(120% 90% at 50% 22%, transparent 42%, rgba(13, 11, 10, 0.4) 100%);
 }
 
-/* ── phone / iPad: one still device crop behind the whole page ── */
-.sharedPlate {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-}
-
-.sharedScrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(13, 11, 10, 0.32) 0%,
-    rgba(13, 11, 10, 0.16) 30%,
-    rgba(13, 11, 10, 0.5) 74%,
-    rgba(13, 11, 10, 0.76) 100%
-  );
-}
-
 /* static motion tier — hold a still frame */
-.still .plate,
-.still .layer {
+.still .plate {
   animation: none;
 }
 .still .plate {
   transform: scale(1.04);
 }
 
+/* narrow / portrait screens crop the landscape plate to a strip: keep the
+   window light and the books in it */
+@media (max-width: 1024px) {
+  .plate {
+    background-position: 22% 50%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .plate,
-  .layer {
+  .plate {
     animation: none;
   }
   .plate {

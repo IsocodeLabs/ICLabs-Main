@@ -1,41 +1,25 @@
 'use client'
 
-import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
+import { useIsDesktop, useMotionTier } from '@/lib/capability'
 import styles from './CareersWorld.module.css'
 
 /**
  * The Careers world — the dark "craftsmanship at work" atelier. Same anchor-world
- * mechanism as the homepage's WorldBackground, dark register and swapped inputs:
- * a base desk plate (slow ken-burns drift) + a foreground botanical layer that
- * sways, over an ink veil that keeps white copy legible. No flora band, no scroll
- * journey — ambient CSS motion only, gated by the motion tier.
+ * mechanism as the homepage's WorldBackground, dark register: one desk plate
+ * under an ink veil that keeps white copy legible. Nothing floats over it — no
+ * foreground layer, no flora band, no scroll journey.
  *
- * Phone / iPad get one still, cover-fitted device crop (same pattern as the hero
- * device backdrops), no motion.
+ * Desktop drifts the plate slowly (ambient CSS motion, gated by the motion
+ * tier); phone / iPad hold it still, cover-fitted.
  */
 export function CareersWorld() {
   const tier = useMotionTier()
   const isDesktop = useIsDesktop()
-  const isPhone = useIsPhone()
-
-  const shared = !isDesktop
-  const sharedSrc = isPhone
-    ? '/assets/careers/careers-phone.jpg'
-    : '/assets/careers/careers-ipad.jpg'
-
-  if (shared) {
-    return (
-      <div aria-hidden className={styles.root}>
-        <div className={styles.sharedPlate} style={{ backgroundImage: `url('${sharedSrc}')` }} />
-        <div className={styles.sharedScrim} />
-      </div>
-    )
-  }
+  const still = tier === 'static' || !isDesktop
 
   return (
-    <div aria-hidden className={`${styles.root} ${tier === 'static' ? styles.still : ''}`}>
+    <div aria-hidden className={`${styles.root} ${still ? styles.still : ''}`}>
       <div className={styles.plate} />
-      <div className={styles.layer} />
       <div className={styles.scrim} />
     </div>
   )

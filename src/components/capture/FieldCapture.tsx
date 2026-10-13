@@ -44,17 +44,23 @@ export function FieldCapture({
   const isLast = step === fields.length - 1
 
   // one input element serves every step — controlled, so the value always
-  // belongs to the current field
+  // belongs to the current field. The draft is swapped in the same update that
+  // changes the step (see goTo), never in an effect: an effect leaves a window
+  // where the previous field's text is still in the box, and a fast typist (or
+  // a slow phone) lands characters on top of it.
   const mountedRef = useRef(false)
   useEffect(() => {
-    setDraft(values[fields[step].name] ?? '')
     // Do NOT steal focus on first mount — this form sits low on the page, and
     // focusing it would scroll the whole page down to it on load. Only focus
     // when the user advances a step, and never scroll to do it.
     if (mountedRef.current) inputRef.current?.focus({ preventScroll: true })
     else mountedRef.current = true
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
+
+  const goTo = (nextStep: number, known: Record<string, string>) => {
+    setDraft(known[fields[nextStep].name] ?? '')
+    setStep(nextStep)
+  }
 
   const validate = (value: string): string => {
     if (!field.optional && !value.trim()) return 'This one we do need.'
@@ -77,7 +83,7 @@ export function FieldCapture({
     setValues(next)
 
     if (!isLast) {
-      setStep(step + 1)
+      goTo(step + 1, next)
       return
     }
 
@@ -98,7 +104,7 @@ export function FieldCapture({
   const goBack = () => {
     if (step === 0 || busy) return
     setError('')
-    setStep(step - 1)
+    goTo(step - 1, values)
   }
 
   if (done) {

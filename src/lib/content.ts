@@ -68,6 +68,21 @@ function toFounders(
   })
 }
 
+/**
+ * The footer always carries a Careers link, even when the CMS's nav list
+ * predates it: it's slotted in before Contact (or last), taken from the seed.
+ */
+function withCareersLink(
+  links: Array<{ label: string; href: string }>,
+  seed: Array<{ label: string; href: string }>,
+) {
+  if (links.some((l) => /careers/i.test(l.href) || /^careers$/i.test(l.label))) return links
+  const careers = seed.find((l) => /careers/i.test(l.href))
+  if (!careers) return links
+  const at = links.findIndex((l) => /contact/i.test(l.label))
+  return at === -1 ? [...links, careers] : [...links.slice(0, at), careers, ...links.slice(at)]
+}
+
 const mediaURL = (img: unknown, fallback: string): string => {
   if (img && typeof img === 'object' && 'url' in img && typeof img.url === 'string') {
     return img.url
@@ -204,7 +219,7 @@ export async function getSiteContent(): Promise<SiteContent> {
       quotes: quotes.docs.length > 0 ? quotes.docs.map((q) => q.quote) : fallback.quotes,
       footer: {
         beliefLine: settings?.footer?.beliefLine ?? fallback.footer.beliefLine,
-        navLinks:
+        navLinks: withCareersLink(
           settings?.footer?.navLinks
             // the creator program is retired — drop it even if the CMS still has the link
             ?.filter((l: { href: string }) => !/creator/i.test(l.href))
@@ -212,6 +227,8 @@ export async function getSiteContent(): Promise<SiteContent> {
               label: l.label,
               href: l.href,
             })) ?? fallback.footer.navLinks,
+          fallback.footer.navLinks,
+        ),
         legalLinks:
           settings?.footer?.legalLinks?.map((l: { label: string; href: string }) => ({
             label: l.label,

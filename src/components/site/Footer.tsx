@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Section } from '@/components/site/Section'
+import { isCareersUrl } from '@/lib/careers/urls'
 import styles from './Footer.module.css'
 import monogramWhite from '../../../public/assets/brand/il-monogram-white.png'
 
@@ -11,6 +12,12 @@ type FooterProps = {
   copyright: string
   hiring?: { text: string; label: string; href: string }
 }
+
+/** Careers is its own site — it opens in a new tab so the studio page stays put. */
+const newTabProps = (href: string) =>
+  isCareersUrl(href)
+    ? { target: '_blank', rel: 'noopener noreferrer' }
+    : { rel: 'noreferrer' }
 
 /** Quiet close — the trail resolves here on ink, the belief restated once. */
 export function Footer({ beliefLine, navLinks, legalLinks, copyright, hiring }: FooterProps) {
@@ -26,7 +33,7 @@ export function Footer({ beliefLine, navLinks, legalLinks, copyright, hiring }: 
         {hiring && (
           <p className={styles.hiring}>
             <span>{hiring.text}</span>
-            <a href={hiring.href} rel="noreferrer">
+            <a href={hiring.href} {...newTabProps(hiring.href)}>
               {hiring.label}
             </a>
           </p>
@@ -35,7 +42,7 @@ export function Footer({ beliefLine, navLinks, legalLinks, copyright, hiring }: 
           {navLinks.map((l) => (
             <li key={l.href}>
               {l.href.startsWith('http') ? (
-                <a href={l.href} rel="noreferrer">
+                <a href={l.href} {...newTabProps(l.href)}>
                   {l.label}
                 </a>
               ) : (

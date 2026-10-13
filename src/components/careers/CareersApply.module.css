@@ -13,7 +13,7 @@
 
 /* ── block headers ── */
 .blockHead {
-  margin-bottom: var(--sp-40);
+  margin-bottom: var(--sp-32);
   max-width: 56ch;
 }
 
@@ -33,36 +33,28 @@
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: var(--text-lead);
   line-height: var(--lh-body);
-  color: #b8b1a8;
+  color: #d8d2c8;
   max-width: 46ch;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.5);
 }
 
-/* ── role cards — a handful of named roles, sized to fill the section
-   generously rather than packed tight (was designed for 4 cards incl. the
-   open-application entry; that no longer renders here, so these run bigger) */
+/* ── role cards — short on purpose: title, pay, one fact row, apply ── */
 .roleGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: var(--sp-32);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-24);
 }
 
 .roleCard {
   border-radius: var(--r-lg);
-  padding: clamp(var(--sp-32), 4vw, var(--sp-48));
-  min-height: 280px;
+  padding: clamp(var(--sp-24), 3vw, var(--sp-32));
   display: flex;
   flex-direction: column;
-  gap: var(--sp-16);
+  gap: var(--sp-12);
+  background: rgba(20, 18, 16, 0.72);
   box-shadow:
     inset 0 1px 0 rgba(245, 241, 234, 0.1),
     0 18px 44px rgba(0, 0, 0, 0.4);
-}
-
-.roleTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--sp-16);
 }
 
 .roleTitle {
@@ -75,29 +67,45 @@
   font-weight: 400;
 }
 
-.roleType {
-  flex-shrink: 0;
+.rolePay {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--paper);
+}
+
+.roleFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4) var(--sp-16);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
   color: #b8b1a8;
 }
 
-.roleMeta {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: var(--fs-14);
-  letter-spacing: 0.04em;
-  color: #9d968c;
+.roleFacts li + li {
+  position: relative;
 }
 
-.roleBlurb {
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: var(--text-lead);
-  line-height: var(--lh-body);
-  color: #d8d2c8;
-  flex: 1;
+.roleFacts li + li::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--sp-16) / -2 - 1px);
+  top: 50%;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
 }
 
 .roleApply {
   align-self: flex-start;
-  margin-top: var(--sp-8);
+  margin-top: var(--sp-16);
   background: none;
   border: none;
   padding: 0;
@@ -116,9 +124,14 @@
 /* ── application form ── */
 .formPanel {
   border-radius: var(--r-lg);
-  padding: clamp(var(--sp-32), 4vw, var(--sp-64));
+  padding: clamp(var(--sp-24), 4vw, var(--sp-48));
   max-width: 760px;
   margin-inline: auto;
+  /* solid ink: the world behind (window light, botanicals) must not show
+     through the fields, or labels and placeholders read as overlapping it */
+  background: #15120f;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   box-shadow:
     inset 0 1px 0 rgba(245, 241, 234, 0.1),
     0 24px 60px rgba(0, 0, 0, 0.45);
@@ -126,14 +139,16 @@
 
 .form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-20);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-24) var(--sp-24);
+  align-items: start;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: var(--sp-8);
+  min-width: 0;
 }
 
 .fieldWide {
@@ -143,7 +158,9 @@
 .field label {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: var(--fs-14);
-  color: #cfc8bd;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #e4ded4;
 }
 
 .optional {
@@ -154,11 +171,14 @@
 .field select,
 .field textarea {
   width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: var(--fs-16);
+  line-height: 1.3;
   color: var(--paper);
-  background: rgba(245, 241, 234, 0.06);
-  border: 1px solid rgba(245, 241, 234, 0.16);
+  background: #211d19;
+  border: 1px solid rgba(245, 241, 234, 0.2);
   border-radius: var(--r-sm);
   padding: var(--sp-12) var(--sp-16);
   transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
@@ -171,7 +191,8 @@
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #8f887e;
+  color: #7d766c;
+  opacity: 1;
 }
 
 .field input:focus,
@@ -179,17 +200,27 @@
 .field textarea:focus {
   outline: none;
   border-color: rgba(245, 241, 234, 0.5);
-  background: rgba(245, 241, 234, 0.09);
+  background: #2a2520;
 }
 
 .field select {
   appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
+  padding-right: calc(var(--sp-16) + 28px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%23cfc8bd' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--sp-16) center;
+}
+
+.field select option {
+  background: #211d19;
+  color: var(--paper);
 }
 
 .file {
   cursor: pointer;
-  padding: var(--sp-12) var(--sp-16);
+  padding: var(--sp-8) var(--sp-12);
 }
 
 .file::file-selector-button {
@@ -277,7 +308,7 @@
 
 @media (max-width: 640px) {
   .form {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

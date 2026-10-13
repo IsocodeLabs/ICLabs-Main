@@ -1,8 +1,9 @@
+import Image from 'next/image'
 import { Section } from '@/components/site/Section'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
 import { ProductMark } from './ProductMark'
 import styles from './Sections.module.css'
+import monogramWhite from '../../../public/assets/brand/il-monogram-white.png'
 
 type Product = {
   name: string
@@ -24,46 +25,60 @@ type LabsProps = {
 /**
  * Labs & Innovation — the proof. No case studies; the products are the
  * evidence. Every card must look genuinely crafted.
+ *
+ * Labs reads as its own entity inside the studio's page: one framed block with
+ * an ink masthead (monogram + "Labs", "by ISOCODELABS") that holds the intro
+ * and the four products, so it's clearly a sub-brand rather than another
+ * section of studio copy.
  */
 export function Labs({ beliefBeat, heading, body, products }: LabsProps) {
   return (
     <Section id="labs" trail="left" flora={{ side: 'left', flip: true, scale: 1.05 }} className={styles.section}>
       <div className={styles.inner}>
-        <Reveal className={styles.panel}>
-          <div className={styles.eyebrowRow}>
-            <Eyebrow>{heading}</Eyebrow>
+        <div className={styles.labsFrame}>
+          <div className={`theme-ink ${styles.labsMasthead}`}>
+            <span className={styles.labsLockup}>
+              <Image src={monogramWhite} alt="" className={styles.labsMark} />
+              <span className={styles.labsName}>{heading}</span>
+            </span>
+            <span className={`mono-label ${styles.labsParent}`}>by ISOCODELABS</span>
           </div>
-          <h2 className={styles.beliefBeat}>{formatBeat(beliefBeat)}</h2>
-          <p className={styles.leadMuted} style={{ marginTop: 'var(--sp-24)', maxWidth: '48ch' }}>
-            {body}
-          </p>
-        </Reveal>
 
-        <Reveal stagger="[data-product]" className={styles.labsGrid}>
-          {products.map((p) => (
-            <a key={p.slug} data-product className={styles.productCard} {...linkProps(p.outboundURL)}>
-              {/* one logo family: a sheared monogram + tracked wordmark, the
-                  same lockup as the studio's own — ink on paper */}
-              <div className={styles.productLogoTile}>
-                <div className={styles.productLockup}>
-                  <ProductMark slug={p.slug} name={p.name} className={styles.productMark} />
-                  <span className={styles.productWordmark}>{p.name}</span>
-                </div>
-              </div>
-              <div className={styles.productBody}>
-                <p className={styles.productBlurb}>{p.blurb}</p>
-                <div className={styles.productFoot}>
-                  <span className={`mono-label ${styles.productFrom}`}>
-                    {/coming soon/i.test(p.statusLabel) ? 'Notify me →' : 'Visit →'}
-                  </span>
-                  {p.statusLabel && (
-                    <span className={`mono-label ${styles.productStatus}`}>{p.statusLabel}</span>
-                  )}
-                </div>
-              </div>
-            </a>
-          ))}
-        </Reveal>
+          <div className={styles.labsBody}>
+            <Reveal>
+              <h2 className={styles.beliefBeat}>{formatBeat(beliefBeat)}</h2>
+              <p className={styles.leadMuted} style={{ marginTop: 'var(--sp-24)', maxWidth: '48ch' }}>
+                {body}
+              </p>
+            </Reveal>
+
+            <Reveal stagger="[data-product]" className={styles.labsGrid}>
+              {products.map((p) => (
+                <a key={p.slug} data-product className={styles.productCard} {...linkProps(p.outboundURL)}>
+                  {/* one logo family: a sheared monogram + tracked wordmark, the
+                      same lockup as the studio's own — ink on paper */}
+                  <div className={styles.productLogoTile}>
+                    <div className={styles.productLockup}>
+                      <ProductMark slug={p.slug} name={p.name} className={styles.productMark} />
+                      <span className={styles.productWordmark}>{p.name}</span>
+                    </div>
+                  </div>
+                  <div className={styles.productBody}>
+                    <p className={styles.productBlurb}>{p.blurb}</p>
+                    <div className={styles.productFoot}>
+                      <span className={`mono-label ${styles.productFrom}`}>
+                        {/coming soon/i.test(p.statusLabel) ? 'Notify me →' : 'Visit →'}
+                      </span>
+                      {p.statusLabel && (
+                        <span className={`mono-label ${styles.productStatus}`}>{p.statusLabel}</span>
+                      )}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </Reveal>
+          </div>
+        </div>
       </div>
     </Section>
   )
