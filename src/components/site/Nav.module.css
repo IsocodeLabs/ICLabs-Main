@@ -16,6 +16,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-12);
+  /* tap target ≥ 24px even when only the monogram shows (phones) */
+  padding: 8px;
+  margin: -8px;
 }
 
 .mark {

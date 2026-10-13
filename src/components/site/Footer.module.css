@@ -105,3 +105,11 @@
 .legalRow a:hover {
   color: var(--paper);
 }
+
+/* tap target ≥ 24px (WCAG 2.2): padding grows the hit area, the equal negative
+   margin keeps the layout exactly where it was */
+.legalRow a {
+  display: inline-block;
+  padding-block: 8px;
+  margin-block: -8px;
+}

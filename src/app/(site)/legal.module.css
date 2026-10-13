@@ -14,7 +14,10 @@
 
 .back {
   display: inline-block;
-  margin-bottom: var(--sp-32);
+  /* tap target ≥ 24px; margins offset the padding so nothing moves */
+  padding-block: 6px;
+  margin-top: -6px;
+  margin-bottom: calc(var(--sp-32) - 6px);
   color: var(--grey);
   font-size: var(--fs-14);
   transition: color var(--dur-fast) var(--ease-out);

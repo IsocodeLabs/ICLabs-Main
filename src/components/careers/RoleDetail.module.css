@@ -21,7 +21,10 @@
 .crumb {
   display: block;
   width: fit-content;
-  margin-bottom: var(--sp-24);
+  /* tap target ≥ 24px; margins offset the padding so nothing moves */
+  padding-block: 6px;
+  margin-top: -6px;
+  margin-bottom: calc(var(--sp-24) - 6px);
   font-size: var(--fs-14);
   color: var(--paper);
   opacity: 0.7;
@@ -299,7 +302,8 @@
 
 .back {
   display: inline-block;
-  margin-top: var(--sp-32);
+  padding-block: 6px;
+  margin-top: calc(var(--sp-32) - 6px);
   font-size: var(--fs-16);
   font-weight: 600;
   color: var(--paper);

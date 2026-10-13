@@ -21,6 +21,10 @@
 }
 
 .wordmark {
+  /* tap target ≥ 24px; negative margin keeps the top bar's height */
+  display: inline-block;
+  padding-block: 8px;
+  margin-block: -8px;
   font-weight: 600;
   font-size: var(--fs-12);
   letter-spacing: 0.16em;

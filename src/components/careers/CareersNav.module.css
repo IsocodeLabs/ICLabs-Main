@@ -22,6 +22,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-12);
+  /* tap target ≥ 24px even when only the monogram shows (phones) */
+  padding: 8px;
+  margin: -8px;
 }
 
 .mark {
@@ -85,4 +88,11 @@
   .name {
     display: none;
   }
+}
+
+/* tap target ≥ 24px (WCAG 2.2): padding grows the hit area, the equal negative
+   margin keeps the layout exactly where it was */
+.back {
+  padding-block: 6px;
+  margin-block: -6px;
 }
