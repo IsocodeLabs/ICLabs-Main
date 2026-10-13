@@ -52,6 +52,24 @@
   }
 }
 
+/* phones and tablets held landscape (≤ 1024px wide): the portrait plates
+   cover-fit to nothing but sky, so show the landscape scene instead */
+.sharedLandscape {
+  background-image: var(--world-landscape);
+  background-position: center 62%;
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  .sharedPhone,
+  .sharedIpad {
+    display: none;
+  }
+
+  .sharedLandscape {
+    display: block;
+  }
+}
+
 /* paper wash for legibility — light at the top (hero belief), building toward
    the foot so the scrolling sections below stay readable over the art */
 .sharedScrim {
@@ -193,5 +211,9 @@
 
   .floraSway {
     background-image: var(--world-flora-set);
+  }
+
+  .sharedLandscape {
+    background-image: var(--world-landscape-set);
   }
 }

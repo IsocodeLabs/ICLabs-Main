@@ -13,7 +13,7 @@ import { careerRoles } from '@/lib/seed-data'
  * a founder has edited is left alone. Saving a role in the admin persists the
  * upgraded text; once all three are saved, this file can go.
  */
-type CopyField = 'payLine' | 'blurb' | 'about' | 'compensation' | 'responsibilities' | 'lookingFor'
+type CopyField = 'title' | 'payLine' | 'blurb' | 'about' | 'compensation' | 'responsibilities' | 'lookingFor'
 type LegacyCopy = Record<string, Partial<Record<CopyField, string | string[] | null>>>
 
 const LEGACY: LegacyCopy = {
@@ -34,6 +34,7 @@ const LEGACY: LegacyCopy = {
     ]
   },
   "product-manager-intern": {
+    "title": "Product Manager Intern",
     "payLine": "₹50,000/month",
     "blurb": "Turn what a client says into software our engineers can build.",
     "about": "You will sit between our clients and our engineers. You take a client’s requirements, turn them into a clear product spec, and see the project through to delivery. You also design and spec the internal tools we build for ourselves.",

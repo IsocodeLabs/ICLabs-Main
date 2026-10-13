@@ -25,6 +25,9 @@
   /* tap target ≥ 24px even when only the monogram shows (phones) */
   padding: 8px;
   margin: -8px;
+  /* never squeezed: on 360px phones the pill used to shrink this to 0px and
+     the monogram vanished */
+  flex-shrink: 0;
 }
 
 .brandMark {
@@ -191,4 +194,11 @@
 .back {
   padding-block: 6px;
   margin-block: -6px;
+}
+
+/* footer legal links: tap target ≥ 24px without moving the row */
+.foot a {
+  display: inline-block;
+  padding-block: 8px;
+  margin-block: -8px;
 }

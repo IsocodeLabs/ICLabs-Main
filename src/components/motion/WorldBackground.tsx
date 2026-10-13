@@ -12,6 +12,8 @@ import ipadAvif from '@/assets/art/world-ipad.avif'
 import ipadWebp from '@/assets/art/world-ipad.webp'
 import phoneAvif from '@/assets/art/world-phone.avif'
 import phoneWebp from '@/assets/art/world-phone.webp'
+import landscapeAvif from '@/assets/art/hero-static.avif'
+import landscapeWebp from '@/assets/art/hero-static.webp'
 import styles from './WorldBackground.module.css'
 
 // hashed AVIF/WebP art as CSS variables (see lib/art.ts); CSS still decides
@@ -21,6 +23,8 @@ const ART = artVars({
   'world-flora': { avif: floraAvif, webp: floraWebp },
   'world-ipad': { avif: ipadAvif, webp: ipadWebp },
   'world-phone': { avif: phoneAvif, webp: phoneWebp },
+  // phones / tablets held landscape: the portrait plates would crop to sky
+  'world-landscape': { avif: landscapeAvif, webp: landscapeWebp },
 })
 
 /**
@@ -93,6 +97,7 @@ export function WorldBackground() {
       {/* phone / iPad: one still image behind everything, plus a legibility scrim */}
       <div className={`${styles.sharedPlate} ${styles.sharedPhone}`} />
       <div className={`${styles.sharedPlate} ${styles.sharedIpad}`} />
+      <div className={`${styles.sharedPlate} ${styles.sharedLandscape}`} />
       <div className={styles.sharedScrim} />
     </div>
   )

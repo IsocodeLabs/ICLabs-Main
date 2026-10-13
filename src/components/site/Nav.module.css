@@ -19,6 +19,9 @@
   /* tap target ≥ 24px even when only the monogram shows (phones) */
   padding: 8px;
   margin: -8px;
+  /* never squeezed: on 360px phones the pill used to shrink this to 0px and
+     the monogram vanished */
+  flex-shrink: 0;
 }
 
 .mark {
