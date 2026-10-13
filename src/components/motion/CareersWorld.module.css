@@ -15,7 +15,7 @@
 .plate {
   position: absolute;
   inset: -4%;
-  background-image: url('/assets/careers/careers-base.jpg');
+  background-image: url('/assets/careers/careers-base.webp');
   background-size: cover;
   background-position: center 42%;
   transform: scale(1.06);
@@ -71,10 +71,30 @@
     radial-gradient(120% 90% at 50% 22%, transparent 42%, rgba(13, 11, 10, 0.4) 100%);
 }
 
-/* ── phone / iPad: one still device crop behind the whole page ── */
+/* ── phone / iPad: one still device crop behind the whole page ──
+   Hidden layers are display:none, so their background images never download. */
+.sharedPlate,
+.sharedScrim {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .plate,
+  .layer,
+  .scrim {
+    display: none;
+  }
+
+  .sharedPlate,
+  .sharedScrim {
+    display: block;
+  }
+}
+
 .sharedPlate {
   position: absolute;
   inset: 0;
+  background-image: url('/assets/careers/careers-ipad.webp');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -90,6 +110,12 @@
     rgba(13, 11, 10, 0.5) 74%,
     rgba(13, 11, 10, 0.76) 100%
   );
+}
+
+@media (max-width: 767px) {
+  .sharedPlate {
+    background-image: url('/assets/careers/careers-phone.webp');
+  }
 }
 
 /* static motion tier — hold a still frame */

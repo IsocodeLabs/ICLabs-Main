@@ -1,6 +1,6 @@
 'use client'
 
-import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
+import { useMotionTier } from '@/lib/capability'
 import styles from './CareersWorld.module.css'
 
 /**
@@ -11,32 +11,22 @@ import styles from './CareersWorld.module.css'
  * journey — ambient CSS motion only, gated by the motion tier.
  *
  * Phone / iPad get one still, cover-fitted device crop (same pattern as the hero
- * device backdrops), no motion.
+ * device backdrops), no motion. Which set shows is decided by CSS media queries,
+ * not JS: the server-rendered page is already right for the device, and the
+ * browser only downloads the plates for the layers it actually displays.
  */
 export function CareersWorld() {
   const tier = useMotionTier()
-  const isDesktop = useIsDesktop()
-  const isPhone = useIsPhone()
-
-  const shared = !isDesktop
-  const sharedSrc = isPhone
-    ? '/assets/careers/careers-phone.jpg'
-    : '/assets/careers/careers-ipad.jpg'
-
-  if (shared) {
-    return (
-      <div aria-hidden className={styles.root}>
-        <div className={styles.sharedPlate} style={{ backgroundImage: `url('${sharedSrc}')` }} />
-        <div className={styles.sharedScrim} />
-      </div>
-    )
-  }
 
   return (
     <div aria-hidden className={`${styles.root} ${tier === 'static' ? styles.still : ''}`}>
+      {/* desktop (≥ 1025px) */}
       <div className={styles.plate} />
       <div className={styles.layer} />
       <div className={styles.scrim} />
+      {/* iPad / phone (≤ 1024px) */}
+      <div className={styles.sharedPlate} />
+      <div className={styles.sharedScrim} />
     </div>
   )
 }
