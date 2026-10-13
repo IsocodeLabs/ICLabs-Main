@@ -24,7 +24,7 @@ export function ComingSoon({ slug, page }: Props) {
       <main className={styles.page}>
         <header className={styles.top}>
           <Link href="https://isocodelabs.com" className={styles.brand} aria-label="ISOCODELABS — home">
-            <Image src={monogram} alt="" className={styles.brandMark} priority />
+            <Image src={monogram} alt="" className={styles.brandMark} sizes="20px" priority />
             <span className={styles.brandName}>ISOCODELABS</span>
           </Link>
           <Link href="https://isocodelabs.com" className={styles.back}>

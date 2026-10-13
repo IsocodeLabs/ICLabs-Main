@@ -19,7 +19,7 @@ export function Footer({ beliefLine, navLinks, legalLinks, copyright, hiring }: 
     <Section reverse flora={false} trail="center" className={styles.footer}>
       <footer className={styles.inner}>
         <div className={styles.brand}>
-          <Image src={monogramWhite} alt="" className={styles.mark} />
+          <Image src={monogramWhite} alt="" className={styles.mark} sizes="20px" />
           <span className={styles.name}>ISOCODELABS</span>
         </div>
         <p className={styles.belief}>{beliefLine}</p>

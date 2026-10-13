@@ -4,6 +4,15 @@ import { useEffect, useRef } from 'react'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
 import { Button } from '@/components/ui/Button'
+import { ArtPicture } from '@/components/ui/ArtPicture'
+import skyAvif from '@/assets/art/hero-sky.avif'
+import skyWebp from '@/assets/art/hero-sky.webp'
+import figuresAvif from '@/assets/art/hero-figures.avif'
+import figuresWebp from '@/assets/art/hero-figures.webp'
+import floraAvif from '@/assets/art/hero-flora.avif'
+import floraWebp from '@/assets/art/hero-flora.webp'
+import stillAvif from '@/assets/art/hero-static.avif'
+import stillWebp from '@/assets/art/hero-static.webp'
 import styles from './Hero.module.css'
 
 type HeroProps = {
@@ -120,7 +129,6 @@ export function Hero({ beliefLine, subline, scrollBeats, primaryCta }: HeroProps
 
   // desktop-but-reduced-motion still needs an image (the site's desktop
   // backdrop is the sky, not the meadow); phone/iPad get it from WorldBackground
-  const stillSrc = '/assets/hero/hero-static.webp'
   const sceneAlt =
     'A painter at an easel and a developer at a glowing laptop, at work together in a sunlit wildflower meadow.'
 
@@ -136,27 +144,40 @@ export function Hero({ beliefLine, subline, scrollBeats, primaryCta }: HeroProps
           /* the living scene: sky base, breathing figures, pulsing laptop
              glow, swaying grass — all transforms, all cheap */
           <div className={styles.scene} role="img" aria-label={sceneAlt}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/hero/hero-l1-sky.webp" alt="" className={styles.layer} fetchPriority="high" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/hero/hero-l2-figures.webp"
+            {/* desktopOnly: the server renders this scene by default, so phones
+                and tablets must not download it before the client swaps layouts */}
+            <ArtPicture avif={skyAvif} webp={skyWebp} alt="" className={styles.layer} desktopOnly priority />
+            <ArtPicture
+              avif={figuresAvif}
+              webp={figuresWebp}
               alt=""
               className={`${styles.layer} ${styles.figuresLayer}`}
-              fetchPriority="high"
+              desktopOnly
+              priority
             />
             <div className={styles.frame} aria-hidden>
               <div className={styles.glow} />
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/hero/hero-l3-flora.webp" alt="" className={`${styles.layer} ${styles.floraLayer}`} />
+            <ArtPicture
+              avif={floraAvif}
+              webp={floraWebp}
+              alt=""
+              className={`${styles.layer} ${styles.floraLayer}`}
+              desktopOnly
+            />
           </div>
         ) : sharedBg ? (
           /* phone / iPad — no image here; the shared fixed background shows through */
           <div className={styles.sharedScene} role="img" aria-label={sceneAlt} />
         ) : (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={stillSrc} alt={sceneAlt} className={styles.staticScene} fetchPriority="high" />
+          <ArtPicture
+            avif={stillAvif}
+            webp={stillWebp}
+            alt={sceneAlt}
+            className={styles.staticScene}
+            desktopOnly
+            priority
+          />
         )}
         <div className={styles.grade} aria-hidden />
 

@@ -7,10 +7,30 @@
 }
 
 /* ── phone / iPad: one still device-composed image behind the whole page.
-   Fixed + cover + no-repeat → no tiling seam, no crop mismatch with the hero. */
+   Fixed + cover + no-repeat → no tiling seam, no crop mismatch with the hero.
+   Shown only ≤ 1024px; display:none layers never download their image. */
+.sharedPlate,
+.sharedScrim {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .plate,
+  .scrim,
+  .flora {
+    display: none;
+  }
+
+  .sharedPlate,
+  .sharedScrim {
+    display: block;
+  }
+}
+
 .sharedPlate {
   position: absolute;
   inset: 0;
+  background-image: var(--world-ipad);
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -50,7 +70,7 @@
   bottom: 0;
   left: 0;
   width: 120%;
-  background-image: url('/assets/sections/section-bg-sky.webp');
+  background-image: var(--world-sky);
   background-size: 100% auto;
   background-position: left top;
   will-change: transform;
@@ -91,7 +111,7 @@
 .floraSway {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/sections/section-flora-edges.webp');
+  background-image: var(--world-flora);
   background-size: cover;
   background-position: center bottom;
   transform-origin: bottom center;
@@ -112,6 +132,13 @@
   }
 }
 
+/* phones (≤ 767px, same breakpoint the hero uses) get the portrait plate */
+@media (max-width: 767px) {
+  .sharedPlate {
+    background-image: var(--world-phone);
+  }
+}
+
 @media (max-width: 640px) {
   .flora {
     height: clamp(150px, 30vh, 240px);
@@ -129,5 +156,26 @@
   }
   .scrim {
     opacity: 0.38;
+  }
+}
+
+/* AVIF where the browser supports image-set() with type(); WebP otherwise */
+@supports (background-image: image-set("data:image/gif;base64,R0lGODlhAQABAAAAACw=" type("image/avif"))) {
+  .plateDrift {
+    background-image: var(--world-sky-set);
+  }
+
+  .floraSway {
+    background-image: var(--world-flora-set);
+  }
+
+  .sharedPlate {
+    background-image: var(--world-ipad-set);
+  }
+
+  @media (max-width: 767px) {
+    .sharedPlate {
+      background-image: var(--world-phone-set);
+    }
   }
 }

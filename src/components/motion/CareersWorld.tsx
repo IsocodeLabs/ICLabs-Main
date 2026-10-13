@@ -1,7 +1,23 @@
 'use client'
 
 import { useMotionTier } from '@/lib/capability'
+import { artVars } from '@/lib/art'
+import baseAvif from '@/assets/art/careers-base.avif'
+import baseWebp from '@/assets/art/careers-base.webp'
+import layerAvif from '@/assets/art/careers-layer.avif'
+import layerWebp from '@/assets/art/careers-layer.webp'
+import ipadAvif from '@/assets/art/careers-ipad.avif'
+import ipadWebp from '@/assets/art/careers-ipad.webp'
+import phoneAvif from '@/assets/art/careers-phone.avif'
+import phoneWebp from '@/assets/art/careers-phone.webp'
 import styles from './CareersWorld.module.css'
+
+const ART = artVars({
+  'careers-base': { avif: baseAvif, webp: baseWebp },
+  'careers-layer': { avif: layerAvif, webp: layerWebp },
+  'careers-ipad': { avif: ipadAvif, webp: ipadWebp },
+  'careers-phone': { avif: phoneAvif, webp: phoneWebp },
+})
 
 /**
  * The Careers world — the dark "craftsmanship at work" atelier. Same anchor-world
@@ -19,7 +35,7 @@ export function CareersWorld() {
   const tier = useMotionTier()
 
   return (
-    <div aria-hidden className={`${styles.root} ${tier === 'static' ? styles.still : ''}`}>
+    <div aria-hidden className={`${styles.root} ${tier === 'static' ? styles.still : ''}`} style={ART}>
       {/* desktop (≥ 1025px) */}
       <div className={styles.plate} />
       <div className={styles.layer} />

@@ -2,8 +2,24 @@
 
 import { useEffect, useRef } from 'react'
 import { ScrollTrigger } from '@/lib/gsap'
-import { useIsDesktop, useIsPhone, useMotionTier } from '@/lib/capability'
+import { useIsDesktop, useMotionTier } from '@/lib/capability'
+import { artVars } from '@/lib/art'
+import skyAvif from '@/assets/art/world-sky.avif'
+import skyWebp from '@/assets/art/world-sky.webp'
+import floraAvif from '@/assets/art/world-flora.avif'
+import floraWebp from '@/assets/art/world-flora.webp'
+import ipadAvif from '@/assets/art/world-ipad.avif'
+import ipadWebp from '@/assets/art/world-ipad.webp'
+import phoneAvif from '@/assets/art/world-phone.avif'
+import phoneWebp from '@/assets/art/world-phone.webp'
 import styles from './WorldBackground.module.css'
+
+const ART = artVars({
+  'world-sky': { avif: skyAvif, webp: skyWebp },
+  'world-flora': { avif: floraAvif, webp: floraWebp },
+  'world-ipad': { avif: ipadAvif, webp: ipadWebp },
+  'world-phone': { avif: phoneAvif, webp: phoneWebp },
+})
 
 /**
  * The site's one fixed painterly stage, behind every section including the hero.
@@ -17,18 +33,22 @@ import styles from './WorldBackground.module.css'
  * behind the whole page, so the hero and the sections below share one seamless
  * background with no tiling seam and no crop mismatch. A paper scrim keeps the
  * scrolling copy legible over it.
+ *
+ * Both sets are always rendered; CSS media queries show one. That way the
+ * server-rendered page is right for the device before any JS runs, and the
+ * browser only downloads the art of the layers it displays (hidden layers'
+ * background images are never fetched). Art comes from src/assets/art
+ * (AVIF + WebP, content-hashed, cached for a year — see scripts/build-art.mjs).
  */
 export function WorldBackground() {
   const plateRef = useRef<HTMLDivElement>(null)
   const scrimRef = useRef<HTMLDivElement>(null)
   const floraRef = useRef<HTMLDivElement>(null)
   const tier = useMotionTier()
-  const isPhone = useIsPhone()
   const isDesktop = useIsDesktop()
 
-  // phone + iPad share one still, cover-fitted image behind the whole page
+  // phone + iPad share one still, cover-fitted image (CSS picks it); no motion
   const shared = !isDesktop
-  const sharedSrc = isPhone ? '/assets/hero/hero-phone.jpg' : '/assets/hero/hero-ipad.jpg'
 
   useEffect(() => {
     // scroll-driven evolution is a desktop, full-motion affair only
@@ -58,19 +78,9 @@ export function WorldBackground() {
     return () => st.kill()
   }, [tier, shared])
 
-  // ── phone / iPad: one still image behind everything, plus a legibility scrim
-  if (shared) {
-    return (
-      <div aria-hidden className={styles.root}>
-        <div className={styles.sharedPlate} style={{ backgroundImage: `url('${sharedSrc}')` }} />
-        <div className={styles.sharedScrim} />
-      </div>
-    )
-  }
-
-  // ── desktop: the living sky + flora stage
   return (
-    <div aria-hidden className={styles.root}>
+    <div aria-hidden className={styles.root} style={ART}>
+      {/* desktop (≥ 1025px): the living sky + flora stage */}
       <div ref={plateRef} className={styles.plate}>
         <div className={styles.plateDrift} />
       </div>
@@ -78,6 +88,9 @@ export function WorldBackground() {
       <div ref={floraRef} className={styles.flora}>
         <div className={styles.floraSway} />
       </div>
+      {/* phone / iPad (≤ 1024px): one still image behind everything + legibility scrim */}
+      <div className={styles.sharedPlate} />
+      <div className={styles.sharedScrim} />
     </div>
   )
 }

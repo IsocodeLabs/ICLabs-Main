@@ -15,7 +15,7 @@
 .plate {
   position: absolute;
   inset: -4%;
-  background-image: url('/assets/careers/careers-base.webp');
+  background-image: var(--careers-base);
   background-size: cover;
   background-position: center 42%;
   transform: scale(1.06);
@@ -36,7 +36,7 @@
 .layer {
   position: absolute;
   inset: -3%;
-  background-image: url('/assets/careers/careers-layer.webp');
+  background-image: var(--careers-layer);
   background-size: cover;
   background-position: center;
   transform-origin: 50% 62%;
@@ -94,7 +94,7 @@
 .sharedPlate {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/careers/careers-ipad.webp');
+  background-image: var(--careers-ipad);
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -114,7 +114,7 @@
 
 @media (max-width: 767px) {
   .sharedPlate {
-    background-image: url('/assets/careers/careers-phone.webp');
+    background-image: var(--careers-phone);
   }
 }
 
@@ -134,5 +134,26 @@
   }
   .plate {
     transform: scale(1.03);
+  }
+}
+
+/* AVIF where the browser supports image-set() with type(); WebP otherwise */
+@supports (background-image: image-set("data:image/gif;base64,R0lGODlhAQABAAAAACw=" type("image/avif"))) {
+  .plate {
+    background-image: var(--careers-base-set);
+  }
+
+  .layer {
+    background-image: var(--careers-layer-set);
+  }
+
+  .sharedPlate {
+    background-image: var(--careers-ipad-set);
+  }
+
+  @media (max-width: 767px) {
+    .sharedPlate {
+      background-image: var(--careers-phone-set);
+    }
   }
 }

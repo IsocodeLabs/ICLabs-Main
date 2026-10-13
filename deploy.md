@@ -22,6 +22,19 @@ This file is the go-live checklist. Do the steps in order and tick them off. [`d
 
 ---
 
+## Image caching (branch `perf/site-images`): one Cloudflare setting
+
+The site's art is served from content-hashed URLs under `/_next/static/media/` with `Cache-Control: public, max-age=31536000, immutable`. Browsers keep these files for a year and never re-request them. Optimized photos and logos (`/_next/image?...`) are cached for 30 days, and plain `/public` files for 7 days.
+
+Cloudflare only edge-caches URLs it treats as static, and `/_next/image?...` has no file extension. Today it shows `cf-cache-status: DYNAMIC`, so every Cloud Run instance re-encodes those images. Add one **Cache Rule** in the Cloudflare dashboard (Caching → Cache Rules) for isocodelabs.com:
+
+- **When:** URI Path starts with `/_next/image` **or** URI Path starts with `/_next/static/`
+- **Then:** Eligible for cache. Edge TTL: use the cache-control header from the origin. Browser TTL: respect origin.
+
+Check it afterwards: `curl -sI "https://isocodelabs.com/_next/static/media/<any art file>"` should show `cf-cache-status: HIT` on the second request.
+
+---
+
 ## Careers PRD v3 (job pages + final copy): extra rollout steps
 
 Branch `feat/careers-job-pages`. Merging it to `main` deploys it. The code itself needs no new infrastructure, env vars or secrets.
