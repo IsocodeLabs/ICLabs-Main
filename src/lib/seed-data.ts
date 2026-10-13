@@ -593,43 +593,87 @@ export const legalPages: LegalPage[] = [
 ]
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Careers — the dark "craftsmanship at work" world (v3.4), Oct 2026 hiring
-   cycle (v2). Copy is seed-fallback-safe; the CMS wins once roles exist there.
-   Role copy is transcribed exactly from the hiring-cycle PRD — in particular the
-   Business Growth pay text must never be shortened anywhere.
+   Careers — the dark "craftsmanship at work" world. Oct 2026 hiring cycle.
+   Copy per careers PRD v3 (job pages + final copy). Seed-fallback-safe: the
+   CMS wins once roles exist there, and `npm run careers:migrate` rewrites role
+   copy whose copyVersion is older than CAREERS_COPY_VERSION.
+
+   Public copy stays discreet: no targets, deal counts or sizes, industries,
+   client names or commission percentages, and nothing saying interns build or
+   deliver client work. Pay strings are exact — never shorten them.
    ──────────────────────────────────────────────────────────────────────────── */
 
+export const CAREERS_COPY_VERSION = 3
+
+const APPLY_STEP = { title: 'Apply', description: 'Your CV and a few details' }
+
 export const careersContent = {
+  // meta / OG (main careers page)
+  metaTitle: 'Careers | ISOCODELABS',
+  metaDescription: 'ISOCODELABS is hiring across 3 roles. Remote. 6 months. Stipends up to ₹1,00,000/month.',
+  ogTitle: 'We’re hiring at ISOCODELABS.',
+  ogDescription: '3 roles. Remote. 6 months. Stipends up to ₹1,00,000/month.',
+  // hero
   eyebrow: 'Careers',
-  heading: 'For the few who’d rather build things properly.',
+  heading: 'We’re hiring.',
   pitch:
-    'Isocode is a small, senior studio held to a single bar — craft. If “good enough” has never once sat right with you, this is where that instinct is the job, not a liability.',
-  metaDescription:
-    'Isocode is hiring remote interns in business growth, product, and engineering, plus an always open application.',
-  barEyebrow: 'The bar',
-  barHeading: 'What we hire for.',
-  barBody: [
-    'We are not hiring seat-fillers. We hire people who are in the top fraction of their craft — engineers, designers, and operators who care how a thing is made, not only that it ships.',
-    'The team stays small on purpose. That means real ownership from week one, work reviewed like it matters, and no hiding behind process. It also means the bar to get in is high, and we keep it there.',
-  ],
-  barPoints: [
-    { title: 'Craft over credentials', body: 'Show us something you made. A repo, a design, a deal you closed — proof beats a résumé line.' },
-    { title: 'Ownership, not tickets', body: 'You’ll own outcomes end to end, with the seniority around you to learn fast.' },
-    { title: 'Remote, senior, quiet', body: 'Work from anywhere, on your own clock. We optimise for deep work, not presence theatre.' },
-  ],
+    'We’re growing fast, and we’re building the team that takes us to the next stage. 3 roles. Remote. 6 months.',
+  heroCta: 'See open roles →',
+  // roles
   rolesEyebrow: 'Open roles',
-  rolesHeading: 'Where we’re hiring.',
-  rolesNote: 'Remote internships, six months each. We hire the person first, then shape the role around them.',
+  rolesHeading: '3 roles. One standard.',
+  rolesNote: 'Read the role. Apply in two minutes.',
+  // smaller + muted, under the roles sub and in every job page header
+  availabilityNote: 'Limited openings. Applications reviewed on a rolling basis.',
   rolesEmpty: 'No open roles right now.',
-  openEyebrow: 'Open application',
+  cardCta: 'View role →',
+  pausedBadge: 'Applications paused',
+  // open application section
   openHeading: 'Don’t see your role?',
-  openBody:
-    'If you are exceptional at something we haven’t listed, tell us. Every open application is read by a founder.',
+  openBody: 'If you’re exceptional at what you do, we want to hear from you.',
   openCta: 'Send an open application →',
-  formEyebrow: 'Apply',
-  formHeading: 'Tell us who you are.',
-  formIntro: 'Round 1 is short: your CV and a few basic details.',
-  successMessage: 'Thanks, your application is in. If you’re shortlisted, we’ll email you the next steps.',
+  // the bar
+  barEyebrow: 'The bar',
+  barHeading: 'We work by one rule.',
+  barIntro: 'Good enough is never the standard.',
+  // main-page form: open application only
+  openForm: {
+    eyebrow: 'Open application',
+    heading: 'Tell us what you’re exceptional at.',
+    sub: 'Two minutes. If there’s a fit, we’ll email you.',
+    privacy: 'Everything here stays private. Read only by our team.',
+    submit: 'Apply',
+    success: 'You’re in. If there’s a fit, we’ll email you.',
+    duplicate: 'You’ve already sent an open application.',
+  },
+  // job pages (shared blocks)
+  job: {
+    aboutHeading: 'About ISOCODELABS',
+    about:
+      'ISOCODELABS is a software studio that designs and builds premium software for growing businesses. We’re a small team that holds every piece of work to one standard, and we’re growing fast.',
+    roleHeading: 'The role',
+    doHeading: 'What you’ll do',
+    bringHeading: 'What you bring',
+    niceHeading: 'Nice to have',
+    detailsHeading: 'Role details',
+    hireHeading: 'How we hire',
+    standardHeading: 'Our standard',
+    standard: 'We work by one rule: good enough is never the standard.',
+    applyCta: 'Apply for this role ↓',
+    stickyApply: 'Apply',
+    backLink: '← All open roles',
+    closed: 'This role is closed.',
+    closedLink: 'See open roles →',
+  },
+  jobForm: {
+    heading: 'Apply for this role',
+    sub: 'Two minutes. Just your CV and a few details. Applications are reviewed on a rolling basis, and if you’re shortlisted, we’ll email you the next steps.',
+    privacy: 'Everything here stays private. Read only by our team.',
+    submit: 'Apply',
+    success: 'You’re in. If you’re shortlisted, we’ll email you the next steps.',
+    duplicate: 'You’ve already applied for this role.',
+    paused: 'Applications for this role are paused. Check back soon.',
+  },
   backLabel: '← isocodelabs.com',
 }
 
@@ -647,16 +691,27 @@ export type CareerRoleSeed = {
   dept: string
   location: string
   duration: string
+  /** card pay line + Role details "Stipend" row */
   payLine: string
+  /** job page header strip; falls back to payLine */
+  stipendShort: string
   baseSalaryMonthlyINR: number | null
+  /** card meta row + job page eyebrow */
+  eyebrow: string
+  /** card one-liner */
   blurb: string
+  /** "The role" paragraph */
   about: string
   responsibilities: string[]
+  /** "What you bring" */
   lookingFor: string[]
-  stack: string[]
-  compensation: string
-  footnote: string
+  niceToHave: string[]
+  startNote: string
   hiringProcess: { title: string; description: string }[]
+  seoTitle: string
+  seoDescription: string
+  ogTitle: string
+  ogDescription: string
   datePosted: string
   validThrough: string | null
   applicationCap: number | null
@@ -676,78 +731,42 @@ export const careerRoles: CareerRoleSeed[] = [
     dept: 'Growth',
     location: 'Remote',
     duration: '6 months',
-    payLine: '₹1,00,000/month at target + 20% commission beyond',
-    baseSalaryMonthlyINR: null,
-    blurb: 'Find the businesses that need what we build, and bring them on board.',
+    payLine: 'Up to ₹1,00,000/month, plus uncapped commission',
+    stipendShort: 'Up to ₹1,00,000/month + uncapped commission',
+    baseSalaryMonthlyINR: null, // variable pay — never in JSON-LD
+    eyebrow: 'Growth · Remote · 6 months',
+    blurb: 'For people who can sell software and think in products.',
     about:
-      'You will own our pipeline in one industry, from the first call to an agreed price. We hand you a detailed proposal for the software we are taking to that industry. You find the right companies, start the conversation, and bring them to the table. The founders join you at the final meeting to sign.',
+      'You’ll lead how ISOCODELABS reaches the businesses that need what we build. You’ll own the full journey, from finding the right companies to opening the conversation and turning interest into partnerships. It’s a role for someone who understands software, enjoys people, and is energised by results.',
     responsibilities: [
-      'Study the proposal document for your assigned industry until you can pitch it cold',
-      'Find and qualify leads yourself',
-      'Reach out by phone, email, WhatsApp and LinkedIn',
-      'Run discovery calls and take serious leads to an agreed price (projects start at ₹1.2 lakh)',
-      'Hand the client over to the founders at the final meeting for signing',
+      'Identify businesses where our software can create real value',
+      'Open and lead conversations with decision makers',
+      'Present our products and solutions with clarity and conviction',
+      'Build and manage a pipeline of high quality opportunities',
+      'Work closely with the founders to bring partnerships over the line',
     ],
     lookingFor: [
-      'You are comfortable calling people you have never met',
-      'You understand software products well enough to explain one to a business owner in plain words',
-      'You follow up relentlessly and keep your pipeline organised',
-      'Bonus: you have sold, pitched or launched something before',
+      'Confidence in conversation, in writing and on calls',
+      'The ability to understand a business problem quickly',
+      'Discipline in follow ups and an organised way of working',
+      'A results first mindset',
     ],
-    stack: [],
-    compensation:
-      '₹1,00,000 per month on reaching the monthly target of 3 closed deals, plus 20% commission on every deal beyond that. Full terms, including pay below target, are shared with shortlisted candidates before any offer.',
-    footnote: '',
+    niceToHave: [
+      'Technical knowledge or experience with software products',
+      'Sales experience',
+      'Product thinking',
+    ],
+    startNote: 'Confirmed at the offer stage',
     hiringProcess: [
-      { title: 'Apply', description: 'Your CV and a few basic details' },
-      { title: 'Written round', description: 'Shortlisted candidates receive it by email' },
+      APPLY_STEP,
+      { title: 'Assessment', description: 'A short task, sent to shortlisted candidates' },
       { title: 'Interview', description: '' },
-      { title: 'Founder interview', description: '' },
+      { title: 'Founder conversation', description: '' },
     ],
-    datePosted: CYCLE_POSTED,
-    validThrough: null,
-    applicationCap: null,
-  },
-  {
-    title: 'Product Manager Intern',
-    slug: 'product-manager-intern',
-    roleKey: 'product-manager-intern',
-    order: 2,
-    status: 'open',
-    roleKind: 'pm',
-    type: 'intern',
-    dept: 'Product',
-    location: 'Remote',
-    duration: '6 months',
-    payLine: '₹50,000/month',
-    baseSalaryMonthlyINR: 50000,
-    blurb: 'Turn what a client says into software our engineers can build.',
-    about:
-      'You will sit between our clients and our engineers. You take a client’s requirements, turn them into a clear product spec, and see the project through to delivery. You also design and spec the internal tools we build for ourselves.',
-    responsibilities: [
-      'Run requirement discussions with onboarded clients and write the PRD for each project',
-      'Own around 3 client projects a month alongside our engineers: scope, priorities, timelines and changes',
-      'Write PRDs and create mockups for our internal tools and products',
-      'Keep every client clear on what is being built and when',
-    ],
-    lookingFor: [
-      'You understand software deeply enough to write a spec an engineer can build from without guessing',
-      'You can turn a messy request into a clear scope, and say no to the rest',
-      'You can produce clean mockups (Figma or similar)',
-      'You write clearly and keep many threads organised',
-    ],
-    stack: [],
-    compensation: '₹50,000 per month, fixed.',
-    footnote: 'Start dates are confirmed at the offer stage.',
-    hiringProcess: [
-      { title: 'Apply', description: 'Your CV and a few basic details' },
-      {
-        title: 'Case assignment',
-        description: 'A short PRD and mockup task, sent by email to shortlisted candidates',
-      },
-      { title: 'Interview', description: '' },
-      { title: 'Founder interview', description: '' },
-    ],
+    seoTitle: 'Business Growth Intern | ISOCODELABS Careers',
+    seoDescription: 'Remote, 6 months. Stipend up to ₹1,00,000/month, plus uncapped commission.',
+    ogTitle: 'Business Growth Intern at ISOCODELABS',
+    ogDescription: 'Remote. 6 months. Up to ₹1,00,000/month, plus uncapped commission.',
     datePosted: CYCLE_POSTED,
     validThrough: null,
     applicationCap: null,
@@ -756,7 +775,7 @@ export const careerRoles: CareerRoleSeed[] = [
     title: 'Software Engineering Intern',
     slug: 'software-engineering-intern',
     roleKey: 'swe-intern', // pre-v2 key — existing applications are filed under it
-    order: 3,
+    order: 2,
     status: 'open',
     roleKind: 'sde',
     type: 'intern',
@@ -764,33 +783,85 @@ export const careerRoles: CareerRoleSeed[] = [
     location: 'Remote',
     duration: '6 months',
     payLine: '₹50,000/month',
+    stipendShort: '₹50,000/month',
     baseSalaryMonthlyINR: 50000,
-    blurb:
-      'Build production software to a craft bar most places only talk about — and have it reviewed like it matters.',
+    eyebrow: 'Engineering · Remote · 6 months',
+    blurb: 'For people who build and ship software end to end.',
     about:
-      'You will build the software we take on for our clients, from the first screen to production. Real projects, real users, and every pull request reviewed like it matters.',
+      'You’ll build software across the ISOCODELABS portfolio, end to end. You’ll take a well defined spec and turn it into something fast, reliable and well crafted, and you’ll own what you ship.',
     responsibilities: [
-      'Build client projects end to end: frontend, backend and deployment',
-      'Work from PRDs written by our product team, alongside the founders',
-      'Ship to production and own what you ship',
+      'Design, build and ship features across the full stack',
+      'Turn product specs into clean, maintainable code',
+      'Take ownership of quality, performance and reliability',
+      'Use modern AI tools to move faster, without compromising on understanding',
+      'Work closely with product and the founders on what gets built and how',
     ],
     lookingFor: [
-      'Things you have actually built and shipped, with links',
-      'Clean, readable code and good judgement about trade offs',
-      'You use AI tools well and still understand every line you ship',
+      'Strong fundamentals and clean, readable code',
+      'Proof of things you’ve built: links to repos or live projects',
+      'Good judgement about tradeoffs',
+      'An understanding of every line you ship',
     ],
-    stack: ['Next.js', 'React', 'TypeScript', 'Node.js', 'Python', 'FastAPI', 'AWS', 'Docker'],
-    compensation: '₹50,000 per month, fixed.',
-    footnote: 'Start dates are confirmed at the offer stage.',
+    niceToHave: ['Experience building and shipping software end to end'],
+    startNote: 'Confirmed at the offer stage',
     hiringProcess: [
-      { title: 'Apply', description: 'Send us your CV' },
+      APPLY_STEP,
       { title: 'Technical interview', description: '' },
-      {
-        title: 'Build test',
-        description: 'Build a small piece of software in a fixed time window, AI tools allowed',
-      },
-      { title: 'HR interview', description: '' },
+      { title: 'Build challenge', description: 'Build something small in a fixed time window' },
+      { title: 'Final interview', description: '' },
     ],
+    seoTitle: 'Software Engineering Intern | ISOCODELABS Careers',
+    seoDescription: 'Remote, 6 months. ₹50,000/month. Build and ship software end to end.',
+    ogTitle: 'Software Engineering Intern at ISOCODELABS',
+    ogDescription: 'Remote. 6 months. ₹50,000/month.',
+    datePosted: CYCLE_POSTED,
+    validThrough: null,
+    applicationCap: null,
+  },
+  {
+    title: 'Product Management Intern',
+    // v2 slug kept; /roles/product-management-intern redirects here permanently
+    slug: 'product-manager-intern',
+    roleKey: 'product-manager-intern',
+    order: 3,
+    status: 'open',
+    roleKind: 'pm',
+    type: 'intern',
+    dept: 'Product',
+    location: 'Remote',
+    duration: '6 months',
+    payLine: '₹50,000/month',
+    stipendShort: '₹50,000/month',
+    baseSalaryMonthlyINR: 50000,
+    eyebrow: 'Product · Remote · 6 months',
+    blurb: 'For people who understand software and AI products deeply.',
+    about:
+      'You’ll shape what ISOCODELABS builds and how it’s built. You’ll turn ideas and business needs into clear product direction that engineers can execute without guesswork, and see work through from first conversation to finished product.',
+    responsibilities: [
+      'Understand business needs and translate them into clear product requirements',
+      'Write PRDs and design mockups',
+      'Set priorities and keep projects moving on schedule',
+      'Work closely with engineering and the founders',
+      'Shape the direction of our internal products and tools',
+    ],
+    lookingFor: [
+      'Clear, structured writing',
+      'The ability to turn ambiguity into a precise plan',
+      'An eye for good product and good design',
+      'Calm organisation across many moving parts',
+    ],
+    niceToHave: ['Technical knowledge of software and AI products'],
+    startNote: 'Confirmed at the offer stage',
+    hiringProcess: [
+      APPLY_STEP,
+      { title: 'Case assignment', description: 'A short product task, sent to shortlisted candidates' },
+      { title: 'Interview', description: '' },
+      { title: 'Founder conversation', description: '' },
+    ],
+    seoTitle: 'Product Management Intern | ISOCODELABS Careers',
+    seoDescription: 'Remote, 6 months. ₹50,000/month. Shape what gets built and how.',
+    ogTitle: 'Product Management Intern at ISOCODELABS',
+    ogDescription: 'Remote. 6 months. ₹50,000/month.',
     datePosted: CYCLE_POSTED,
     validThrough: null,
     applicationCap: null,
@@ -807,21 +878,26 @@ export const careerRoles: CareerRoleSeed[] = [
     location: 'Remote',
     duration: '',
     payLine: '',
+    stipendShort: '',
     baseSalaryMonthlyINR: null,
-    blurb:
-      'If you are exceptional at something we haven’t listed, tell us. Every open application is read by a founder.',
+    eyebrow: '',
+    blurb: 'If you’re exceptional at what you do, we want to hear from you.',
     about: '',
     responsibilities: [],
     lookingFor: [],
-    stack: [],
-    compensation: '',
-    footnote: '',
+    niceToHave: [],
+    startNote: '',
     hiringProcess: [],
+    seoTitle: '',
+    seoDescription: '',
+    ogTitle: '',
+    ogDescription: '',
     datePosted: CYCLE_POSTED,
     validThrough: null,
     applicationCap: null,
   },
 ]
+
 
 /** Pre-v2 roles the migration archives (never deletes). */
 export const archivedRoleKeys = ['sales-exec', 'design-intern']
@@ -832,7 +908,10 @@ export const archivedV1RoleKeys = [
   'bdpm-intern',
 ]
 
-/** Intro line above the form — still CMS-editable via the Application Form global. */
+/**
+ * Application Form global. Its `intro` is no longer rendered (the v3 privacy
+ * lines live in careersContent); kept so the global and its data stay intact.
+ */
 export const applicationForm = {
-  intro: 'Everything here stays private — read only by the founders, never sold or shared.',
+  intro: 'Everything here stays private. Read only by our team.',
 }

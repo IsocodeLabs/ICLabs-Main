@@ -5,15 +5,23 @@ import { careersContent } from '@/lib/seed-data'
 import { CareersPage } from '@/components/careers/CareersPage'
 
 export const metadata: Metadata = {
-  title: 'Careers',
+  title: { absolute: careersContent.metaTitle },
   description: careersContent.metaDescription,
   // canonical is the live subdomain, not this shadow path on the main domain —
   // careers.isocodelabs.com's root is what the middleware rewrites to here.
   alternates: { canonical: canonicalCareersUrl('/') },
   openGraph: {
-    title: 'Careers — ISOCODELABS',
-    description: careersContent.metaDescription,
+    title: careersContent.ogTitle,
+    description: careersContent.ogDescription,
     url: canonicalCareersUrl('/'),
+    siteName: 'ISOCODELABS',
+    type: 'website',
+    images: ['/og.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: careersContent.ogTitle,
+    description: careersContent.ogDescription,
   },
 }
 

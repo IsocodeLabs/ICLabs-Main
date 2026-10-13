@@ -30,6 +30,7 @@
 
 .blockNote {
   margin-top: var(--sp-16);
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.6); /* section heads sit on the world, not glass */
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: var(--text-lead);
   line-height: var(--lh-body);
@@ -38,11 +39,10 @@
 }
 
 /* ── role cards — a handful of named roles, sized to fill the section
-   generously rather than packed tight (was designed for 4 cards incl. the
-   open-application entry; that no longer renders here, so these run bigger) */
+   generously rather than packed tight */
 .roleGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
   gap: var(--sp-32);
 }
 
@@ -58,12 +58,6 @@
     0 18px 44px rgba(0, 0, 0, 0.4);
 }
 
-.roleTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--sp-16);
-}
 
 .roleTitle {
   font-family: var(--font-display), 'Arial Narrow', sans-serif;
@@ -75,10 +69,6 @@
   font-weight: 400;
 }
 
-.roleType {
-  flex-shrink: 0;
-  color: #b8b1a8;
-}
 
 .roleMeta {
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -95,23 +85,7 @@
   flex: 1;
 }
 
-.roleApply {
-  align-self: flex-start;
-  margin-top: var(--sp-8);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: var(--fs-14);
-  font-weight: 600;
-  color: var(--paper);
-  transition: opacity var(--dur-fast) var(--ease-out);
-}
 
-.roleApply:hover {
-  opacity: 0.65;
-}
 
 /* ── application form ── */
 .formPanel {
@@ -258,22 +232,7 @@
   padding: var(--sp-32) 0;
 }
 
-.doneHeading {
-  font-family: var(--font-display), 'Arial Narrow', sans-serif;
-  font-size: var(--text-display-md);
-  line-height: 1.02;
-  letter-spacing: var(--track-display);
-  text-transform: uppercase;
-  color: var(--paper);
-  font-weight: 400;
-}
 
-.doneNote {
-  margin-top: var(--sp-16);
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: var(--text-lead);
-  color: #b8b1a8;
-}
 
 @media (max-width: 640px) {
   .form {
@@ -313,12 +272,6 @@
   outline-offset: 3px;
 }
 
-/* the Apply link sits above the stretched link */
-.roleCardLinked .roleApply {
-  position: relative;
-  z-index: 1;
-  text-decoration: none;
-}
 
 .pausedBadge {
   align-self: flex-start;
@@ -433,9 +386,10 @@
 }
 
 .checkRow input {
-  width: 18px;
-  height: 18px;
-  margin-top: 3px;
+  /* 24px: the WCAG 2.2 / Lighthouse minimum tap target */
+  width: 24px;
+  height: 24px;
+  margin-top: 0;
   accent-color: var(--paper);
   cursor: pointer;
 }
@@ -503,8 +457,62 @@
 }
 
 .submit:focus-visible,
-.roleApply:focus-visible,
 .openCta:focus-visible {
   outline: 2px solid var(--paper);
   outline-offset: 3px;
+}
+
+/* ── v3 card pieces: pay line + "View role →" foot ── */
+.rolePay {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--paper);
+}
+
+.roleFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-12) var(--sp-16);
+  margin-top: var(--sp-8);
+}
+
+.roleCta {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--paper);
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.roleCardLinked:hover .roleCta {
+  opacity: 0.65;
+}
+
+.roleCardLinked .pausedBadge {
+  margin-top: 0;
+}
+
+/* ── v3 success state ── */
+.doneMessage {
+  font-family: var(--font-display), 'Arial Narrow', sans-serif;
+  font-size: var(--text-title);
+  line-height: 1.15;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  max-width: 28ch;
+  margin-inline: auto;
+}
+
+/* availability note — smaller and muted, directly under the roles sub */
+.availability {
+  margin-top: var(--sp-8);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  line-height: 1.5;
+  color: #a49e95;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.7);
 }

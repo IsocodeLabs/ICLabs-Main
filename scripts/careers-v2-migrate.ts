@@ -8,9 +8,12 @@
  * 1. Booting Payload in non-production mode pushes the schema (adds the new v2
  *    columns/tables). Drizzle prompts before anything destructive — answer "no"
  *    if it lists a careers table/column, and stop.
- * 2. Roles: upserts the 3 v2 roles + the open application from seed-data.ts by
- *    roleKey. A role that already has a slug is left as the CMS has it (founders
- *    may have edited copy) unless --refresh-content is passed.
+ * 2. Roles: upserts the 3 roles + the open application from seed-data.ts by
+ *    roleKey. Missing roles are created. Existing roles get the seeded copy only
+ *    when their `copyVersion` is older than CAREERS_COPY_VERSION (so a copy
+ *    update like PRD v3 lands once, and later edits in the CMS are kept) or when
+ *    --refresh-content is passed. Copy updates never touch status,
+ *    applicationCap or roleKey — founders control those live.
  * 3. Archives Sales Executive, Design Intern and any v1 "Business Development &
  *    Product Manager Intern" role (status → archived; rows stay).
  * 4. Applications: fills the new `cycle` ('legacy') and `stage` columns on pre-v2
@@ -20,7 +23,13 @@
  */
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { archivedRoleKeys, archivedV1RoleKeys, careerRoles } from '../src/lib/seed-data'
+import {
+  applicationForm,
+  archivedRoleKeys,
+  archivedV1RoleKeys,
+  CAREERS_COPY_VERSION,
+  careerRoles,
+} from '../src/lib/seed-data'
 
 const args = new Set(process.argv.slice(2))
 const DRY = args.has('--dry-run')
@@ -53,43 +62,63 @@ async function run() {
       limit: 1,
       depth: 0,
     })
-    const data = {
+    // copy only: never status / applicationCap / roleKey on an existing role
+    const copy = {
       title: seed.title,
       slug: seed.slug,
-      roleKey: seed.roleKey,
       order: seed.order,
-      status: seed.status,
       roleKind: seed.roleKind,
       type: seed.type,
       dept: seed.dept,
       location: seed.location,
       duration: seed.duration,
       payLine: seed.payLine,
+      stipendShort: seed.stipendShort,
       baseSalaryMonthlyINR: seed.baseSalaryMonthlyINR,
+      eyebrow: seed.eyebrow,
       blurb: seed.blurb,
       about: seed.about,
       responsibilities: seed.responsibilities.map((text) => ({ text })),
       lookingFor: seed.lookingFor.map((text) => ({ text })),
-      stack: seed.stack.map((text) => ({ text })),
-      compensation: seed.compensation,
-      footnote: seed.footnote,
+      niceToHave: seed.niceToHave.map((text) => ({ text })),
+      startNote: seed.startNote,
       hiringProcess: seed.hiringProcess,
+      seoTitle: seed.seoTitle,
+      seoDescription: seed.seoDescription,
+      ogTitle: seed.ogTitle,
+      ogDescription: seed.ogDescription,
       datePosted: seed.datePosted,
       validThrough: seed.validThrough,
-      applicationCap: seed.applicationCap,
       applicantLocation: 'IN',
       openApplication: seed.roleKind === 'open',
+      // v2 copy no longer shown: cleared so internal terms aren't served by the public API
+      stack: [],
+      compensation: '',
+      footnote: '',
+      copyVersion: CAREERS_COPY_VERSION,
     }
     const doc = existing.docs[0]
     if (!doc) {
       log(`create role ${seed.roleKey}`)
-      if (!DRY) await payload.create({ collection: 'job-openings', data })
-    } else if (!doc.slug || REFRESH) {
-      log(`update role ${seed.roleKey} (id ${doc.id}) to v2 content`)
-      if (!DRY) await payload.update({ collection: 'job-openings', id: doc.id, data })
+      if (!DRY) {
+        await payload.create({
+          collection: 'job-openings',
+          data: { ...copy, roleKey: seed.roleKey, status: seed.status, applicationCap: seed.applicationCap },
+        })
+      }
+    } else if ((doc.copyVersion ?? 0) < CAREERS_COPY_VERSION || REFRESH) {
+      log(`update role ${seed.roleKey} (id ${doc.id}) copy v${doc.copyVersion ?? 2} → v${CAREERS_COPY_VERSION}`)
+      if (!DRY) await payload.update({ collection: 'job-openings', id: doc.id, data: copy })
     } else {
-      log(`keep role ${seed.roleKey} (already v2)`)
+      log(`keep role ${seed.roleKey} (copy v${doc.copyVersion} is current)`)
     }
+  }
+
+  // ── application form global: intro is the v3 privacy line ──
+  const form = await payload.findGlobal({ slug: 'application-form', depth: 0 })
+  if (form?.intro !== applicationForm.intro) {
+    log(`update application-form intro`)
+    if (!DRY) await payload.updateGlobal({ slug: 'application-form', data: { intro: applicationForm.intro } })
   }
 
   // ── archive old roles ──

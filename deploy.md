@@ -22,6 +22,21 @@ This file is the go-live checklist. Do the steps in order and tick them off. [`d
 
 ---
 
+## Careers PRD v3 (job pages + final copy): extra rollout steps
+
+Branch `feat/careers-job-pages`. Merging it to `main` deploys it. The code itself needs no new infrastructure, env vars or secrets.
+
+1. **Re-run the migration** after the v3 deploy (the same command as step 7.3): `npm run careers:migrate -- --dry-run`, then `-- --yes`. It adds the new role fields, rewrites each role's copy once (copy version 2 → 3, shown as `update role … copy v2 → v3`), and sets the Application Form privacy line. It never changes role status or application caps. Until it runs, the CMS still holds v2 role copy, and the pages show it.
+2. **Smoke test additions** (step 8):
+   - Every card opens its job page.
+   - `/roles/product-management-intern` returns 308 to `/roles/product-manager-intern`.
+   - The main page form has no role dropdown.
+   - On a phone, the sticky "Apply" button hides once the form is on screen.
+   - The availability note shows under the roles sub and in each job page header.
+3. Old → new copy list: [`docs/careers-v3-copy-changes.md`](docs/careers-v3-copy-changes.md).
+
+---
+
 ## 0. Where things stand
 
 **Done and verified locally (dev server + local Postgres):**

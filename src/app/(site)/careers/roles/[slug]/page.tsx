@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { RoleDetail } from '@/components/careers/RoleDetail'
-import { getCareerRole, getCareerRoles, getCareersContent, type CareerRole } from '@/lib/careers/content'
+import {
+  getCareerRole,
+  getCareerRoles,
+  getCareersContent,
+  type CareerRole,
+  type CareersContent,
+} from '@/lib/careers/content'
 import { canonicalCareersUrl } from '@/lib/careers/urls'
 
 // Status changes revalidate on demand; 60 s is the cross-instance backstop.
@@ -15,61 +21,60 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ slug: string }> }
 
-function describe(role: CareerRole) {
-  const facts = [role.duration && `${role.duration}`, role.location].filter(Boolean).join(', ')
-  return `${role.blurb} ${role.type === 'intern' ? 'Internship' : 'Role'}${facts ? ` · ${facts}` : ''}.`
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const role = await getCareerRole(slug)
   if (!role) return { title: 'Role not found', robots: { index: false } }
   const url = canonicalCareersUrl(`/roles/${role.slug}`)
-  const description = describe(role)
+  const title = role.seoTitle || `${role.title} | ISOCODELABS Careers`
+  const description = role.seoDescription || role.blurb
+  const ogTitle = role.ogTitle || title
+  const ogDescription = role.ogDescription || description
   return {
-    title: `${role.title} — Careers`,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     robots: role.status === 'closed' ? { index: false } : undefined,
     openGraph: {
-      title: `${role.title} — ISOCODELABS Careers`,
-      description,
+      title: ogTitle,
+      description: ogDescription,
       url,
       type: 'website',
       siteName: 'ISOCODELABS',
       images: ['/og.png'],
     },
-    twitter: { card: 'summary_large_image', title: `${role.title} — ISOCODELABS`, description },
+    twitter: { card: 'summary_large_image', title: ogTitle, description: ogDescription },
   }
 }
 
 const COUNTRY: Record<string, string> = { IN: 'India' }
 
-function jobPostingJsonLd(role: CareerRole) {
-  const list = (items: string[]) => (items.length ? `<ul>${items.map((t) => `<li>${t}</li>`).join('')}</ul>` : '')
-  const description = [
-    role.about && `<p>${role.about}</p>`,
-    role.responsibilities.length && `<p><strong>What you’ll do</strong></p>${list(role.responsibilities)}`,
-    role.lookingFor.length && `<p><strong>What we look for</strong></p>${list(role.lookingFor)}`,
-    role.stack.length && `<p><strong>What you’ll work with</strong></p>${list(role.stack)}`,
-    role.compensation && `<p><strong>Compensation</strong></p><p>${role.compensation}</p>`,
+/** JobPosting description: The role + What you'll do + What you bring, as plain text. */
+function plainDescription(role: CareerRole, page: CareersContent['page']) {
+  const bullets = (items: string[]) => items.map((t) => `• ${t}`).join('\n')
+  return [
+    role.about,
+    role.responsibilities.length && `${page.job.doHeading}:\n${bullets(role.responsibilities)}`,
+    role.lookingFor.length && `${page.job.bringHeading}:\n${bullets(role.lookingFor)}`,
   ]
     .filter(Boolean)
-    .join('')
+    .join('\n\n')
+}
 
+function jobPostingJsonLd(role: CareerRole, page: CareersContent['page']) {
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: role.title,
-    description,
-    identifier: { '@type': 'PropertyValue', name: 'Isocode Labs', value: role.slug },
+    description: plainDescription(role, page),
+    identifier: { '@type': 'PropertyValue', name: 'ISOCODELABS', value: role.slug },
     datePosted: role.datePosted?.slice(0, 10),
     employmentType: role.type === 'intern' ? 'INTERN' : role.type === 'contract' ? 'CONTRACTOR' : 'FULL_TIME',
     jobLocationType: 'TELECOMMUTE',
     applicantLocationRequirements: { '@type': 'Country', name: COUNTRY.IN },
     hiringOrganization: {
       '@type': 'Organization',
-      name: 'Isocode Labs',
+      name: 'ISOCODELABS',
       sameAs: 'https://isocodelabs.com',
       logo: 'https://isocodelabs.com/assets/brand/il-monogram-black.png',
     },
@@ -77,6 +82,7 @@ function jobPostingJsonLd(role: CareerRole) {
     url: canonicalCareersUrl(`/roles/${role.slug}`),
   }
   if (role.validThrough) ld.validThrough = role.validThrough
+  // fixed stipends only (SWE, PM) — Business Growth's pay is variable, so none
   if (role.baseSalaryMonthlyINR) {
     ld.baseSalary = {
       '@type': 'MonetaryAmount',
@@ -91,7 +97,7 @@ export default async function RolePage({ params }: Props) {
   const { slug } = await params
   const role = await getCareerRole(slug)
   if (!role) notFound()
-  const { page, formIntro } = await getCareersContent()
+  const { page } = await getCareersContent()
 
   return (
     <>
@@ -99,11 +105,11 @@ export default async function RolePage({ params }: Props) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jobPostingJsonLd(role)).replace(/</g, '\\u003c'),
+            __html: JSON.stringify(jobPostingJsonLd(role, page)).replace(/</g, '\\u003c'),
           }}
         />
       )}
-      <RoleDetail role={role} page={page} formIntro={formIntro} />
+      <RoleDetail role={role} page={page} />
     </>
   )
 }

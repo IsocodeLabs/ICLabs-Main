@@ -150,12 +150,30 @@ export const JobOpenings: CollectionConfig = {
       ],
     },
     {
+      name: 'eyebrow',
+      type: 'text',
+      admin: { description: 'e.g. "Growth · Remote · 6 months" — card meta row and job page eyebrow.' },
+    },
+    {
+      name: 'stipendShort',
+      label: 'Stipend (key facts strip)',
+      type: 'text',
+      admin: {
+        description: 'Short pay text for the job page header strip. Falls back to Pay line.',
+      },
+    },
+    {
       name: 'blurb',
-      label: 'Tagline',
+      label: 'One-liner',
       type: 'textarea',
       admin: { description: 'One line on the role card.' },
     },
-    { name: 'about', type: 'textarea', admin: { description: 'About the role.' } },
+    {
+      name: 'about',
+      label: 'The role (summary)',
+      type: 'textarea',
+      admin: { description: '“The role” paragraph on the job page.' },
+    },
     {
       name: 'responsibilities',
       label: 'What you’ll do',
@@ -164,26 +182,21 @@ export const JobOpenings: CollectionConfig = {
     },
     {
       name: 'lookingFor',
-      label: 'What we look for',
+      label: 'What you bring (requirements)',
       type: 'array',
       fields: [{ name: 'text', type: 'text', required: true }],
     },
     {
-      name: 'stack',
-      label: 'What you’ll work with',
+      name: 'niceToHave',
+      label: 'Nice to have',
       type: 'array',
-      admin: { description: 'Optional tool / tech list.' },
       fields: [{ name: 'text', type: 'text', required: true }],
     },
     {
-      name: 'compensation',
-      type: 'textarea',
-      admin: { description: 'Shown exactly as written. A blank line starts a new paragraph.' },
-    },
-    {
-      name: 'footnote',
+      name: 'startNote',
+      label: 'Start',
       type: 'text',
-      admin: { description: 'Optional line under Compensation.' },
+      admin: { description: 'Role details “Start” row, e.g. "Confirmed at the offer stage".' },
     },
     {
       name: 'hiringProcess',
@@ -210,6 +223,44 @@ export const JobOpenings: CollectionConfig = {
           admin: { description: 'Country code applicants must be in (JSON-LD).' },
         },
       ],
+    },
+    {
+      type: 'collapsible',
+      label: 'SEO and sharing',
+      admin: { initCollapsed: true },
+      fields: [
+        { name: 'seoTitle', type: 'text', admin: { description: 'Full page title (no suffix added).' } },
+        { name: 'seoDescription', type: 'textarea' },
+        { name: 'ogTitle', type: 'text' },
+        { name: 'ogDescription', type: 'textarea' },
+      ],
+    },
+    {
+      name: 'copyVersion',
+      type: 'number',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: 'Seeded copy version. The migration only rewrites copy older than the current seed.',
+      },
+    },
+    // ── no longer shown on the site (kept so no data is lost) ──
+    {
+      name: 'stack',
+      label: 'What you’ll work with',
+      type: 'array',
+      admin: { description: 'Not shown since the v3 job pages.' },
+      fields: [{ name: 'text', type: 'text', required: true }],
+    },
+    {
+      name: 'compensation',
+      type: 'textarea',
+      admin: { description: 'Not shown since the v3 job pages (internal terms stay off the site).' },
+    },
+    {
+      name: 'footnote',
+      type: 'text',
+      admin: { description: 'Not shown since the v3 job pages. Use Start.' },
     },
     // ── pre-v2 fields, kept so no data is lost ──
     {

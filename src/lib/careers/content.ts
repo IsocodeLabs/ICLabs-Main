@@ -2,7 +2,6 @@ import { cache } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import {
-  applicationForm,
   careerRoles,
   careersContent,
   type CareerRoleSeed,
@@ -18,7 +17,6 @@ export type CareersContent = {
   page: typeof careersContent
   /** every non-archived role (incl. the open application), sorted by order */
   roles: CareerRole[]
-  formIntro: string
 }
 
 const list = (rows?: { text?: string | null }[] | null) =>
@@ -37,14 +35,19 @@ function toRole(o: JobOpening): CareerRole {
     location: o.location ?? 'Remote',
     duration: o.duration ?? '',
     payLine: o.payLine ?? '',
+    stipendShort: o.stipendShort ?? '',
     baseSalaryMonthlyINR: o.baseSalaryMonthlyINR ?? null,
+    eyebrow: o.eyebrow ?? '',
     blurb: o.blurb ?? '',
     about: o.about ?? '',
     responsibilities: list(o.responsibilities),
     lookingFor: list(o.lookingFor),
-    stack: list(o.stack),
-    compensation: o.compensation ?? '',
-    footnote: o.footnote ?? '',
+    niceToHave: list(o.niceToHave),
+    startNote: o.startNote ?? '',
+    seoTitle: o.seoTitle ?? '',
+    seoDescription: o.seoDescription ?? '',
+    ogTitle: o.ogTitle ?? '',
+    ogDescription: o.ogDescription ?? '',
     hiringProcess: (o.hiringProcess ?? []).map((s) => ({
       title: s.title,
       description: s.description ?? '',
@@ -78,16 +81,7 @@ export const getCareerRoles = cache(async (): Promise<CareerRole[]> => {
 })
 
 export async function getCareersContent(): Promise<CareersContent> {
-  const roles = await getCareerRoles()
-  let formIntro = applicationForm.intro
-  try {
-    const payload = await getPayload({ config })
-    const form = await payload.findGlobal({ slug: 'application-form', depth: 0 })
-    if (form?.intro) formIntro = form.intro
-  } catch {
-    // fallback intro
-  }
-  return { page: careersContent, roles, formIntro }
+  return { page: careersContent, roles: await getCareerRoles() }
 }
 
 export async function getCareerRole(slug: string): Promise<CareerRole | null> {
@@ -99,8 +93,6 @@ export async function getCareerRole(slug: string): Promise<CareerRole | null> {
 export const visibleRoleCards = (roles: CareerRole[]) =>
   roles.filter((r) => r.roleKind !== 'open' && (r.status === 'open' || r.status === 'paused'))
 
-/** Roles the form's dropdown offers: open named roles, then the open application if open. */
-export const applyableRoles = (roles: CareerRole[]) => [
-  ...roles.filter((r) => r.roleKind !== 'open' && r.status === 'open'),
-  ...roles.filter((r) => r.roleKind === 'open' && r.status === 'open'),
-]
+/** The open application (main page form), when it is accepting applications. */
+export const openApplicationRole = (roles: CareerRole[]) =>
+  roles.find((r) => r.roleKind === 'open' && r.status === 'open') ?? null

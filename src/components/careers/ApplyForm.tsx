@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import glass from '@/components/ui/Glass.module.css'
-import type { CareerRole, CareersContent } from '@/lib/careers/content'
+import type { CareerRole } from '@/lib/careers/content'
 import { careersHref } from '@/lib/careers/urls'
 import {
   fieldsFor,
@@ -16,7 +16,6 @@ import {
   type ApplicationInput,
   type FieldErrors,
 } from '@/lib/careers/validation'
-import { useOptionalCareersRole } from './CareersRoleContext'
 import { useTurnstile } from './useTurnstile'
 import styles from './CareersApply.module.css'
 
@@ -30,8 +29,10 @@ import styles from './CareersApply.module.css'
  * makes retries and double clicks safe (the server returns the original
  * success). Answers persist in localStorage so a failure never wipes them.
  *
- * On the main page the role comes from CareersRoleContext (shared with the
- * Open Application CTA); on a role page it's locked to that role.
+ * The form is always locked to one role: the main careers page uses it for the
+ * open application only, and each job page for its own role (PRD v3 FR3), so
+ * nobody applies to a role without reading its description. All visible copy
+ * comes in through `copy`.
  */
 const STORAGE_KEY = 'isocode-careers-apply-v2'
 
@@ -103,22 +104,19 @@ function postToBucket(
   })
 }
 
-export function ApplyForm({
-  page,
-  roles,
-  intro,
-  lockedRole,
-}: {
-  page: CareersContent['page']
-  roles: CareerRole[]
-  intro: string
-  /** role page: the form is fixed to this role */
-  lockedRole?: CareerRole
-}) {
-  const ctx = useOptionalCareersRole()
-  const roleKey = lockedRole?.roleKey ?? ctx?.role ?? roles[0]?.roleKey ?? ''
-  const role = lockedRole ?? roles.find((r) => r.roleKey === roleKey) ?? roles[0]
-  const kind = role?.roleKind ?? 'sde'
+export type ApplyFormCopy = {
+  eyebrow?: string
+  heading: string
+  sub: string
+  privacy: string
+  submit: string
+  success: string
+  duplicate: string
+}
+
+export function ApplyForm({ role, copy }: { role: CareerRole; copy: ApplyFormCopy }) {
+  const roleKey = role.roleKey
+  const kind = role.roleKind
   const f = fieldsFor(kind)
 
   const [fields, setFields] = useState<ApplicationInput>({})
@@ -284,7 +282,7 @@ export function ApplyForm({
         clearSaved()
         submissionIdRef.current = undefined
         setDone(true)
-        setAnnounce(page.successMessage)
+        setAnnounce(copy.success)
         return
       }
       if (data.fieldErrors) {
@@ -299,6 +297,8 @@ export function ApplyForm({
       if (data.code === 'duplicate') {
         clearSaved()
         submissionIdRef.current = undefined
+        setFormError(copy.duplicate)
+        return
       }
       setFormError(data.error || 'Something went wrong on our side — your answers are saved. Please try again.')
     } catch {
@@ -316,25 +316,20 @@ export function ApplyForm({
     el?.focus()
   }
 
-  if (!role) return null
-
   return (
-    <section id="apply" className={styles.section} ref={lockedRole ? undefined : ctx?.applyRef}>
+    <section id="apply" className={styles.section} aria-label={copy.heading}>
       <div className={styles.inner}>
         <div className={`${glass.glass} ${glass.dark} ${styles.formPanel}`}>
           {done ? (
             <div className={styles.done} role="status">
-              <h2 className={styles.doneHeading}>Application received.</h2>
-              <p className={styles.doneNote}>{page.successMessage}</p>
+              <p className={styles.doneMessage}>{copy.success}</p>
             </div>
           ) : (
             <>
               <div className={styles.blockHead}>
-                <Eyebrow>{page.formEyebrow}</Eyebrow>
-                <h2 className={styles.blockHeading}>
-                  {lockedRole ? `Apply: ${lockedRole.title}` : page.formHeading}
-                </h2>
-                <p className={styles.blockNote}>{page.formIntro}</p>
+                {copy.eyebrow && <Eyebrow>{copy.eyebrow}</Eyebrow>}
+                <h2 className={styles.blockHeading}>{copy.heading}</h2>
+                <p className={styles.blockNote}>{copy.sub}</p>
               </div>
 
               <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -347,22 +342,6 @@ export function ApplyForm({
                   className={styles.honeypot}
                   aria-hidden
                 />
-
-                {!lockedRole && (
-                  <Field label="Role" id="app-role" wide>
-                    <select
-                      id="app-role"
-                      value={roleKey}
-                      onChange={(e) => ctx?.setRole(e.target.value)}
-                    >
-                      {roles.map((r) => (
-                        <option key={r.roleKey} value={r.roleKey}>
-                          {r.title}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                )}
 
                 <TextField k="name" label="Full name" autoComplete="name" fields={fields} errors={errors} set={set} max={LIMITS.name} />
                 <TextField k="email" label="Email" type="email" autoComplete="email" fields={fields} errors={errors} set={set} max={LIMITS.email} />
@@ -543,7 +522,7 @@ export function ApplyForm({
                   }
                 />
 
-                <p className={styles.formPrivacy}>{intro}</p>
+                <p className={styles.formPrivacy}>{copy.privacy}</p>
 
                 {turnstile.enabled && <div ref={turnstile.containerRef} className={styles.turnstile} />}
 
@@ -558,7 +537,7 @@ export function ApplyForm({
                     ? upload.status === 'uploading'
                       ? 'Finishing upload…'
                       : 'Sending…'
-                    : 'Submit application'}
+                    : copy.submit}
                 </button>
               </form>
             </>

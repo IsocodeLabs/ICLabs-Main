@@ -56,12 +56,9 @@ export default function ApplicantPrivacyPage() {
       <main id="top">
         <header className={styles.header}>
           <div className={styles.inner}>
-            <a href={careersHref('/')} className={styles.crumb}>
-              ← Careers
-            </a>
             <Eyebrow>Careers · Privacy</Eyebrow>
             <h1 className={styles.title}>Applicant privacy notice</h1>
-            <p className={styles.tagline}>
+            <p className={styles.factStrip} style={{ fontWeight: 400 }}>
               The short version of how we handle your application. The full{' '}
               <a href={`${MAIN_SITE_URL}/privacy`} style={{ textDecoration: 'underline' }}>
                 privacy policy
@@ -88,6 +85,11 @@ export default function ApplicantPrivacyPage() {
             </div>
           </div>
         </section>
+        <div className={styles.inner}>
+          <a href={careersHref('/')} className={styles.back}>
+            ← Careers
+          </a>
+        </div>
       </main>
     </div>
   )

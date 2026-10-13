@@ -521,11 +521,19 @@ export interface JobOpening {
    */
   baseSalaryMonthlyINR?: number | null;
   /**
+   * e.g. "Growth · Remote · 6 months" — card meta row and job page eyebrow.
+   */
+  eyebrow?: string | null;
+  /**
+   * Short pay text for the job page header strip. Falls back to Pay line.
+   */
+  stipendShort?: string | null;
+  /**
    * One line on the role card.
    */
   blurb?: string | null;
   /**
-   * About the role.
+   * “The role” paragraph on the job page.
    */
   about?: string | null;
   responsibilities?:
@@ -540,23 +548,16 @@ export interface JobOpening {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Optional tool / tech list.
-   */
-  stack?:
+  niceToHave?:
     | {
         text: string;
         id?: string | null;
       }[]
     | null;
   /**
-   * Shown exactly as written. A blank line starts a new paragraph.
+   * Role details “Start” row, e.g. "Confirmed at the offer stage".
    */
-  compensation?: string | null;
-  /**
-   * Optional line under Compensation.
-   */
-  footnote?: string | null;
+  startNote?: string | null;
   /**
    * The steps shown in the hiring-process stepper, in order.
    */
@@ -576,6 +577,34 @@ export interface JobOpening {
    * Country code applicants must be in (JSON-LD).
    */
   applicantLocation?: string | null;
+  /**
+   * Full page title (no suffix added).
+   */
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  /**
+   * Seeded copy version. The migration only rewrites copy older than the current seed.
+   */
+  copyVersion?: number | null;
+  /**
+   * Not shown since the v3 job pages.
+   */
+  stack?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Not shown since the v3 job pages (internal terms stay off the site).
+   */
+  compensation?: string | null;
+  /**
+   * Not shown since the v3 job pages. Use Start.
+   */
+  footnote?: string | null;
   /**
    * Legacy (pre-v2). Not shown on the site; use Pay line.
    */
@@ -1122,6 +1151,8 @@ export interface JobOpeningsSelect<T extends boolean = true> {
   duration?: T;
   payLine?: T;
   baseSalaryMonthlyINR?: T;
+  eyebrow?: T;
+  stipendShort?: T;
   blurb?: T;
   about?: T;
   responsibilities?:
@@ -1136,14 +1167,13 @@ export interface JobOpeningsSelect<T extends boolean = true> {
         text?: T;
         id?: T;
       };
-  stack?:
+  niceToHave?:
     | T
     | {
         text?: T;
         id?: T;
       };
-  compensation?: T;
-  footnote?: T;
+  startNote?: T;
   hiringProcess?:
     | T
     | {
@@ -1154,6 +1184,19 @@ export interface JobOpeningsSelect<T extends boolean = true> {
   datePosted?: T;
   validThrough?: T;
   applicantLocation?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  ogTitle?: T;
+  ogDescription?: T;
+  copyVersion?: T;
+  stack?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  compensation?: T;
+  footnote?: T;
   stipend?: T;
   description?: T;
   active?: T;
