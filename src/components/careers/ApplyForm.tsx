@@ -463,12 +463,6 @@ export function ApplyForm({
                     max={LIMITS.url}
                   />
                 )}
-                {kind === 'open' && errors.links && (
-                  <p className={`${styles.fieldError} ${styles.fieldWide}`} role="alert" data-field="links" tabIndex={-1}>
-                    {errors.links}
-                  </p>
-                )}
-
                 {f.interestArea && (
                   <Field label="Area of interest" id="app-interestArea" wide error={errors.interestArea}>
                     <select

@@ -184,9 +184,9 @@ export function validateApplication(
   urlField('githubUrl', githubUrl, f.github, 'github.com')
   urlField('portfolioUrl', portfolioUrl, f.portfolio)
   urlField('projectUrl', projectUrl, f.project)
-  if (kind === 'open' && !linkedinUrl && !githubUrl && !portfolioUrl) {
-    errors.links = 'Add at least one link: LinkedIn, GitHub or a portfolio.'
-  }
+  // Open application: LinkedIn, GitHub and portfolio are all genuinely optional.
+  // (An earlier rule demanded at least one while every field was labelled
+  // "optional", which blocked submissions with no visible reason.)
 
   if (pitchNote.length > LIMITS.pitchNote) errors.pitchNote = `Keep it under ${LIMITS.pitchNote} characters.`
   if (f.why) {
