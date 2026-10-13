@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { adminOnly, publicRead } from '@/access'
 import { revalidateCareers } from '@/lib/careers/revalidate'
+import { upgradeStaleRoleCopy } from '@/lib/careers/legacyCopy'
 
 /**
  * Roles Isocode is hiring for — CMS-managed so roles open, pause and close
@@ -49,6 +50,9 @@ export const JobOpenings: CollectionConfig = {
         return doc
       },
     ],
+    // swap copy still identical to the original seed for the current approved
+    // copy (no pay conditions; generic PM / SDE) — see lib/careers/legacyCopy.ts
+    afterRead: [({ doc }) => upgradeStaleRoleCopy(doc)],
   },
   fields: [
     { name: 'title', type: 'text', required: true },
