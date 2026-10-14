@@ -74,6 +74,17 @@ const LEGACY: LegacyCopy = {
   }
 }
 
+/**
+ * Later approved copy that has since been replaced again. Same rule: a field
+ * still holding one of these exactly gets the current seed copy.
+ */
+const SUPERSEDED: Record<string, Partial<Record<CopyField, string[]>>> = {
+  'business-growth-intern': {
+    // Oct 2026: compensation now states the target + commission structure (no numbers)
+    compensation: ['Up to ₹1,00,000 per month + uncapped commissions'],
+  },
+}
+
 const same = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
 
 export function upgradeStaleRoleCopy<T extends Partial<JobOpening>>(doc: T): T {
@@ -91,6 +102,10 @@ export function upgradeStaleRoleCopy<T extends Partial<JobOpening>>(doc: T): T {
     } else if (same(current, legacy[field])) {
       out[field] = seed[field]
     }
+  }
+  for (const [field, values] of Object.entries(SUPERSEDED[doc.roleKey] ?? {})) {
+    const current = out[field]
+    if (typeof current === 'string' && values?.includes(current)) out[field] = seed[field as CopyField]
   }
   return out as T
 }

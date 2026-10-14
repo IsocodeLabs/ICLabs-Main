@@ -51,7 +51,7 @@ export const JobOpenings: CollectionConfig = {
       },
     ],
     // swap copy still identical to the original seed for the current approved
-    // copy (no pay conditions; generic PM / SDE) — see lib/careers/legacyCopy.ts
+    // copy (generic PM / SDE / BG) — see lib/careers/legacyCopy.ts
     afterRead: [({ doc }) => upgradeStaleRoleCopy(doc)],
   },
   fields: [

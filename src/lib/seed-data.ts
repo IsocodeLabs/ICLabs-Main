@@ -697,7 +697,8 @@ export const careerRoles: CareerRoleSeed[] = [
       'Bonus: you have sold, pitched or launched something before',
     ],
     stack: [],
-    compensation: 'Up to ₹1,00,000 per month + uncapped commissions',
+    compensation:
+      '₹1,00,000 per month on reaching a monthly minimum target, plus an uncapped 20% commission on everything beyond that target.',
     footnote: '',
     hiringProcess: [
       { title: 'Apply', description: 'Your CV and a few basic details' },
