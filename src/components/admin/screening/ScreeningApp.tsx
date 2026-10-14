@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Filters, Row } from '@/lib/careers/admin'
+import { reviewLabel } from '@/lib/careers/review'
+import { ReviewPanel, type Viewer } from './ReviewPanel'
 import styles from './Screening.module.css'
 
 /**
@@ -23,6 +25,16 @@ const STAGES = [
   ['withdrawn', 'Withdrawn'],
 ] as const
 const STAGE_LABEL = Object.fromEntries(STAGES) as Record<string, string>
+
+const REVIEW_FILTERS = [
+  ['', 'Any review'],
+  ['mine', 'Not reviewed by me'],
+  ['awaiting', 'Not reviewed yet'],
+  ['waiting', 'Waiting for 2nd review'],
+  ['discussion', 'Discussion'],
+  ['agreed', 'Agreed'],
+  ['undecided', 'Undecided'],
+] as const
 
 type RoleRow = {
   id: number
@@ -76,6 +88,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   const [autoAdvance, setAutoAdvance] = useState(true)
   const [cvUrl, setCvUrl] = useState<string | null>(null)
   const [cvError, setCvError] = useState<string | null>(null)
+  const [viewer, setViewer] = useState<Viewer | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<Row | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
@@ -112,10 +125,11 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   const loadRows = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await api<{ docs: Row[]; totalDocs: number; totalPages: number }>(
+      const data = await api<{ docs: Row[]; totalDocs: number; totalPages: number; viewer: Viewer | null }>(
         `/api/careers/admin/applications?${qs(filters, { page })}`,
       )
       setRows(data.docs)
+      setViewer(data.viewer ?? null)
       setTotal(data.totalDocs)
       setTotalPages(Math.max(1, data.totalPages))
       setFocus(pendingFocusLast.current ? Math.max(0, data.docs.length - 1) : 0)
@@ -198,6 +212,27 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
       }
     },
     [rows, loadRoles, say],
+  )
+
+  // a founder's own review of an applicant. Queued with other edits so they don't race.
+  const saveReview = useCallback(
+    async (row: Row, data: { decision: string; rating: number | null; note: string }) => {
+      const job = editQueue.current.then(() =>
+        api<{ row: Row }>(`/api/careers/admin/applications/${row.id}/review`, {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
+      )
+      editQueue.current = job.catch(() => {})
+      try {
+        const res = await job
+        setRows((rs) => rs.map((r) => (r.id === row.id ? res.row : r)))
+        say('Review saved')
+      } catch (e) {
+        say((e as Error).message, true)
+      }
+    },
+    [say],
   )
 
   const move = useCallback(
@@ -454,6 +489,13 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
               </option>
             ))}
           </select>
+          <select value={filters.review ?? ''} onChange={(e) => setFilter('review', e.target.value)} aria-label="Review">
+            {REVIEW_FILTERS.map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
           <select
             aria-label="Rating"
             value={filters.unrated ? 'unrated' : filters.ratingMin ?? ''}
@@ -602,6 +644,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
                 <th>Links</th>
                 <th>Rating</th>
                 <th>Stage</th>
+                <th>Review</th>
                 <th>Applied</th>
               </tr>
             </thead>
@@ -656,12 +699,17 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
                       {STAGE_LABEL[r.stage] ?? r.stage}
                     </span>
                   </td>
+                  <td>
+                    <span className={styles.review} data-state={r.reviewState}>
+                      {reviewLabel(r.reviewState, r.reviewDecision)}
+                    </span>
+                  </td>
                   <td className={styles.muted}>{fmtDate(r.createdAt)}</td>
                 </tr>
               ))}
               {!loading && rows.length === 0 && (
                 <tr>
-                  <td colSpan={9} className={styles.empty}>
+                  <td colSpan={10} className={styles.empty}>
                     No applicants match this filter.
                   </td>
                 </tr>
@@ -691,6 +739,8 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
               cvError={cvError}
               onPatch={(d) => void patch(current, d)}
               onStage={(s) => setStage(current, s)}
+              viewer={viewer}
+              onReview={(d) => saveReview(current, d)}
               onDelete={() => setDeleting(current)}
             />
           ) : (
@@ -729,6 +779,8 @@ function Detail({
   onPatch,
   onStage,
   onDelete,
+  viewer,
+  onReview,
 }: {
   row: Row
   roleTitle: string
@@ -737,6 +789,8 @@ function Detail({
   onPatch: (d: Partial<Pick<Row, 'rating' | 'stage' | 'tags' | 'notes'>>) => void
   onStage: (s: string) => void
   onDelete: () => void
+  viewer: Viewer | null
+  onReview: (d: { decision: string; rating: number | null; note: string }) => Promise<void>
 }) {
   const [tagDraft, setTagDraft] = useState('')
   const wa = row.phone ? `https://wa.me/${row.phone.replace(/[^\d]/g, '').replace(/^(\d{10})$/, '91$1')}` : null
@@ -799,6 +853,7 @@ function Detail({
         {row.pitchNote && <Quote label="Sold, pitched or launched" text={row.pitchNote} />}
 
         <div className={styles.controls}>
+          <ReviewPanel row={row} viewer={viewer} onSave={onReview} />
           <div className={styles.ratingRow} role="radiogroup" aria-label="Rating">
             {[1, 2, 3, 4, 5].map((n) => (
               <button

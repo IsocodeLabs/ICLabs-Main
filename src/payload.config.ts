@@ -19,6 +19,7 @@ import { JobOpenings } from '@/collections/JobOpenings'
 import { Applications } from '@/collections/Applications'
 import { Resumes } from '@/collections/Resumes'
 import { CareersAuditLog } from '@/collections/CareersAuditLog'
+import { ApplicationReviews } from '@/collections/ApplicationReviews'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { Homepage } from '@/globals/Homepage'
 import { ApplicationForm } from '@/globals/ApplicationForm'
@@ -62,6 +63,7 @@ export default buildConfig({
     Applications,
     Resumes,
     CareersAuditLog,
+    ApplicationReviews,
   ],
   globals: [SiteSettings, Homepage, ApplicationForm],
   editor: lexicalEditor(),

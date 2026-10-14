@@ -42,7 +42,17 @@ Two rules worth knowing even outside a deploy:
 - **Mail shortlisted candidates:** filter to Stage = Shortlisted, then click Export CSV.
 - **Deletion request:** open the applicant, choose "Delete applicant data…" and type their email to confirm. This removes the record and every stored copy of the CV, and writes an audit entry with no PII (Careers → Careers Audit Log). It's the only hard delete in the system.
 - **New hiring cycle:** set `CAREERS_CYCLE` (e.g. `2027-04`) and redeploy. The same people can then apply again, and earlier cycles stay filterable in the screening view.
+- **Two-founder reviews:** every founder can review every applicant. Each review is separate: a decision (approve, maybe or reject), an optional rating and a note. The applicant's merged state follows from the reviews:
+  - *Waiting for 2nd review*: one review so far.
+  - *Agreed*: both reviews are approve, or both are reject. A "maybe" never overturns a firm decision.
+  - *Discussion*: one approves and one rejects. Separate them with the Review filter and talk it through.
+  - *Undecided*: both say maybe.
+  The shared stage, tags and notes are unchanged. Saving your own review again updates it. The merge rules live in `src/lib/careers/review.ts`.
 - **Retention:** keep rejected applicants' data for 12 months after the cycle closes. After that, founders review and bulk-delete. Nothing is deleted automatically.
+
+## Deploying the review feature
+
+It adds a table (`application-reviews`) and two columns on applications. Production doesn't push schema, so before the release goes live, dry-run and then apply `npm run careers:migrate` against production (see `deploy.md` step 7), the same as the careers v2 migration. Both changes are additive.
 
 ## Local development
 

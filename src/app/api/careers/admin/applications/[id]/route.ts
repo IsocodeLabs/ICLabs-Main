@@ -1,5 +1,5 @@
 import { APPLICATION_STAGES } from '@/collections/Applications'
-import { requireAdmin, ROW_SELECT, toRow } from '@/lib/careers/admin'
+import { loadRow, requireAdmin } from '@/lib/careers/admin'
 import { hashId } from '@/lib/careers/crypto'
 import { logError, logInfo } from '@/lib/careers/log'
 import { json } from '@/lib/careers/request'
@@ -37,17 +37,15 @@ export async function PATCH(req: Request, { params }: Ctx) {
   if (body.notes !== undefined) data.notes = String(body.notes).slice(0, 5000)
 
   try {
-    const doc = await payload.update({
+    await payload.update({
       collection: 'applications',
       id,
       data,
       user,
       overrideAccess: true,
-      depth: 1,
-      select: ROW_SELECT,
-      populate: { users: { name: true, email: true } },
+      depth: 0,
     })
-    return json({ ok: true, row: toRow(doc as never) })
+    return json({ ok: true, row: await loadRow(payload, id) })
   } catch (err) {
     logError('admin_update_failed', err, { applicationId: id })
     return json({ ok: false, error: 'Couldn’t save that change.' }, 500)
@@ -57,8 +55,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
 /**
  * "Delete applicant data" — the ONLY hard delete, for an applicant's deletion
  * request (DPDP). Requires typing the applicant's email to confirm; removes the
- * CV (every stored version) and the record, and writes an audit entry with no
- * PII (id + salted email hash).
+ * CV (every stored version), the record and every founder's review of them, and
+ * writes an audit entry with no PII (id + salted email hash).
  */
 export async function DELETE(req: Request, { params }: Ctx) {
   const auth = await requireAdmin(req)
@@ -79,6 +77,8 @@ export async function DELETE(req: Request, { params }: Ctx) {
       const resumeId = typeof app.resume === 'object' ? app.resume.id : app.resume
       await payload.delete({ collection: 'resumes', id: resumeId, overrideAccess: true }).catch(() => {})
     }
+    // the founders' reviews of this person hold notes about them: they go too
+    await payload.delete({ collection: 'application-reviews', where: { application: { equals: id } }, overrideAccess: true })
     await payload.delete({ collection: 'applications', id, overrideAccess: true })
     await payload.create({
       collection: 'careers-audit-log',
