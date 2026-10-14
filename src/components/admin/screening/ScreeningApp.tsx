@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Filters, Row } from '@/lib/careers/admin'
+import { TaskEmailDialog } from './TaskEmailDialog'
 import styles from './Screening.module.css'
 
 /**
@@ -78,6 +79,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   const [cvError, setCvError] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<Row | null>(null)
+  const [emailing, setEmailing] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
   const cvCache = useRef(new Map<number, { url: string; at: number }>())
   const pendingFocusLast = useRef(false)
@@ -234,7 +236,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey) return
-      if (deleting) return
+      if (deleting || emailing) return
       if (isTyping(e.target)) {
         if (e.key === 'Escape') (e.target as HTMLElement).blur()
         return
@@ -295,7 +297,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [rows, focus, move, patch, setStage, cvUrl, deleting])
+  }, [rows, focus, move, patch, setStage, cvUrl, deleting, emailing])
 
   // keep the focused row in view
   useEffect(() => {
@@ -561,6 +563,15 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
           <button type="button" className={styles.btn} disabled={busy !== null} onClick={() => void downloadZip(checked.size > 0)}>
             {busy === 'zip' ? 'Building ZIP…' : checked.size > 0 ? `Download ${checked.size} CVs (ZIP)` : 'Download CVs (ZIP, ≤ 500)'}
           </button>
+          <button
+            type="button"
+            className={styles.btn}
+            disabled={busy !== null || (checked.size === 0 && !filters.role)}
+            title={checked.size === 0 && !filters.role ? 'Select people, or filter to one role first' : 'Email the task to the selected people'}
+            onClick={() => setEmailing(true)}
+          >
+            {checked.size > 0 ? `Email task to ${checked.size}…` : 'Email task…'}
+          </button>
           <label className={styles.inline} title="After s / r / p, jump to the next applicant">
             <input type="checkbox" checked={autoAdvance} onChange={(e) => setAutoAdvance(e.target.checked)} />
             Auto-advance
@@ -708,6 +719,25 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
             say('Applicant data deleted and audit-logged.')
             void loadRows()
             void loadRoles()
+          }}
+        />
+      )}
+
+      {emailing && (
+        <TaskEmailDialog
+          scope={checked.size > 0 ? { ids: [...checked] } : { all: true, filters }}
+          count={checked.size > 0 ? checked.size : total}
+          roleLabel={
+            checked.size > 0
+              ? `${checked.size} selected`
+              : roleTitle[filters.role ?? ''] ?? filters.role ?? 'this role'
+          }
+          onClose={() => setEmailing(false)}
+          onDone={(r) => {
+            setEmailing(false)
+            say(`Task emailed to ${r.sent}${r.failed ? ` (${r.failed} failed)` : ''}`, r.failed > 0)
+            setChecked(new Set())
+            void loadRows()
           }}
         />
       )}
