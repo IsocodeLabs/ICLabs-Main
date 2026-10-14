@@ -38,6 +38,27 @@ export function mergeReviews(reviews: { decision: Decision }[]): MergedReview {
   return { state: 'undecided', decision: null }
 }
 
+/**
+ * Stages the founders' agreement may move an applicant between. Anything later
+ * in the pipeline (in process, offer, hired, withdrawn) is never touched by it.
+ */
+export const AUTO_STAGE_FROM = ['applied', 'shortlisted', 'rejected'] as const
+
+/**
+ * The stage both founders' reviews imply, or null if they don't firmly agree:
+ *   everyone approves → shortlisted      everyone rejects → rejected
+ *
+ * Stricter than mergeReviews on purpose: "maybe" doesn't count here. Approve +
+ * maybe reads as "agreed · approve" on the list, but moving someone's stage
+ * needs both founders to have actually said the same firm thing.
+ */
+export function agreedStage(reviews: { decision: Decision }[]): 'shortlisted' | 'rejected' | null {
+  if (reviews.length < 2) return null
+  if (reviews.every((r) => r.decision === 'approve')) return 'shortlisted'
+  if (reviews.every((r) => r.decision === 'reject')) return 'rejected'
+  return null
+}
+
 /** Short label for a merged state, e.g. "Agreed · approve". */
 export function reviewLabel(state: string | null | undefined, decision?: string | null): string {
   switch (state) {

@@ -58,7 +58,7 @@ export async function POST(req: Request, { params }: Ctx) {
         overrideAccess: true,
       })
     }
-    await recomputeReview(payload, id)
+    await recomputeReview(payload, id, user)
     return json({ ok: true, row: await loadRow(payload, id) })
   } catch (err) {
     logError('review_save_failed', err, { applicationId: id })

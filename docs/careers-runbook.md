@@ -47,7 +47,7 @@ Two rules worth knowing even outside a deploy:
   - *Agreed*: both reviews are approve, or both are reject. A "maybe" never overturns a firm decision.
   - *Discussion*: one approves and one rejects. Separate them with the Review filter and talk it through.
   - *Undecided*: both say maybe.
-  The shared stage, tags and notes are unchanged. Saving your own review again updates it. The merge rules live in `src/lib/careers/review.ts`.
+  **The stage follows firm agreement.** When both founders approve, the applicant moves to **Shortlisted**; when both reject, to **Rejected**. "Maybe" doesn't count: approve + maybe reads as *Agreed · approve* but does not move anyone. Only applicants still in screening (Applied, Shortlisted, Rejected) are moved; once someone is In process, Offer, Hired or Withdrawn their stage is never changed by reviews. The move is recorded in the stage history as the founder who saved the second review. Nothing is emailed to the applicant. Tags and notes are unchanged. Saving your own review again updates it. The merge rules live in `src/lib/careers/review.ts`.
 - **Retention:** keep rejected applicants' data for 12 months after the cycle closes. After that, founders review and bulk-delete. Nothing is deleted automatically.
 
 ## Deploying the review feature

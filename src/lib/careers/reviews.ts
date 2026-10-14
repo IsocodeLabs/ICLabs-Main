@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
-import { mergeReviews, type Decision } from './review'
+import type { User } from '@/payload-types'
+import { agreedStage, AUTO_STAGE_FROM, mergeReviews, type Decision } from './review'
 
 /** One founder's review, shaped for the screening desk. */
 export type ReviewRow = {
@@ -59,8 +60,15 @@ export async function loadReviews(payload: Payload, applicationIds: number[]): P
 /**
  * Re-merge an applicant's reviews and store the result on the application, so
  * the list can filter and sort on it without reading every review.
+ *
+ * When both founders firmly agree the stage follows: both approve → Shortlisted,
+ * both reject → Rejected. Only applicants still in the screening phase move
+ * (applied / shortlisted / rejected); someone already in process, offered,
+ * hired or withdrawn is left alone. The move goes through the collection hook
+ * as the founder who just reviewed, so the stage history shows who and when.
+ * Nothing is emailed to the applicant.
  */
-export async function recomputeReview(payload: Payload, applicationId: number) {
+export async function recomputeReview(payload: Payload, applicationId: number, user?: User) {
   const res = await payload.find({
     collection: 'application-reviews',
     where: { application: { equals: applicationId } },
@@ -69,14 +77,27 @@ export async function recomputeReview(payload: Payload, applicationId: number) {
     overrideAccess: true,
     select: { decision: true },
   })
-  const merged = mergeReviews(res.docs as { decision: Decision }[])
+  const reviews = res.docs as { decision: Decision }[]
+  const merged = mergeReviews(reviews)
+
+  let stage: 'shortlisted' | 'rejected' | null = null
+  const target = agreedStage(reviews)
+  if (target) {
+    const current = await payload
+      .findByID({ collection: 'applications', id: applicationId, depth: 0, overrideAccess: true, select: { stage: true } })
+      .catch(() => null)
+    const from = String(current?.stage ?? 'applied')
+    if (from !== target && (AUTO_STAGE_FROM as readonly string[]).includes(from)) stage = target
+  }
+
   await payload.update({
     collection: 'applications',
     id: applicationId,
-    data: { reviewState: merged.state, reviewDecision: merged.decision },
+    data: { reviewState: merged.state, reviewDecision: merged.decision, ...(stage ? { stage } : {}) },
+    ...(user ? { user } : {}),
     overrideAccess: true,
     depth: 0,
     select: { reviewState: true },
   })
-  return merged
+  return { ...merged, stage }
 }
