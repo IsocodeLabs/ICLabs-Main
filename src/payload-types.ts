@@ -83,6 +83,7 @@ export interface Config {
     applications: Application;
     resumes: Resume;
     'careers-audit-log': CareersAuditLog;
+    'application-reviews': ApplicationReview;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -106,6 +107,7 @@ export interface Config {
     applications: ApplicationsSelect<false> | ApplicationsSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
     'careers-audit-log': CareersAuditLogSelect<false> | CareersAuditLogSelect<true>;
+    'application-reviews': ApplicationReviewsSelect<false> | ApplicationReviewsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -649,6 +651,14 @@ export interface Application {
   consentAt?: string | null;
   notes?: string | null;
   /**
+   * Merged review state. Null on rows nobody has reviewed.
+   */
+  reviewState?: ('awaiting' | 'waiting' | 'agreed' | 'discussion' | 'undecided') | null;
+  /**
+   * Set when the reviews agree.
+   */
+  reviewDecision?: ('approve' | 'reject') | null;
+  /**
    * Private bucket path of the CV.
    */
   objectKey?: string | null;
@@ -751,6 +761,22 @@ export interface CareersAuditLog {
   createdAt: string;
 }
 /**
+ * Each founder’s own review of an applicant. Merged on the applicant’s row.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "application-reviews".
+ */
+export interface ApplicationReview {
+  id: number;
+  application: number | Application;
+  reviewer: number | User;
+  decision: 'approve' | 'maybe' | 'reject';
+  rating?: number | null;
+  note?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -837,6 +863,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'careers-audit-log';
         value: number | CareersAuditLog;
+      } | null)
+    | ({
+        relationTo: 'application-reviews';
+        value: number | ApplicationReview;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1188,6 +1218,8 @@ export interface ApplicationsSelect<T extends boolean = true> {
   commitSixMonths?: T;
   consentAt?: T;
   notes?: T;
+  reviewState?: T;
+  reviewDecision?: T;
   objectKey?: T;
   resumeSize?: T;
   submissionId?: T;
@@ -1238,6 +1270,19 @@ export interface CareersAuditLogSelect<T extends boolean = true> {
   emailHash?: T;
   actor?: T;
   detail?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "application-reviews_select".
+ */
+export interface ApplicationReviewsSelect<T extends boolean = true> {
+  application?: T;
+  reviewer?: T;
+  decision?: T;
+  rating?: T;
+  note?: T;
   updatedAt?: T;
   createdAt?: T;
 }

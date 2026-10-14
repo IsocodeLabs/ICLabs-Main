@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly, noOne } from '@/access'
+import { REVIEW_STATES } from '@/lib/careers/review'
 
 export const APPLICATION_STAGES = [
   { label: 'Applied', value: 'applied' },
@@ -67,7 +68,7 @@ export const Applications: CollectionConfig = {
       },
     ],
   },
-  indexes: [{ fields: ['role', 'cycle', 'stage'] }],
+  indexes: [{ fields: ['role', 'cycle', 'stage'] }, { fields: ['cycle', 'reviewState'] }],
   fields: [
     {
       type: 'row',
@@ -160,6 +161,28 @@ export const Applications: CollectionConfig = {
       ],
     },
     { name: 'notes', label: 'Internal notes', type: 'textarea' },
+    // ── two-founder review, merged from application-reviews (see lib/careers/reviews.ts) ──
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'reviewState',
+          type: 'select',
+          index: true,
+          options: REVIEW_STATES.map((s) => ({ label: s, value: s })),
+          admin: { readOnly: true, description: 'Merged review state. Null on rows nobody has reviewed.' },
+        },
+        {
+          name: 'reviewDecision',
+          type: 'select',
+          options: [
+            { label: 'Approve', value: 'approve' },
+            { label: 'Reject', value: 'reject' },
+          ],
+          admin: { readOnly: true, description: 'Set when the reviews agree.' },
+        },
+      ],
+    },
     // ── résumé ──
     {
       type: 'row',

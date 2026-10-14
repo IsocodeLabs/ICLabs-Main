@@ -3,6 +3,7 @@ import type { Application, User } from '@/payload-types'
 import { careersConfig } from './config'
 import { payloadInstance } from './db'
 import { json } from './request'
+import { loadReviews, type ReviewRow } from './reviews'
 
 /**
  * Shared plumbing for the founders' screening API (/api/careers/admin/*):
@@ -36,6 +37,8 @@ export type Filters = {
   to?: string
   q?: string
   sort?: string
+  /** review filter: awaiting | waiting | agreed | discussion | undecided | mine */
+  review?: string
 }
 
 export const FILTER_KEYS: (keyof Filters)[] = [
@@ -51,6 +54,7 @@ export const FILTER_KEYS: (keyof Filters)[] = [
   'to',
   'q',
   'sort',
+  'review',
 ]
 
 export function filtersFrom(params: URLSearchParams | Record<string, unknown>): Filters {
@@ -64,8 +68,10 @@ export function filtersFrom(params: URLSearchParams | Record<string, unknown>): 
   return f
 }
 
-export function buildWhere(f: Filters): Where {
+/** `extra` lets the caller add a condition that needs more than the filter (e.g. "not reviewed by me"). */
+export function buildWhere(f: Filters, extra?: Where): Where {
   const and: Where[] = []
+  if (extra) and.push(extra)
   const cycle = f.cycle ?? careersConfig.cycle
   if (cycle !== 'all') and.push({ cycle: { equals: cycle } })
   if (f.role) and.push({ role: { equals: f.role } })
@@ -77,6 +83,12 @@ export function buildWhere(f: Filters): Where {
     and.push({ rating: { greater_than_equal: Number(f.ratingMin) } })
   }
   if (f.sort === 'rating') and.push({ rating: { exists: true } })
+  if (f.review === 'awaiting') {
+    // rows nobody has reviewed yet: the field is empty or explicitly "awaiting"
+    and.push({ or: [{ reviewState: { exists: false } }, { reviewState: { equals: 'awaiting' } }] })
+  } else if (f.review && ['waiting', 'agreed', 'discussion', 'undecided'].includes(f.review)) {
+    and.push({ reviewState: { equals: f.review } })
+  }
   if (f.tag) and.push({ tags: { in: [f.tag] } })
   if (f.from && /^\d{4}-\d{2}-\d{2}$/.test(f.from)) {
     and.push({ createdAt: { greater_than_equal: `${f.from}T00:00:00.000+05:30` } })
@@ -107,6 +119,8 @@ export const ROW_SELECT = {
   cycle: true,
   stage: true,
   rating: true,
+  reviewState: true,
+  reviewDecision: true,
   tags: true,
   college: true,
   gradYear: true,
@@ -132,7 +146,7 @@ export const ROW_SELECT = {
 
 export type Row = ReturnType<typeof toRow>
 
-export function toRow(a: Partial<Application> & { id: number }) {
+export function toRow(a: Partial<Application> & { id: number }, reviews: ReviewRow[] = []) {
   return {
     id: a.id,
     name: a.name ?? '',
@@ -156,6 +170,9 @@ export function toRow(a: Partial<Application> & { id: number }) {
     why: a.why ?? '',
     interestArea: a.interestArea ?? '',
     notes: a.notes ?? '',
+    reviewState: (a.reviewState ?? 'awaiting') as string,
+    reviewDecision: (a.reviewDecision ?? null) as string | null,
+    reviews,
     hasCv: Boolean(a.objectKey || a.resume),
     stageChangedAt: a.stageChangedAt ?? null,
     stageHistory: (a.stageHistory ?? []).map((h) => ({
@@ -165,6 +182,20 @@ export function toRow(a: Partial<Application> & { id: number }) {
     })),
     createdAt: a.createdAt ?? '',
   }
+}
+
+/** One applicant with their reviews, shaped as the screening desk expects. */
+export async function loadRow(payload: Payload, id: number) {
+  const doc = await payload.findByID({
+    collection: 'applications',
+    id,
+    depth: 1,
+    select: ROW_SELECT,
+    overrideAccess: true,
+    populate: { users: { name: true, email: true } },
+  })
+  const reviews = (await loadReviews(payload, [id])).get(id) ?? []
+  return toRow(doc as never, reviews)
 }
 
 /** Neutralise spreadsheet formula injection in CSV cells. */

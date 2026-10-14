@@ -655,3 +655,124 @@
   opacity: 0.4;
   cursor: default;
 }
+/* ── two-founder review ── */
+.review {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  white-space: nowrap;
+  background: var(--theme-elevation-100);
+}
+
+.review[data-state='waiting'] {
+  background: color-mix(in srgb, #3b6ea5 18%, transparent);
+}
+
+.review[data-state='agreed'] {
+  background: color-mix(in srgb, var(--theme-success-500, #3f6b4a) 25%, transparent);
+}
+
+.review[data-state='discussion'] {
+  background: color-mix(in srgb, var(--theme-error-500, #a5432f) 25%, transparent);
+  font-weight: 600;
+}
+
+.review[data-state='undecided'] {
+  background: color-mix(in srgb, #c38a17 22%, transparent);
+}
+
+.reviewPanel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.reviewBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.reviewList {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.reviewNote {
+  color: var(--muted);
+}
+
+.reviewMeta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.reviewForm {
+  display: grid;
+  gap: 8px;
+}
+
+.decisionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.decisionBtn {
+  font: inherit;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--theme-text);
+  cursor: pointer;
+}
+
+.decisionBtnOn {
+  font-weight: 700;
+  border-color: var(--theme-text);
+  background: var(--theme-elevation-100);
+}
+
+.decisionBtnOn[data-decision='approve'] {
+  background: color-mix(in srgb, var(--theme-success-500, #3f6b4a) 25%, transparent);
+}
+
+.decisionBtnOn[data-decision='reject'] {
+  background: color-mix(in srgb, var(--theme-error-500, #a5432f) 22%, transparent);
+}
+
+.decisionBtnOn[data-decision='maybe'] {
+  background: color-mix(in srgb, #c38a17 20%, transparent);
+}
+
+.reviewActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewSave {
+  font: inherit;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--theme-text);
+  background: var(--theme-text);
+  color: var(--theme-elevation-0);
+  cursor: pointer;
+}
+
+.reviewSave:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+

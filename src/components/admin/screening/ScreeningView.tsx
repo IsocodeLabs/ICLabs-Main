@@ -33,7 +33,7 @@ export async function ScreeningView({ initPageResult, params, searchParams }: Ad
   )
 }
 
-const FILTER_KEYS = ['role', 'stage', 'cycle', 'gradYear', 'college', 'ratingMin', 'unrated', 'tag', 'from', 'to', 'q', 'sort']
+const FILTER_KEYS = ['role', 'stage', 'cycle', 'gradYear', 'college', 'ratingMin', 'unrated', 'tag', 'from', 'to', 'q', 'sort', 'review']
 
 function filtersFromSearch(sp: AdminViewServerProps['searchParams']): Record<string, string> {
   const out: Record<string, string> = {}

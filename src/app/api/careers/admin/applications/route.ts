@@ -3,6 +3,8 @@ import { buildWhere, filtersFrom, requireAdmin, ROW_SELECT, sortFor, toRow } fro
 import { hashId } from '@/lib/careers/crypto'
 import { logError } from '@/lib/careers/log'
 import { json } from '@/lib/careers/request'
+import { loadReviews } from '@/lib/careers/reviews'
+import type { Where } from 'payload'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,14 +14,28 @@ const PAGE_SIZE = 50
 export async function GET(req: Request) {
   const auth = await requireAdmin(req)
   if ('error' in auth) return auth.error
-  const { payload } = auth
+  const { payload, user } = auth
   const params = new URL(req.url).searchParams
   const filters = filtersFrom(params)
   const page = Math.max(1, Number(params.get('page')) || 1)
   try {
+    // "needs my review": everything I haven't reviewed yet
+    let notMine: Where | undefined
+    if (filters.review === 'mine') {
+      const mine = await payload.find({
+        collection: 'application-reviews',
+        where: { reviewer: { equals: user.id } },
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+        select: { application: true },
+      })
+      const ids = mine.docs.map((d) => (typeof d.application === 'object' ? d.application.id : d.application))
+      if (ids.length) notMine = { id: { not_in: ids } }
+    }
     const res = await payload.find({
       collection: 'applications',
-      where: buildWhere(filters),
+      where: buildWhere(filters, notMine),
       sort: sortFor(filters),
       page,
       limit: PAGE_SIZE,
@@ -28,9 +44,11 @@ export async function GET(req: Request) {
       overrideAccess: true,
       populate: { users: { name: true, email: true } },
     })
+    const reviews = await loadReviews(payload, res.docs.map((d) => d.id))
     return json({
       ok: true,
-      docs: res.docs.map((d) => toRow(d as never)),
+      viewer: { id: user.id, name: user.name || user.email },
+      docs: res.docs.map((d) => toRow(d as never, reviews.get(d.id) ?? [])),
       totalDocs: res.totalDocs,
       page: res.page,
       totalPages: res.totalPages,
