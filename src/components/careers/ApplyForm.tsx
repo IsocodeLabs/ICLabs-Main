@@ -18,7 +18,7 @@ import {
   type FieldErrors,
 } from '@/lib/careers/validation'
 import { useOptionalCareersRole } from './CareersRoleContext'
-import { useTurnstile } from './useTurnstile'
+import { useTurnstile, type TurnstileStatus } from './useTurnstile'
 import styles from './CareersApply.module.css'
 
 /**
@@ -36,8 +36,12 @@ import styles from './CareersApply.module.css'
  */
 const STORAGE_KEY = 'isocode-careers-apply-v2'
 
+const HUMAN_CHECK_FAILED =
+  'The “Verify you are human” check didn’t finish, so your CV wasn’t uploaded. Tick the box below the CV field (or reload the page), then pick your file again.'
+
 type UploadState =
   | { status: 'idle' }
+  | { status: 'verifying'; fileName: string }
   | { status: 'uploading'; progress: number; fileName: string }
   | { status: 'done'; fileName: string; objectKey: string; ticket: string }
   | { status: 'error'; fileName: string; message: string }
@@ -141,6 +145,13 @@ export function ApplyForm({
   const restoredRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
   const turnstile = useTurnstile()
+  const { getToken, prepare: prepareHumanCheck } = turnstile
+
+  // a CV is waiting on a "Verify you are human" tick: bring the box into view
+  const waitingOnTick = upload.status === 'verifying' && turnstile.status === 'interactive'
+  useEffect(() => {
+    if (waitingOnTick) turnstile.containerRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [waitingOnTick, turnstile.containerRef])
 
   // restore saved answers once
   useEffect(() => {
@@ -169,12 +180,24 @@ export function ApplyForm({
   const startUpload = useCallback(
     (file: File) => {
       const run = async (): Promise<UploadState> => {
-        setUpload({ status: 'uploading', progress: 0, fileName: file.name })
-        setAnnounce('Uploading your CV…')
         let lastError = 'Upload failed. Check your connection and pick the file again.'
         for (let attempt = 0; attempt < 2; attempt++) {
+          // 1) the human check — usually already done (started on first touch of
+          //    the form); otherwise it may need a tick, which the status asks for
+          setUpload({ status: 'verifying', fileName: file.name })
+          let token: string
           try {
-            const token = await turnstile.getToken()
+            token = await getToken()
+          } catch {
+            const final: UploadState = { status: 'error', fileName: file.name, message: HUMAN_CHECK_FAILED }
+            setUpload(final)
+            setAnnounce(final.message)
+            return final
+          }
+          // 2) the upload slot, then the file straight to the bucket
+          setUpload({ status: 'uploading', progress: 0, fileName: file.name })
+          setAnnounce('Uploading your CV…')
+          try {
             const res = await fetch('/api/careers/upload-url', {
               method: 'POST',
               headers: { 'content-type': 'application/json' },
@@ -223,7 +246,7 @@ export function ApplyForm({
       uploadPromiseRef.current = p
       return p
     },
-    [roleKey, turnstile],
+    [roleKey, getToken],
   )
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -262,7 +285,9 @@ export function ApplyForm({
     try {
       // the upload may still be running — wait for it
       let up = upload
-      if (up.status === 'uploading' && uploadPromiseRef.current) up = await uploadPromiseRef.current
+      if ((up.status === 'uploading' || up.status === 'verifying') && uploadPromiseRef.current) {
+        up = await uploadPromiseRef.current
+      }
       if (up.status !== 'done') {
         setErrors({ resume: up.status === 'error' ? up.message : 'Please attach your CV as a PDF.' })
         setFormError('Your CV didn’t upload — please attach it again.')
@@ -355,7 +380,13 @@ export function ApplyForm({
                 <p className={styles.blockNote}>{page.formIntro}</p>
               </div>
 
-              <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate>
+              <form
+                ref={formRef}
+                className={styles.form}
+                onSubmit={handleSubmit}
+                onFocusCapture={() => void prepareHumanCheck()}
+                noValidate
+              >
                 {/* honeypot */}
                 <input
                   type="text"
@@ -531,7 +562,19 @@ export function ApplyForm({
                     aria-invalid={Boolean(errors.resume)}
                     aria-describedby={`app-resume-status${errors.resume ? ' app-resume-error' : ''}`}
                   />
-                  <UploadStatus upload={upload} />
+                  <UploadStatus upload={upload} humanCheck={turnstile.status} />
+                  {/* the human check sits right under the CV field: when Cloudflare
+                      wants a tick, it shows up where the applicant is looking */}
+                  {turnstile.enabled && (
+                    <>
+                      {turnstile.status === 'interactive' && upload.status !== 'verifying' && (
+                        <span className={styles.uploadHint}>
+                          Quick check before your CV can upload: tick “Verify you are human”.
+                        </span>
+                      )}
+                      <div ref={turnstile.containerRef} className={styles.turnstile} />
+                    </>
+                  )}
                 </Field>
 
                 {f.commit && (
@@ -561,7 +604,6 @@ export function ApplyForm({
 
                 <p className={styles.formPrivacy}>{intro}</p>
 
-                {turnstile.enabled && <div ref={turnstile.containerRef} className={styles.turnstile} />}
 
                 {formError && (
                   <p className={styles.error} role="alert">
@@ -581,7 +623,7 @@ export function ApplyForm({
 
                 <button type="submit" className={styles.submit} disabled={submitting} aria-busy={submitting}>
                   {submitting
-                    ? upload.status === 'uploading'
+                    ? upload.status === 'uploading' || upload.status === 'verifying'
                       ? 'Finishing upload…'
                       : 'Sending…'
                     : 'Submit application'}
@@ -766,9 +808,18 @@ function CheckField({
   )
 }
 
-function UploadStatus({ upload }: { upload: UploadState }) {
+function UploadStatus({ upload, humanCheck }: { upload: UploadState; humanCheck: TurnstileStatus }) {
   if (upload.status === 'idle') {
     return <span id="app-resume-status" className={styles.uploadHint}>Uploads as soon as you pick it.</span>
+  }
+  if (upload.status === 'verifying') {
+    return (
+      <span id="app-resume-status" className={humanCheck === 'interactive' ? styles.uploadAction : styles.uploadHint} role="status">
+        {humanCheck === 'interactive'
+          ? 'One step: tick “Verify you are human” just below, and your CV will upload.'
+          : `Getting ready to upload ${upload.fileName}…`}
+      </span>
+    )
   }
   if (upload.status === 'uploading') {
     return (

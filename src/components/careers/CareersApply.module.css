@@ -542,3 +542,11 @@
   outline: 2px solid var(--paper);
   outline-offset: 3px;
 }
+
+/* the CV is waiting on the "Verify you are human" tick: say so clearly */
+.uploadAction {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--paper);
+}
