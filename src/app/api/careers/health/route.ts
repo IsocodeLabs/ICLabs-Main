@@ -10,7 +10,7 @@ export async function GET() {
   const checks = {
     db: false,
     storage: careersConfig.storageDriver === 'local' ? !careersConfig.isProd : Boolean(careersConfig.bucket),
-    turnstile: Boolean(careersConfig.turnstileSecret) || !careersConfig.isProd,
+    turnstile: !careersConfig.humanCheck || Boolean(careersConfig.turnstileSecret) || !careersConfig.isProd,
   }
   try {
     const payload = await payloadInstance()

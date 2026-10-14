@@ -113,12 +113,15 @@ export function ApplyForm({
   roles,
   intro,
   lockedRole,
+  humanCheck = false,
 }: {
   page: CareersContent['page']
   roles: CareerRole[]
   intro: string
   /** role page: the form is fixed to this role */
   lockedRole?: CareerRole
+  /** Cloudflare Turnstile before uploads (CAREERS_HUMAN_CHECK) */
+  humanCheck?: boolean
 }) {
   const ctx = useOptionalCareersRole()
   const roleKey = lockedRole?.roleKey ?? ctx?.role ?? roles[0]?.roleKey ?? ''
@@ -144,7 +147,7 @@ export function ApplyForm({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const restoredRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
-  const turnstile = useTurnstile()
+  const turnstile = useTurnstile(humanCheck)
   const { getToken, prepare: prepareHumanCheck } = turnstile
 
   // a CV is waiting on a "Verify you are human" tick: bring the box into view

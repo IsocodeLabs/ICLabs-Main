@@ -20,8 +20,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
  * - status: 'interactive' while the visitor needs to tick the box, so the form
  *   can say so next to the CV field (where the widget is rendered).
  *
- * Tokens are single-use: one per upload slot. With no
- * NEXT_PUBLIC_TURNSTILE_SITE_KEY (local dev) everything is a no-op.
+ * Tokens are single-use: one per upload slot. When the check is switched off
+ * (CAREERS_HUMAN_CHECK, passed in as `on`) or there's no site key (local dev),
+ * nothing loads and getToken() returns ''.
  */
 type TurnstileApi = {
   render: (el: HTMLElement, opts: Record<string, unknown>) => string
@@ -64,7 +65,8 @@ function loadScript(): Promise<TurnstileApi> {
 
 type Waiter = { resolve: (token: string) => void; reject: (e: Error) => void; timer?: ReturnType<typeof setTimeout> }
 
-export function useTurnstile() {
+export function useTurnstile(on = true) {
+  const enabled = Boolean(SITE_KEY) && on
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetRef = useRef<string | null>(null)
   const tokenRef = useRef<{ token: string; at: number } | null>(null)
@@ -73,7 +75,7 @@ export function useTurnstile() {
   const [status, setStatus] = useState<TurnstileStatus>('idle')
 
   useEffect(() => {
-    if (!SITE_KEY) return
+    if (!enabled) return
     // warm the script so the check can start the moment the form is touched
     loadScript().catch(() => {})
   }, [])
@@ -144,7 +146,7 @@ export function useTurnstile() {
 
     /** Start the check early (first touch of the form). Never throws. */
     async function prepare() {
-      if (!SITE_KEY || runningRef.current) return
+      if (!enabled || runningRef.current) return
       const cached = tokenRef.current
       if (cached && Date.now() - cached.at < TOKEN_TTL_MS) return
       try {
@@ -157,7 +159,7 @@ export function useTurnstile() {
 
     /** A single-use token for one upload slot. */
     async function getToken(): Promise<string> {
-      if (!SITE_KEY) return ''
+      if (!enabled) return ''
       const cached = tokenRef.current
       tokenRef.current = null
       if (cached && Date.now() - cached.at < TOKEN_TTL_MS) {
@@ -178,8 +180,8 @@ export function useTurnstile() {
       })
     }
 
-    return { enabled: Boolean(SITE_KEY), containerRef, prepare, getToken }
-  }, [])
+    return { enabled, containerRef, prepare, getToken }
+  }, [enabled])
 
   return { ...api, status }
 }

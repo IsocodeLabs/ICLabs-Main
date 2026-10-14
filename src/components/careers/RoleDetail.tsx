@@ -4,6 +4,7 @@ import glass from '@/components/ui/Glass.module.css'
 import type { CareerRole, CareersContent } from '@/lib/careers/content'
 import { careersHref } from '@/lib/careers/urls'
 import { ApplyForm } from './ApplyForm'
+import { careersConfig } from '@/lib/careers/config'
 import { CareersNav } from './CareersNav'
 import { HiringStepper } from './HiringStepper'
 import styles from './RoleDetail.module.css'
@@ -149,7 +150,7 @@ export function RoleDetail({
                 </div>
               </section>
             ) : (
-              <ApplyForm page={page} roles={[role]} lockedRole={role} intro={formIntro} />
+              <ApplyForm page={page} roles={[role]} lockedRole={role} intro={formIntro} humanCheck={careersConfig.humanCheck} />
             )}
           </>
         )}

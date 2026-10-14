@@ -4,6 +4,7 @@ import { CareersRoleProvider } from './CareersRoleContext'
 import { RoleCards } from './RoleCards'
 import { OpenApplication } from './OpenApplication'
 import { ApplyForm } from './ApplyForm'
+import { careersConfig } from '@/lib/careers/config'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import glass from '@/components/ui/Glass.module.css'
 import { applyableRoles, visibleRoleCards, type CareersContent } from '@/lib/careers/content'
@@ -74,7 +75,7 @@ export function CareersPage({ content }: { content: CareersContent }) {
 
           {/* ── Apply ── */}
           {formRoles.length > 0 && (
-            <ApplyForm page={page} roles={formRoles} intro={formIntro} />
+            <ApplyForm page={page} roles={formRoles} intro={formIntro} humanCheck={careersConfig.humanCheck} />
           )}
           <div className={styles.closeSpacer} aria-hidden />
         </main>

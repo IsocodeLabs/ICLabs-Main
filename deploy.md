@@ -76,6 +76,8 @@ openssl rand -base64 48   # staging PAYLOAD_SECRET (staging only)
 
 ---
 
+> **Human check is OFF (14 Oct 2026, Aryan's call).** The "Verify you are human" step was blocking real applicants, so CV uploads no longer require it. Rate limits, the PDF checks, the honeypot and one application per email + role still apply. **If spam applications show up,** set `CAREERS_HUMAN_CHECK=on` on the Cloud Run service (`gcloud run services update $SERVICE --region $REGION --update-env-vars CAREERS_HUMAN_CHECK=on`). That needs no code change, and the forms pick it up within about 60 s. The Turnstile keys below can stay configured either way.
+
 ## 2. Cloudflare Turnstile (5 min)
 
 1. Cloudflare dashboard → **Turnstile** → **Add widget**.

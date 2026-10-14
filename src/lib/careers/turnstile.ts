@@ -6,6 +6,7 @@ import { logWarn } from './log'
  * check is skipped; in production a missing secret fails closed (logged).
  */
 export async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+  if (!careersConfig.humanCheck) return true // switched off (CAREERS_HUMAN_CHECK)
   const secret = careersConfig.turnstileSecret
   if (!secret) {
     if (!careersConfig.isProd) return true
