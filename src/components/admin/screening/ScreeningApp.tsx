@@ -14,8 +14,12 @@ import styles from './Screening.module.css'
  *
  *   j / ↓  next     k / ↑  previous     1–5  rate     0  clear rating
  *   s  shortlist    r  reject           p  in process  x  select row
- *   o  open CV in a new tab             /  search      ?  shortcuts
+ *   v  read CV full screen (Esc closes) o  open CV in a new tab
+ *   /  search                           ?  shortcuts
  */
+
+/** PDF viewer hint: fit the page to the frame's width so a CV is readable in place. */
+const fitWidth = (url: string) => `${url}#view=FitH&navpanes=0`
 const STAGES = [
   ['applied', 'Applied'],
   ['shortlisted', 'Shortlisted'],
@@ -90,6 +94,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   const [cvUrl, setCvUrl] = useState<string | null>(null)
   const [cvError, setCvError] = useState<string | null>(null)
   const [viewer, setViewer] = useState<Viewer | null>(null)
+  const [cvBig, setCvBig] = useState(false)
   const [busy, setBusy] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<Row | null>(null)
   const [emailing, setEmailing] = useState(false)
@@ -272,6 +277,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (deleting || emailing) return
+      if (cvBig && e.key === 'Escape') return setCvBig(false)
       if (isTyping(e.target)) {
         if (e.key === 'Escape') (e.target as HTMLElement).blur()
         return
@@ -319,6 +325,9 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
         case 'o':
           if (cvUrl) window.open(cvUrl, '_blank', 'noopener')
           break
+        case 'v':
+          if (row) setCvBig((v) => !v)
+          break
         case '/':
           e.preventDefault()
           searchRef.current?.focus()
@@ -332,7 +341,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [rows, focus, move, patch, setStage, cvUrl, deleting, emailing])
+  }, [rows, focus, move, patch, setStage, cvUrl, deleting, emailing, cvBig])
 
   // keep the focused row in view
   useEffect(() => {
@@ -624,7 +633,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
       {showHelp && (
         <div className={styles.help} role="dialog" aria-label="Keyboard shortcuts">
           <b>Keyboard</b> — j/↓ next · k/↑ previous · 1–5 rate · 0 clear rating · s shortlist · r reject · p in process ·
-          x select · o open CV in new tab · / search · ? toggle this
+          x select · v read CV full screen · o open CV in new tab · / search · ? toggle this
         </div>
       )}
 
@@ -753,12 +762,34 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
               viewer={viewer}
               onReview={(d) => saveReview(current, d)}
               onDelete={() => setDeleting(current)}
+              onExpand={() => setCvBig(true)}
             />
           ) : (
             <div className={styles.emptySide}>{loading ? 'Loading…' : 'Pick an applicant.'}</div>
           )}
         </div>
       </div>
+
+      {cvBig && current && (
+        <div className={styles.cvReader} role="dialog" aria-label={`CV of ${current.name}`}>
+          <div className={styles.cvReaderBar}>
+            <b>{current.name || '—'}</b>
+            <span className={styles.muted}>
+              {roleTitle[current.role] ?? current.roleTitle} · {current.rating ? '★'.repeat(current.rating) : 'unrated'} ·{' '}
+              {STAGE_LABEL[current.stage] ?? current.stage}
+            </span>
+            <span className={styles.cvReaderKeys}>j / k next · previous · 1–5 rate · s shortlist · r reject</span>
+            <button type="button" onClick={() => setCvBig(false)}>
+              Close (Esc)
+            </button>
+          </div>
+          {cvUrl ? (
+            <iframe key={cvUrl} src={fitWidth(cvUrl)} title={`CV of ${current.name}`} className={styles.cvReaderFrame} />
+          ) : (
+            <div className={styles.cvEmpty}>{cvError ?? 'Loading CV…'}</div>
+          )}
+        </div>
+      )}
 
       {deleting && (
         <DeleteDialog
@@ -811,6 +842,7 @@ function Detail({
   onDelete,
   viewer,
   onReview,
+  onExpand,
 }: {
   row: Row
   roleTitle: string
@@ -821,6 +853,7 @@ function Detail({
   onDelete: () => void
   viewer: Viewer | null
   onReview: (d: { decision: string; rating: number | null; note: string }) => Promise<void>
+  onExpand: () => void
 }) {
   const [tagDraft, setTagDraft] = useState('')
   const wa = row.phone ? `https://wa.me/${row.phone.replace(/[^\d]/g, '').replace(/^(\d{10})$/, '91$1')}` : null
@@ -962,10 +995,15 @@ function Detail({
       <div className={styles.cv}>
         {cvUrl ? (
           <>
-            <iframe src={cvUrl} title={`CV of ${row.name}`} className={styles.cvFrame} />
-            <a href={cvUrl} target="_blank" rel="noreferrer noopener" className={styles.cvOpen}>
-              Open in new tab (o) ↗
-            </a>
+            <iframe src={fitWidth(cvUrl)} title={`CV of ${row.name}`} className={styles.cvFrame} />
+            <div className={styles.cvBar}>
+              <button type="button" className={styles.cvExpand} onClick={onExpand}>
+                Read full screen (v)
+              </button>
+              <a href={cvUrl} target="_blank" rel="noreferrer noopener" className={styles.cvOpen}>
+                Open in new tab (o) ↗
+              </a>
+            </div>
           </>
         ) : (
           <div className={styles.cvEmpty}>{cvError ?? 'Loading CV…'}</div>
