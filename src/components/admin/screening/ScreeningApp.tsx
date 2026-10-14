@@ -369,6 +369,48 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     }
   }
 
+  // one-off catch-up: reviews saved before "both agree → stage follows" existed
+  async function applyAgreed() {
+    setBusy('agreed')
+    try {
+      const plan = await api<{ toShortlist: number; toReject: number; heldBackByMaybe: number }>(
+        '/api/careers/admin/applications/apply-agreed',
+        { method: 'POST', body: JSON.stringify({ dryRun: true, cycle: filters.cycle }) },
+      )
+      const n = plan.toShortlist + plan.toReject
+      if (n === 0) {
+        say(
+          plan.heldBackByMaybe > 0
+            ? `Nothing to move. ${plan.heldBackByMaybe} are marked agreed but include a maybe.`
+            : 'Nothing to move — every agreed applicant is already in the right stage.',
+        )
+        return
+      }
+      const lines = [
+        `Both founders agree on ${n} applicant${n === 1 ? '' : 's'}.`,
+        '',
+        `• Move ${plan.toShortlist} to Shortlisted (both approved)`,
+        `• Move ${plan.toReject} to Rejected (both rejected)`,
+      ]
+      if (plan.heldBackByMaybe > 0) {
+        lines.push('', `${plan.heldBackByMaybe} marked agreed include a maybe and stay as they are.`)
+      }
+      lines.push('', 'Nobody is emailed. Continue?')
+      const ok = window.confirm(lines.join('\n'))
+      if (!ok) return
+      const done = await api<{ toShortlist: number; toReject: number }>(
+        '/api/careers/admin/applications/apply-agreed',
+        { method: 'POST', body: JSON.stringify({ cycle: filters.cycle }) },
+      )
+      say(`Shortlisted ${done.toShortlist}, rejected ${done.toReject}.`)
+      await Promise.all([loadRows(), loadRoles()])
+    } catch (e) {
+      say((e as Error).message, true)
+    } finally {
+      setBusy(null)
+    }
+  }
+
   async function downloadZip(onlySelected: boolean) {
     setBusy('zip')
     say('Building ZIP… this can take a minute for a few hundred CVs.')
@@ -613,6 +655,15 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
           </a>
           <button type="button" className={styles.btn} disabled={busy !== null} onClick={() => void downloadZip(checked.size > 0)}>
             {busy === 'zip' ? 'Building ZIP…' : checked.size > 0 ? `Download ${checked.size} CVs (ZIP)` : 'Download CVs (ZIP, ≤ 500)'}
+          </button>
+          <button
+            type="button"
+            className={styles.btn}
+            disabled={busy !== null}
+            title="Shortlist or reject everyone both founders already agree on"
+            onClick={() => void applyAgreed()}
+          >
+            {busy === 'agreed' ? 'Applying…' : 'Apply agreed reviews'}
           </button>
           <button
             type="button"
