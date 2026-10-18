@@ -16,7 +16,8 @@ let sending = false
 
 /**
  * "Invite to workspace" for the selected applicants. Only Shortlisted people are
- * sent; anyone already tagged `workspace-invited` is skipped unless `resend`.
+ * sent; anyone already tagged `workspace-invited` is skipped unless `resend`, which
+ * asks the workspace to email them a fresh login (new temporary password).
  * `preview: true` only counts. Everyone the workspace accepts gets the tag.
  */
 export async function POST(req: Request) {
@@ -93,6 +94,7 @@ export async function POST(req: Request) {
           linkedin: d.linkedinUrl,
           github: d.githubUrl,
           shortlistedBy: user.email,
+          resendLogin: body.resend === true && (d.tags ?? []).includes(WORKSPACE_TAG),
         })),
       )
 
@@ -125,14 +127,16 @@ export async function POST(req: Request) {
       }
 
       const already = results.filter((r) => r.status === 'already').length
+      const resent = results.filter((r) => r.status === 'resent').length
       logInfo('workspace_invited', {
         actor: hashId(String(user.id)),
-        invited: done.length - already,
+        invited: done.length - already - resent,
         already,
+        resent,
         failed: failed.length,
         ...skipped,
       })
-      return json({ ok: true, invited: done.length - already, already, failed, skipped })
+      return json({ ok: true, invited: done.length - already - resent, already, resent, failed, skipped })
     } finally {
       sending = false
     }

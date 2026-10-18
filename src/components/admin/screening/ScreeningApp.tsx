@@ -382,22 +382,39 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
       const notes: string[] = []
       if (plan.skipped.notShortlisted) notes.push(`${plan.skipped.notShortlisted} not Shortlisted (skipped)`)
       if (plan.skipped.alreadyInvited) notes.push(`${plan.skipped.alreadyInvited} already in the workspace (skipped)`)
+      let resend = false
       if (plan.recipients === 0) {
-        say(`Nobody to invite${notes.length ? ` — ${notes.join(', ')}` : ''}.`, true)
-        return
+        const n = plan.skipped.alreadyInvited
+        if (n === 0) {
+          say(`Nobody to invite${notes.length ? ` — ${notes.join(', ')}` : ''}.`, true)
+          return
+        }
+        // everyone picked is already in: offer a fresh login instead of a dead end
+        const again = window.confirm(
+          [
+            `${n === 1 ? 'This person is' : `These ${n} people are`} already in the workspace.`,
+            '',
+            'Send their login email again? They get a new temporary password and the old one stops working.',
+          ].join('\n'),
+        )
+        if (!again) return
+        resend = true
+      } else {
+        const lines = [
+          `Invite ${plan.recipients} applicant${plan.recipients === 1 ? '' : 's'} to the workspace?`,
+          '',
+          'Each gets a workspace account and an email with their login.',
+        ]
+        if (notes.length) lines.push('', ...notes.map((n) => `• ${n}`))
+        if (!window.confirm(lines.join('\n'))) return
       }
-      const lines = [
-        `Invite ${plan.recipients} applicant${plan.recipients === 1 ? '' : 's'} to the workspace?`,
-        '',
-        'Each gets a workspace account and an email with their login.',
-      ]
-      if (notes.length) lines.push('', ...notes.map((n) => `• ${n}`))
-      if (!window.confirm(lines.join('\n'))) return
-      const done = await api<{ invited: number; already: number; failed: { name: string; reason: string }[] }>(
-        '/api/careers/admin/workspace-invite',
-        { method: 'POST', body: JSON.stringify({ ids }) },
-      )
-      const parts = [`Invited ${done.invited} to the workspace`]
+      const done = await api<{
+        invited: number
+        already: number
+        resent: number
+        failed: { name: string; reason: string }[]
+      }>('/api/careers/admin/workspace-invite', { method: 'POST', body: JSON.stringify({ ids, resend }) })
+      const parts = resend ? [`Sent a new login to ${done.resent}`] : [`Invited ${done.invited} to the workspace`]
       if (done.already) parts.push(`${done.already} were already there`)
       if (done.failed.length) {
         parts.push(`${done.failed.length} failed: ${done.failed.map((f) => `${f.name} (${f.reason})`).join('; ')}`)

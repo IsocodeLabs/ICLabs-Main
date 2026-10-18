@@ -32,10 +32,12 @@ export type WorkspaceCandidate = {
   linkedin?: string | null
   github?: string | null
   shortlistedBy?: string | null
+  /** already invited: send a fresh login email (new temporary password) */
+  resendLogin?: boolean
 }
 
 export type WorkspaceResult = { applicationId: string | null } & (
-  | { status: 'invited' | 'role_added' | 'already'; role: string }
+  | { status: 'invited' | 'role_added' | 'already' | 'resent'; role: string }
   | { status: 'error'; reason: string }
 )
 
