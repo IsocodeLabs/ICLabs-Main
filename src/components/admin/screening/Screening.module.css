@@ -88,6 +88,13 @@
   cursor: default;
 }
 
+/* the hand-off to the hiring workspace: the one action that emails people an account */
+.btnPrimary {
+  color: var(--theme-bg);
+  background: var(--theme-text);
+  border-color: var(--theme-text);
+}
+
 /* ── roles ── */
 .roles {
   display: grid;
@@ -277,6 +284,13 @@
   padding: 1px 8px;
   border-radius: 999px;
   background: var(--theme-elevation-100);
+}
+
+.wsMark {
+  margin-left: 6px;
+  font-size: 0.85em;
+  white-space: nowrap;
+  color: var(--theme-success-500, #3f6b4a);
 }
 
 .stage[data-stage='shortlisted'],

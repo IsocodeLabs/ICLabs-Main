@@ -369,6 +369,49 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     }
   }
 
+  // hand shortlisted people to the hiring workspace: account + login email
+  async function inviteToWorkspace() {
+    const ids = [...checked]
+    if (ids.length === 0) return
+    setBusy('workspace')
+    try {
+      const plan = await api<{ recipients: number; skipped: { notShortlisted: number; alreadyInvited: number }; limit: number }>(
+        '/api/careers/admin/workspace-invite',
+        { method: 'POST', body: JSON.stringify({ ids, preview: true }) },
+      )
+      const notes: string[] = []
+      if (plan.skipped.notShortlisted) notes.push(`${plan.skipped.notShortlisted} not Shortlisted (skipped)`)
+      if (plan.skipped.alreadyInvited) notes.push(`${plan.skipped.alreadyInvited} already in the workspace (skipped)`)
+      if (plan.recipients === 0) {
+        say(`Nobody to invite${notes.length ? ` — ${notes.join(', ')}` : ''}.`, true)
+        return
+      }
+      const lines = [
+        `Invite ${plan.recipients} applicant${plan.recipients === 1 ? '' : 's'} to the workspace?`,
+        '',
+        'Each gets a workspace account and an email with their login.',
+      ]
+      if (notes.length) lines.push('', ...notes.map((n) => `• ${n}`))
+      if (!window.confirm(lines.join('\n'))) return
+      const done = await api<{ invited: number; already: number; failed: { name: string; reason: string }[] }>(
+        '/api/careers/admin/workspace-invite',
+        { method: 'POST', body: JSON.stringify({ ids }) },
+      )
+      const parts = [`Invited ${done.invited} to the workspace`]
+      if (done.already) parts.push(`${done.already} were already there`)
+      if (done.failed.length) {
+        parts.push(`${done.failed.length} failed: ${done.failed.map((f) => `${f.name} (${f.reason})`).join('; ')}`)
+      }
+      say(`${parts.join(' · ')}.`, done.failed.length > 0)
+      setChecked(new Set())
+      await loadRows()
+    } catch (e) {
+      say((e as Error).message, true)
+    } finally {
+      setBusy(null)
+    }
+  }
+
   // one-off catch-up: reviews saved before "both agree → stage follows" existed
   async function applyAgreed() {
     setBusy('agreed')
@@ -674,6 +717,19 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
           >
             {checked.size > 0 ? `Email task to ${checked.size}…` : 'Email task…'}
           </button>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            disabled={busy !== null || checked.size === 0}
+            title={checked.size === 0 ? 'Select shortlisted people first' : 'Create their workspace accounts and email them a login'}
+            onClick={() => void inviteToWorkspace()}
+          >
+            {busy === 'workspace'
+              ? 'Inviting…'
+              : checked.size > 0
+                ? `Invite ${checked.size} to workspace…`
+                : 'Invite to workspace…'}
+          </button>
           <label className={styles.inline} title="After s / r / p, jump to the next applicant">
             <input type="checkbox" checked={autoAdvance} onChange={(e) => setAutoAdvance(e.target.checked)} />
             Auto-advance
@@ -769,6 +825,11 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
                     <span className={styles.stage} data-stage={r.stage}>
                       {STAGE_LABEL[r.stage] ?? r.stage}
                     </span>
+                    {r.tags.includes('workspace-invited') && (
+                      <span className={styles.wsMark} title="Invited to the workspace">
+                        ✓ workspace
+                      </span>
+                    )}
                   </td>
                   <td>
                     <span className={styles.review} data-state={r.reviewState}>
