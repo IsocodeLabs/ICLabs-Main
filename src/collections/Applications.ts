@@ -37,7 +37,7 @@ export const Applications: CollectionConfig = {
     group: 'Careers',
     defaultColumns: ['name', 'email', 'phone', 'roleTitle', 'college', 'gradYear', 'rating', 'stage', 'createdAt'],
     listSearchableFields: ['name', 'email', 'college'],
-    pagination: { defaultLimit: 50 },
+    pagination: { defaultLimit: 1000, limits: [50, 100, 500, 1000, 2000, 3000] },
     description: 'For fast screening use the Screening view (left nav → Screening).',
   },
   access: {

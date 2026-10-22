@@ -8,9 +8,9 @@ import type { Where } from 'payload'
 
 export const dynamic = 'force-dynamic'
 
-const PAGE_SIZE = 50
+const PAGE_SIZE = 1000
 
-/** List applications — server-side filtered + paginated (50 a page, never all). */
+/** List applications — server-side filtered + paginated (1000 a page). */
 export async function GET(req: Request) {
   const auth = await requireAdmin(req)
   if ('error' in auth) return auth.error

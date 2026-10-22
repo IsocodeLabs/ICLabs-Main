@@ -9,7 +9,7 @@ import styles from './Screening.module.css'
 
 /**
  * The screening desk. Left: a dense, sheet-like table of the current filter
- * (50 a page, server-side). Right: the focused applicant — details, rating,
+ * (1000 a page, server-side). Right: the focused applicant — details, rating,
  * stage, tags, notes — beside their CV, inline. Built for keyboard:
  *
  *   j / ↓  next     k / ↑  previous     1–5  rate     0  clear rating
