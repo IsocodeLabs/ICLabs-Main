@@ -348,6 +348,24 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     document.querySelector(`[data-row-index="${focus}"]`)?.scrollIntoView({ block: 'nearest' })
   }, [focus, rows])
 
+  // ── selection beyond this page ──
+  async function selectAllMatching() {
+    setBusy('select')
+    try {
+      const res = await api<{ ids: number[]; totalDocs: number }>(
+        `/api/careers/admin/applications?${qs(filters, { idsOnly: 1 })}`,
+      )
+      setChecked(new Set(res.ids))
+      if (res.totalDocs > res.ids.length) {
+        say(`Selected the first ${res.ids.length.toLocaleString('en-IN')} of ${res.totalDocs.toLocaleString('en-IN')} — narrow the filter to get the rest.`, true)
+      }
+    } catch (e) {
+      say((e as Error).message, true)
+    } finally {
+      setBusy(null)
+    }
+  }
+
   // ── bulk + exports ──
   async function bulkStage(stage: string, all: boolean) {
     const n = all ? total : checked.size
@@ -373,6 +391,10 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   async function inviteToWorkspace() {
     const ids = [...checked]
     if (ids.length === 0) return
+    if (ids.length > 1000) {
+      say(`Invites go out to at most 1,000 at a time — ${ids.length.toLocaleString('en-IN')} are selected.`, true)
+      return
+    }
     setBusy('workspace')
     try {
       const plan = await api<{ recipients: number; skipped: { notShortlisted: number; alreadyInvited: number }; limit: number }>(
@@ -681,8 +703,18 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
         <div className={styles.bulk}>
           <span className={styles.count}>
             {loading ? 'Loading…' : `${total.toLocaleString('en-IN')} applicant${total === 1 ? '' : 's'}`}
-            {checked.size > 0 && ` · ${checked.size} selected`}
+            {checked.size > 0 && ` · ${checked.size.toLocaleString('en-IN')} selected`}
           </span>
+          {total > 0 && checked.size < total && (
+            <button type="button" className={styles.btn} disabled={busy !== null || loading} onClick={() => void selectAllMatching()}>
+              {busy === 'select' ? 'Selecting…' : `Select all ${total.toLocaleString('en-IN')}`}
+            </button>
+          )}
+          {checked.size > 0 && (
+            <button type="button" className={styles.btn} disabled={busy !== null} onClick={() => setChecked(new Set())}>
+              Clear selection
+            </button>
+          )}
           <select
             aria-label="Bulk stage change"
             value=""
@@ -730,7 +762,13 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
             className={styles.btn}
             disabled={busy !== null || (checked.size === 0 && !filters.role)}
             title={checked.size === 0 && !filters.role ? 'Select people, or filter to one role first' : 'Email the task to the selected people'}
-            onClick={() => setEmailing(true)}
+            onClick={() => {
+              if (checked.size > 1000) {
+                say(`The task email goes to at most 1,000 at a time — ${checked.size.toLocaleString('en-IN')} are selected.`, true)
+                return
+              }
+              setEmailing(true)
+            }}
           >
             {checked.size > 0 ? `Email task to ${checked.size}…` : 'Email task…'}
           </button>
@@ -764,6 +802,25 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
       {/* ── workspace ── */}
       <div className={styles.work}>
         <div className={styles.tableWrap}>
+          {allChecked && total > rows.length && (
+            <div className={styles.selectAllBar}>
+              {checked.size >= total ? (
+                <>
+                  All {total.toLocaleString('en-IN')} applicants matching this filter are selected.{' '}
+                  <button type="button" onClick={() => setChecked(new Set())}>
+                    Clear selection
+                  </button>
+                </>
+              ) : (
+                <>
+                  All {rows.length.toLocaleString('en-IN')} on this page are selected.{' '}
+                  <button type="button" disabled={busy !== null} onClick={() => void selectAllMatching()}>
+                    {busy === 'select' ? 'Selecting…' : `Select all ${total.toLocaleString('en-IN')} matching this filter`}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
           <table className={styles.table}>
             <thead>
               <tr>

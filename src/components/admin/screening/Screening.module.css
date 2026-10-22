@@ -320,6 +320,24 @@
   color: var(--muted);
 }
 
+.selectAllBar {
+  padding: 6px 10px;
+  text-align: center;
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.selectAllBar button {
+  font: inherit;
+  font-weight: 700;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .pager {
   display: flex;
   justify-content: space-between;
