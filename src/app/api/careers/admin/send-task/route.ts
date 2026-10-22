@@ -24,7 +24,8 @@ const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice
 /**
  * Emails the task to applicants — the selected ids, or everything matching a
  * filter that names a role. `preview: true` returns who would receive it and a
- * rendered sample, and sends nothing. Each person who is sent it is tagged
+ * rendered sample (plus their ids, so the desk can send in batches of
+ * MAX_PER_SEND), and sends nothing. Each person who is sent it is tagged
  * `task-sent`, and is skipped next time unless `resend: true`.
  */
 export async function POST(req: Request) {
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
 
   const ids = (Array.isArray(body.ids) ? body.ids : [])
     .filter((n): n is number => Number.isInteger(n))
-    .slice(0, 1000)
+    .slice(0, 10000)
   const filters = filtersFrom(body.filters ?? {})
   if (body.all) {
     // "everyone matching" must at least name a role — never a blanket send
@@ -69,7 +70,6 @@ export async function POST(req: Request) {
     const found = await payload.find({
       collection: 'applications',
       where: body.all ? buildWhere(filters) : { id: { in: ids } },
-      limit: 1000,
       depth: 0,
       pagination: false,
       overrideAccess: true,
@@ -108,6 +108,7 @@ export async function POST(req: Request) {
         skipped,
         sample: first ? { to: first.to, subject: first.subject, text: first.text } : null,
         limit: MAX_PER_SEND,
+        recipientIds: outgoing.map((o) => o.id),
       })
     }
 

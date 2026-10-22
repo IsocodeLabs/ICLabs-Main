@@ -8,6 +8,7 @@ import styles from './Screening.module.css'
  * "Email task" — write the task once, preview exactly who gets it and what
  * they'll read, then send. Applicants who were already sent it are skipped, and
  * rejected / withdrawn people are never emailed (the server enforces both).
+ * Sending is handed to a background job that goes out in batches of `limit`.
  */
 
 type Scope = { ids?: number[]; all?: boolean; filters?: Filters }
@@ -17,7 +18,11 @@ type Preview = {
   skipped: { stage: number; alreadySent: number }
   sample: { to: string; subject: string; text: string } | null
   limit: number
+  recipientIds: number[]
 }
+
+/** What the desk's background job needs to send exactly what was previewed. */
+export type TaskSend = { recipientIds: number[]; subject: string; body: string; resend: boolean; limit: number }
 
 const DEFAULT_SUBJECT = 'Next step: your {{role}} task at Isocode Labs'
 
@@ -55,14 +60,14 @@ export function TaskEmailDialog({
   count,
   roleLabel,
   onClose,
-  onDone,
+  onSend,
 }: {
   scope: Scope
   /** how many people the scope covers, before the server's skips */
   count: number
   roleLabel: string
   onClose: () => void
-  onDone: (result: { sent: number; failed: number }) => void
+  onSend: (send: TaskSend) => void
 }) {
   const [subject, setSubject] = useState(DEFAULT_SUBJECT)
   const [message, setMessage] = useState(DEFAULT_BODY)
@@ -70,7 +75,7 @@ export function TaskEmailDialog({
   const [preview, setPreview] = useState<Preview | null>(null)
   const [previewKey, setPreviewKey] = useState('')
   const [reviewed, setReviewed] = useState(false)
-  const [working, setWorking] = useState<'preview' | 'send' | null>(null)
+  const [working, setWorking] = useState<'preview' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const key = `${subject}\n${message}\n${resend}`
@@ -94,17 +99,9 @@ export function TaskEmailDialog({
     }
   }
 
-  async function send() {
-    setWorking('send')
-    setError(null)
-    try {
-      const r = await post<{ sent: number; failed: number }>(payload)
-      onDone(r)
-    } catch (e) {
-      setError((e as Error).message)
-    } finally {
-      setWorking(null)
-    }
+  function send() {
+    if (!preview) return
+    onSend({ recipientIds: preview.recipientIds, subject, body: message, resend, limit: preview.limit })
   }
 
   const canSend =
@@ -161,7 +158,7 @@ export function TaskEmailDialog({
               {preview.skipped.alreadySent > 0 && <> · {preview.skipped.alreadySent} skipped (already sent)</>}
               {preview.skipped.stage > 0 && <> · {preview.skipped.stage} skipped (rejected / withdrawn)</>}
               {preview.recipients > preview.limit && (
-                <span className={styles.errorText}> · over the {preview.limit}-per-send limit — narrow it</span>
+                <span className={styles.muted}> · goes out in the background, {preview.limit} at a time</span>
               )}
             </p>
             {preview.sample && (
@@ -197,8 +194,8 @@ export function TaskEmailDialog({
           >
             {working === 'preview' ? 'Checking…' : fresh ? 'Refresh preview' : 'Preview'}
           </button>
-          <button type="button" className={styles.primaryBtn} disabled={!canSend} onClick={() => void send()}>
-            {working === 'send' ? 'Sending…' : fresh && preview ? `Send to ${preview.recipients}` : 'Send'}
+          <button type="button" className={styles.primaryBtn} disabled={!canSend} onClick={send}>
+            {fresh && preview ? `Send to ${preview.recipients}` : 'Send'}
           </button>
         </div>
       </div>

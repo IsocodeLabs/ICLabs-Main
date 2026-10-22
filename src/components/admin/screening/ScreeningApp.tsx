@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Filters, Row } from '@/lib/careers/admin'
-import { TaskEmailDialog } from './TaskEmailDialog'
+import { TaskEmailDialog, type TaskSend } from './TaskEmailDialog'
+import { ApiError, inChunks, JobsPanel, useJobs, withRetry } from './jobs'
 import { reviewLabel } from '@/lib/careers/review'
 import { ReviewPanel, type Viewer } from './ReviewPanel'
 import styles from './Screening.module.css'
@@ -59,7 +60,10 @@ const HEADERS = { 'content-type': 'application/json', 'x-careers-admin': '1' }
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { credentials: 'same-origin', ...init, headers: { ...HEADERS, ...(init?.headers ?? {}) } })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok || data.ok === false) throw new Error(data.error || `Request failed (${res.status})`)
+  if (!res.ok || data.ok === false) {
+    const retryAfter = Number(res.headers.get('retry-after')) || null
+    throw new ApiError(data.error || `Request failed (${res.status})`, res.ok ? 400 : res.status, retryAfter)
+  }
   return data as T
 }
 
@@ -98,6 +102,8 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   const [busy, setBusy] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<Row | null>(null)
   const [emailing, setEmailing] = useState(false)
+  const [inviting, setInviting] = useState<InvitePlan | null>(null)
+  const { jobs, enqueue, dismiss } = useJobs()
   const searchRef = useRef<HTMLInputElement>(null)
   const cvCache = useRef(new Map<number, { url: string; at: number }>())
   const pendingFocusLast = useRef(false)
@@ -276,7 +282,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey) return
-      if (deleting || emailing) return
+      if (deleting || emailing || inviting) return
       if (cvBig && e.key === 'Escape') return setCvBig(false)
       if (isTyping(e.target)) {
         if (e.key === 'Escape') (e.target as HTMLElement).blur()
@@ -341,7 +347,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [rows, focus, move, patch, setStage, cvUrl, deleting, emailing, cvBig])
+  }, [rows, focus, move, patch, setStage, cvUrl, deleting, emailing, inviting, cvBig])
 
   // keep the focused row in view
   useEffect(() => {
@@ -367,19 +373,65 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
   }
 
   // ── bulk + exports ──
+  // after a background job: the table and role counts may have moved
+  const refresh = useCallback(() => {
+    void loadRows()
+    void loadRoles()
+  }, [loadRows, loadRoles])
+
+  // ── bulk actions: each one is a background job (see ./jobs) ──
   async function bulkStage(stage: string, all: boolean) {
     const n = all ? total : checked.size
     if (!stage || n === 0) return
     if (!window.confirm(`Move ${n} applicant${n === 1 ? '' : 's'} to “${STAGE_LABEL[stage]}”?`)) return
-    setBusy('bulk')
+    let ids = [...checked]
+    if (all) {
+      setBusy('bulk')
+      try {
+        ids = (await api<{ ids: number[] }>(`/api/careers/admin/applications?${qs(filters, { idsOnly: 1 })}`)).ids
+      } catch (e) {
+        return say((e as Error).message, true)
+      } finally {
+        setBusy(null)
+      }
+    }
+    setChecked(new Set())
+    enqueue({
+      label: `Move ${ids.length.toLocaleString('en-IN')} to ${STAGE_LABEL[stage]}`,
+      total: ids.length,
+      onFinish: refresh,
+      run: async (ctx) => {
+        let moved = 0
+        let unchanged = 0
+        await inChunks(ids, 1000, ctx, async (chunk) => {
+          const r = await api<{ updated: number; unchanged: number }>('/api/careers/admin/applications', {
+            method: 'POST',
+            body: JSON.stringify({ ids: chunk, stage }),
+          })
+          moved += r.updated
+          unchanged += r.unchanged
+        }, 250)
+        return { text: `Moved ${moved} to ${STAGE_LABEL[stage]}${unchanged ? ` (${unchanged} were already there)` : ''}.` }
+      },
+    })
+  }
+
+  // hand shortlisted people to the hiring workspace: count first, the dialog decides, then a job sends
+  async function inviteToWorkspace() {
+    const ids = [...checked]
+    if (ids.length === 0) return
+    setBusy('workspace')
     try {
-      const res = await api<{ updated: number; failed: number }>('/api/careers/admin/applications', {
+      // resend: true so the preview lists the already-invited too; the dialog lets the founder skip them
+      const plan = await api<InvitePlan>('/api/careers/admin/workspace-invite', {
         method: 'POST',
-        body: JSON.stringify(all ? { all: true, filters, stage } : { ids: [...checked], stage }),
+        body: JSON.stringify({ ids, preview: true, resend: true }),
       })
-      say(`Moved ${res.updated} to ${STAGE_LABEL[stage]}${res.failed ? ` (${res.failed} failed)` : ''}`)
-      setChecked(new Set())
-      await Promise.all([loadRows(), loadRoles()])
+      if (plan.newIds.length + plan.invitedIds.length === 0) {
+        say(`Nobody to invite — none of the ${ids.length.toLocaleString('en-IN')} selected are Shortlisted.`, true)
+        return
+      }
+      setInviting(plan)
     } catch (e) {
       say((e as Error).message, true)
     } finally {
@@ -387,127 +439,146 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
     }
   }
 
-  // hand shortlisted people to the hiring workspace: account + login email
-  async function inviteToWorkspace() {
-    const ids = [...checked]
-    if (ids.length === 0) return
-    if (ids.length > 1000) {
-      say(`Invites go out to at most 1,000 at a time — ${ids.length.toLocaleString('en-IN')} are selected.`, true)
-      return
-    }
-    setBusy('workspace')
-    try {
-      const plan = await api<{ recipients: number; skipped: { notShortlisted: number; alreadyInvited: number }; limit: number }>(
-        '/api/careers/admin/workspace-invite',
-        { method: 'POST', body: JSON.stringify({ ids, preview: true }) },
-      )
-      const notes: string[] = []
-      if (plan.skipped.notShortlisted) notes.push(`${plan.skipped.notShortlisted} not Shortlisted (skipped)`)
-      if (plan.skipped.alreadyInvited) notes.push(`${plan.skipped.alreadyInvited} already in the workspace (skipped)`)
-      let resend = false
-      if (plan.recipients === 0) {
-        const n = plan.skipped.alreadyInvited
-        if (n === 0) {
-          say(`Nobody to invite${notes.length ? ` — ${notes.join(', ')}` : ''}.`, true)
-          return
+  function startInvites(plan: InvitePlan, skipInvited: boolean) {
+    setInviting(null)
+    setChecked(new Set())
+    // new people first, then (if chosen) a fresh login for the ones already in
+    const items = [
+      ...plan.newIds.map((id) => ({ id, resend: false })),
+      ...(skipInvited ? [] : plan.invitedIds.map((id) => ({ id, resend: true }))),
+    ]
+    enqueue({
+      label: `Invite ${items.length.toLocaleString('en-IN')} to workspace`,
+      total: items.length,
+      onFinish: refresh,
+      run: async (ctx) => {
+        const sum = { invited: 0, already: 0, resent: 0, failed: [] as { name: string; reason: string }[] }
+        // the workspace creates accounts and sends a login email per person: small bursts, 1 s apart
+        await inChunks(items, plan.limit, ctx, async (chunk) => {
+          for (const resend of [false, true]) {
+            const ids = chunk.filter((c) => c.resend === resend).map((c) => c.id)
+            if (ids.length === 0) continue
+            const r = await api<InviteResult>('/api/careers/admin/workspace-invite', {
+              method: 'POST',
+              body: JSON.stringify({ ids, resend }),
+            })
+            sum.invited += r.invited
+            sum.already += r.already
+            sum.resent += r.resent
+            sum.failed.push(...r.failed)
+          }
+        }, 1000)
+        const parts: string[] = []
+        if (sum.invited) parts.push(`Invited ${sum.invited}`)
+        if (sum.resent) parts.push(`sent a new login to ${sum.resent}`)
+        if (sum.already) parts.push(`${sum.already} were already there`)
+        if (skipInvited && plan.invitedIds.length) parts.push(`skipped ${plan.invitedIds.length} already invited`)
+        if (sum.failed.length) {
+          const names = sum.failed.slice(0, 5).map((f) => `${f.name} (${f.reason})`)
+          parts.push(`${sum.failed.length} failed: ${names.join('; ')}${sum.failed.length > 5 ? '…' : ''}`)
         }
-        // everyone picked is already in: offer a fresh login instead of a dead end
-        const again = window.confirm(
-          [
-            `${n === 1 ? 'This person is' : `These ${n} people are`} already in the workspace.`,
-            '',
-            'Send their login email again? They get a new temporary password and the old one stops working.',
-          ].join('\n'),
-        )
-        if (!again) return
-        resend = true
-      } else {
-        const lines = [
-          `Invite ${plan.recipients} applicant${plan.recipients === 1 ? '' : 's'} to the workspace?`,
-          '',
-          'Each gets a workspace account and an email with their login.',
-        ]
-        if (notes.length) lines.push('', ...notes.map((n) => `• ${n}`))
-        if (!window.confirm(lines.join('\n'))) return
-      }
-      const done = await api<{
-        invited: number
-        already: number
-        resent: number
-        failed: { name: string; reason: string }[]
-      }>('/api/careers/admin/workspace-invite', { method: 'POST', body: JSON.stringify({ ids, resend }) })
-      const parts = resend ? [`Sent a new login to ${done.resent}`] : [`Invited ${done.invited} to the workspace`]
-      if (done.already) parts.push(`${done.already} were already there`)
-      if (done.failed.length) {
-        parts.push(`${done.failed.length} failed: ${done.failed.map((f) => `${f.name} (${f.reason})`).join('; ')}`)
-      }
-      say(`${parts.join(' · ')}.`, done.failed.length > 0)
-      setChecked(new Set())
-      await loadRows()
-    } catch (e) {
-      say((e as Error).message, true)
-    } finally {
-      setBusy(null)
-    }
+        return { text: `${parts.join(' · ') || 'Nothing sent'}.`, error: sum.failed.length > 0 }
+      },
+    })
+  }
+
+  function startTaskEmail(send: TaskSend) {
+    setEmailing(false)
+    setChecked(new Set())
+    const ids = send.recipientIds
+    enqueue({
+      label: `Email task to ${ids.length.toLocaleString('en-IN')}`,
+      total: ids.length,
+      onFinish: () => void loadRows(),
+      run: async (ctx) => {
+        let sent = 0
+        let failed = 0
+        // one Resend batch call per chunk (≤ 100 emails), 1 s apart — well inside Resend's rate limit
+        await inChunks(ids, send.limit, ctx, async (chunk) => {
+          const r = await api<{ sent: number; failed: number }>('/api/careers/admin/send-task', {
+            method: 'POST',
+            body: JSON.stringify({ ids: chunk, subject: send.subject, body: send.body, resend: send.resend }),
+          })
+          sent += r.sent
+          failed += r.failed
+        }, 1000)
+        return { text: `Task emailed to ${sent}${failed ? ` (${failed} failed)` : ''}.`, error: failed > 0 }
+      },
+    })
   }
 
   // one-off catch-up: reviews saved before "both agree → stage follows" existed
   async function applyAgreed() {
     setBusy('agreed')
+    let plan: { toShortlist: number; toReject: number; heldBackByMaybe: number }
     try {
-      const plan = await api<{ toShortlist: number; toReject: number; heldBackByMaybe: number }>(
-        '/api/careers/admin/applications/apply-agreed',
-        { method: 'POST', body: JSON.stringify({ dryRun: true, cycle: filters.cycle }) },
-      )
-      const n = plan.toShortlist + plan.toReject
-      if (n === 0) {
-        say(
-          plan.heldBackByMaybe > 0
-            ? `Nothing to move. ${plan.heldBackByMaybe} are marked agreed but include a maybe.`
-            : 'Nothing to move — every agreed applicant is already in the right stage.',
-        )
-        return
-      }
-      const lines = [
-        `Both founders agree on ${n} applicant${n === 1 ? '' : 's'}.`,
-        '',
-        `• Move ${plan.toShortlist} to Shortlisted (both approved)`,
-        `• Move ${plan.toReject} to Rejected (both rejected)`,
-      ]
-      if (plan.heldBackByMaybe > 0) {
-        lines.push('', `${plan.heldBackByMaybe} marked agreed include a maybe and stay as they are.`)
-      }
-      lines.push('', 'Nobody is emailed. Continue?')
-      const ok = window.confirm(lines.join('\n'))
-      if (!ok) return
-      const done = await api<{ toShortlist: number; toReject: number }>(
-        '/api/careers/admin/applications/apply-agreed',
-        { method: 'POST', body: JSON.stringify({ cycle: filters.cycle }) },
-      )
-      say(`Shortlisted ${done.toShortlist}, rejected ${done.toReject}.`)
-      await Promise.all([loadRows(), loadRoles()])
+      plan = await api('/api/careers/admin/applications/apply-agreed', {
+        method: 'POST',
+        body: JSON.stringify({ dryRun: true, cycle: filters.cycle }),
+      })
     } catch (e) {
-      say((e as Error).message, true)
+      return say((e as Error).message, true)
     } finally {
       setBusy(null)
     }
+    const n = plan.toShortlist + plan.toReject
+    if (n === 0) {
+      say(
+        plan.heldBackByMaybe > 0
+          ? `Nothing to move. ${plan.heldBackByMaybe} are marked agreed but include a maybe.`
+          : 'Nothing to move — every agreed applicant is already in the right stage.',
+      )
+      return
+    }
+    const lines = [
+      `Both founders agree on ${n} applicant${n === 1 ? '' : 's'}.`,
+      '',
+      `• Move ${plan.toShortlist} to Shortlisted (both approved)`,
+      `• Move ${plan.toReject} to Rejected (both rejected)`,
+    ]
+    if (plan.heldBackByMaybe > 0) {
+      lines.push('', `${plan.heldBackByMaybe} marked agreed include a maybe and stay as they are.`)
+    }
+    lines.push('', 'Nobody is emailed. Continue?')
+    if (!window.confirm(lines.join('\n'))) return
+    const cycle = filters.cycle
+    enqueue({
+      label: `Apply ${n} agreed reviews`,
+      total: n,
+      onFinish: refresh,
+      run: async (ctx) => {
+        let done = 0
+        // 50 per call; moved rows drop out of the server's query, so each call takes the next ones
+        for (;;) {
+          const r = await withRetry(() =>
+            api<{ moved: number; remaining: number }>('/api/careers/admin/applications/apply-agreed', {
+              method: 'POST',
+              body: JSON.stringify({ cycle, limit: 50 }),
+            }),
+          )
+          done += r.moved
+          ctx.report(Math.min(done, n))
+          if (r.remaining === 0 || r.moved === 0) break
+          await new Promise((res) => setTimeout(res, 300))
+        }
+        return { text: `Applied ${done} agreed review${done === 1 ? '' : 's'}.` }
+      },
+    })
   }
 
-  async function downloadZip(onlySelected: boolean) {
-    setBusy('zip')
-    say('Building ZIP… this can take a minute for a few hundred CVs.')
-    try {
-      const res = await api<{ url: string; count: number }>('/api/careers/admin/zip', {
-        method: 'POST',
-        body: JSON.stringify(onlySelected ? { ids: [...checked] } : { filters }),
-      })
-      say(`ZIP ready: ${res.count} CVs. Link valid for 1 hour.`)
-      window.location.href = res.url
-    } catch (e) {
-      say((e as Error).message, true)
-    } finally {
-      setBusy(null)
-    }
+  function downloadZip(onlySelected: boolean) {
+    const body = onlySelected ? { ids: [...checked] } : { filters }
+    enqueue({
+      label: onlySelected ? `ZIP of ${checked.size} CVs` : 'ZIP of CVs (current filter)',
+      total: null,
+      run: async () => {
+        const res = await api<{ url: string; count: number }>('/api/careers/admin/zip', {
+          method: 'POST',
+          body: JSON.stringify(body),
+        })
+        return { text: `ZIP ready: ${res.count} CVs. Link valid for 1 hour.`, href: res.url, hrefLabel: 'Download ZIP' }
+      },
+    })
   }
 
   async function updateRole(role: RoleRow, data: { status?: string; applicationCap?: number | null }) {
@@ -706,19 +777,19 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
             {checked.size > 0 && ` · ${checked.size.toLocaleString('en-IN')} selected`}
           </span>
           {total > 0 && checked.size < total && (
-            <button type="button" className={styles.btn} disabled={busy !== null || loading} onClick={() => void selectAllMatching()}>
+            <button type="button" className={styles.btn} disabled={busy === 'select' || loading} onClick={() => void selectAllMatching()}>
               {busy === 'select' ? 'Selecting…' : `Select all ${total.toLocaleString('en-IN')}`}
             </button>
           )}
           {checked.size > 0 && (
-            <button type="button" className={styles.btn} disabled={busy !== null} onClick={() => setChecked(new Set())}>
+            <button type="button" className={styles.btn} onClick={() => setChecked(new Set())}>
               Clear selection
             </button>
           )}
           <select
             aria-label="Bulk stage change"
             value=""
-            disabled={busy !== null || (checked.size === 0 && total === 0)}
+            disabled={busy === 'bulk' || (checked.size === 0 && total === 0)}
             onChange={(e) => {
               const [scope, stage] = e.target.value.split(':')
               void bulkStage(stage, scope === 'all')
@@ -745,13 +816,13 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
           <a className={styles.btn} href={`/api/careers/admin/export?${qs(filters)}`}>
             Export CSV
           </a>
-          <button type="button" className={styles.btn} disabled={busy !== null} onClick={() => void downloadZip(checked.size > 0)}>
-            {busy === 'zip' ? 'Building ZIP…' : checked.size > 0 ? `Download ${checked.size} CVs (ZIP)` : 'Download CVs (ZIP, ≤ 500)'}
+          <button type="button" className={styles.btn} onClick={() => downloadZip(checked.size > 0)}>
+            {checked.size > 0 ? `Download ${checked.size} CVs (ZIP)` : 'Download CVs (ZIP, ≤ 500)'}
           </button>
           <button
             type="button"
             className={styles.btn}
-            disabled={busy !== null}
+            disabled={busy === 'agreed'}
             title="Shortlist or reject everyone both founders already agree on"
             onClick={() => void applyAgreed()}
           >
@@ -760,27 +831,21 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
           <button
             type="button"
             className={styles.btn}
-            disabled={busy !== null || (checked.size === 0 && !filters.role)}
+            disabled={checked.size === 0 && !filters.role}
             title={checked.size === 0 && !filters.role ? 'Select people, or filter to one role first' : 'Email the task to the selected people'}
-            onClick={() => {
-              if (checked.size > 1000) {
-                say(`The task email goes to at most 1,000 at a time — ${checked.size.toLocaleString('en-IN')} are selected.`, true)
-                return
-              }
-              setEmailing(true)
-            }}
+            onClick={() => setEmailing(true)}
           >
             {checked.size > 0 ? `Email task to ${checked.size}…` : 'Email task…'}
           </button>
           <button
             type="button"
             className={`${styles.btn} ${styles.btnPrimary}`}
-            disabled={busy !== null || checked.size === 0}
+            disabled={busy === 'workspace' || checked.size === 0}
             title={checked.size === 0 ? 'Select shortlisted people first' : 'Create their workspace accounts and email them a login'}
             onClick={() => void inviteToWorkspace()}
           >
             {busy === 'workspace'
-              ? 'Inviting…'
+              ? 'Checking…'
               : checked.size > 0
                 ? `Invite ${checked.size} to workspace…`
                 : 'Invite to workspace…'}
@@ -814,7 +879,7 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
               ) : (
                 <>
                   All {rows.length.toLocaleString('en-IN')} on this page are selected.{' '}
-                  <button type="button" disabled={busy !== null} onClick={() => void selectAllMatching()}>
+                  <button type="button" disabled={busy === 'select'} onClick={() => void selectAllMatching()}>
                     {busy === 'select' ? 'Selecting…' : `Select all ${total.toLocaleString('en-IN')} matching this filter`}
                   </button>
                 </>
@@ -1000,14 +1065,19 @@ export function ScreeningApp({ initialFilters = {} }: { initialFilters?: Filters
               : roleTitle[filters.role ?? ''] ?? filters.role ?? 'this role'
           }
           onClose={() => setEmailing(false)}
-          onDone={(r) => {
-            setEmailing(false)
-            say(`Task emailed to ${r.sent}${r.failed ? ` (${r.failed} failed)` : ''}`, r.failed > 0)
-            setChecked(new Set())
-            void loadRows()
-          }}
+          onSend={startTaskEmail}
         />
       )}
+
+      {inviting && (
+        <InviteDialog
+          plan={inviting}
+          onClose={() => setInviting(null)}
+          onConfirm={(skipInvited) => startInvites(inviting, skipInvited)}
+        />
+      )}
+
+      <JobsPanel jobs={jobs} onDismiss={dismiss} />
 
       {toast && (
         <div className={`${styles.toast} ${toast.error ? styles.toastError : ''}`} role="status">
@@ -1269,6 +1339,82 @@ function DeleteDialog({ row, onClose, onDone }: { row: Row; onClose: () => void;
             onClick={() => void run()}
           >
             {working ? 'Deleting…' : 'Delete permanently'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+type InvitePlan = {
+  skipped: { notShortlisted: number }
+  limit: number
+  /** shortlisted and not in the workspace yet */
+  newIds: number[]
+  /** shortlisted and already invited */
+  invitedIds: number[]
+}
+
+type InviteResult = { invited: number; already: number; resent: number; failed: { name: string; reason: string }[] }
+
+/**
+ * "Invite to workspace" — who's new, and who's already in (skip them, or send
+ * them a fresh login). Confirming hands it to a background job that sends in
+ * batches of `plan.limit`, so any selection size works.
+ */
+function InviteDialog({
+  plan,
+  onClose,
+  onConfirm,
+}: {
+  plan: InvitePlan
+  onClose: () => void
+  onConfirm: (skipInvited: boolean) => void
+}) {
+  const [skipInvited, setSkipInvited] = useState(true)
+  const nNew = plan.newIds.length
+  const nInvited = plan.invitedIds.length
+  const total = nNew + (skipInvited ? 0 : nInvited)
+
+  return (
+    <div className={styles.modalBackdrop} role="presentation" onClick={onClose}>
+      <div className={styles.modal} role="dialog" aria-modal aria-labelledby="invite-title" onClick={(e) => e.stopPropagation()}>
+        <h2 id="invite-title" className={styles.h2}>
+          Invite to workspace
+        </h2>
+        <p>
+          <b>{nNew.toLocaleString('en-IN')}</b> Shortlisted applicant{nNew === 1 ? '' : 's'} will get a workspace account and
+          an email with their login.
+        </p>
+        {nInvited > 0 && (
+          <div className={styles.previewBox}>
+            <p>
+              <b>{nInvited.toLocaleString('en-IN')}</b> {nInvited === 1 ? 'is' : 'are'} already in the workspace.
+            </p>
+            <label className={styles.inline}>
+              <input type="radio" name="invited" checked={skipInvited} onChange={() => setSkipInvited(true)} />
+              Skip everyone already invited
+            </label>
+            <label className={styles.inline}>
+              <input type="radio" name="invited" checked={!skipInvited} onChange={() => setSkipInvited(false)} />
+              Send them a new login (new temporary password; the old one stops working)
+            </label>
+          </div>
+        )}
+        {plan.skipped.notShortlisted > 0 && (
+          <p className={styles.muted}>
+            {plan.skipped.notShortlisted.toLocaleString('en-IN')} selected aren’t Shortlisted and are skipped.
+          </p>
+        )}
+        <p className={styles.muted}>
+          Runs in the background in batches of {plan.limit} — keep screening; progress shows bottom-right.
+        </p>
+        <div className={styles.modalActions}>
+          <button type="button" className={styles.btn} onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" className={styles.primaryBtn} disabled={total === 0} onClick={() => onConfirm(skipInvited)}>
+            {total === 0 ? 'Nobody to send' : `Send to ${total.toLocaleString('en-IN')}`}
           </button>
         </div>
       </div>

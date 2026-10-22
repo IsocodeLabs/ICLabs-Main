@@ -18,7 +18,9 @@ let sending = false
  * "Invite to workspace" for the selected applicants. Only Shortlisted people are
  * sent; anyone already tagged `workspace-invited` is skipped unless `resend`, which
  * asks the workspace to email them a fresh login (new temporary password).
- * `preview: true` only counts. Everyone the workspace accepts gets the tag.
+ * `preview: true` only counts, and lists who is new and who is already in, so
+ * the desk can let the founder skip or re-send those and send the rest in
+ * batches of MAX_PER_INVITE. Everyone the workspace accepts gets the tag.
  */
 export async function POST(req: Request) {
   const auth = await requireAdmin(req)
@@ -26,7 +28,7 @@ export async function POST(req: Request) {
   const { payload, user } = auth
 
   const body = (await req.json().catch(() => ({}))) as { ids?: unknown[]; preview?: boolean; resend?: boolean }
-  const ids = (Array.isArray(body.ids) ? body.ids : []).filter((n): n is number => Number.isInteger(n)).slice(0, 1000)
+  const ids = (Array.isArray(body.ids) ? body.ids : []).filter((n): n is number => Number.isInteger(n)).slice(0, 10000)
   if (ids.length === 0) return json({ ok: false, error: 'Nobody selected.' }, 400)
 
   if (!workspaceConfigured()) {
@@ -37,7 +39,6 @@ export async function POST(req: Request) {
     const found = await payload.find({
       collection: 'applications',
       where: { id: { in: ids } },
-      limit: 1000,
       depth: 0,
       pagination: false,
       overrideAccess: true,
@@ -69,7 +70,17 @@ export async function POST(req: Request) {
       return true
     })
 
-    if (body.preview) return json({ ok: true, recipients: eligible.length, skipped, limit: MAX_PER_INVITE })
+    if (body.preview) {
+      const invited = (d: (typeof eligible)[number]) => (d.tags ?? []).includes(WORKSPACE_TAG)
+      return json({
+        ok: true,
+        recipients: eligible.length,
+        skipped,
+        limit: MAX_PER_INVITE,
+        newIds: eligible.filter((d) => !invited(d)).map((d) => d.id),
+        invitedIds: eligible.filter(invited).map((d) => d.id),
+      })
+    }
     if (eligible.length === 0) return json({ ok: true, invited: 0, already: 0, failed: [], skipped })
     if (eligible.length > MAX_PER_INVITE) {
       return json(

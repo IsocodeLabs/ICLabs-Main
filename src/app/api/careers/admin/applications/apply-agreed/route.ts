@@ -16,12 +16,17 @@ export const dynamic = 'force-dynamic'
  * This applies the same rule to them: everyone-approves → Shortlisted,
  * everyone-rejects → Rejected, only for applicants still in screening
  * (applied / shortlisted / rejected). `dryRun: true` only counts.
+ *
+ * `limit` moves at most that many and reports `remaining`, so the desk can run
+ * it in small chunks with a progress bar. Moved rows drop out of the query, so
+ * each call simply picks up the next ones.
  */
 export async function POST(req: Request) {
   const auth = await requireAdmin(req)
   if ('error' in auth) return auth.error
   const { payload, user } = auth
-  const body = (await req.json().catch(() => ({}))) as { dryRun?: boolean; cycle?: string }
+  const body = (await req.json().catch(() => ({}))) as { dryRun?: boolean; cycle?: string; limit?: number }
+  const limit = Number.isInteger(body.limit) && body.limit! > 0 ? Math.min(body.limit!, 500) : Infinity
   const cycle = typeof body.cycle === 'string' && body.cycle ? body.cycle : careersConfig.cycle
 
   try {
@@ -64,9 +69,10 @@ export async function POST(req: Request) {
     if (body.dryRun) return json({ ok: true, dryRun: true, ...summary })
 
     // a few at a time, through the collection hook, as the founder who ran it
-    for (let i = 0; i < moves.length; i += 10) {
+    const batch = moves.slice(0, limit)
+    for (let i = 0; i < batch.length; i += 10) {
       await Promise.all(
-        moves.slice(i, i + 10).map((m) =>
+        batch.slice(i, i + 10).map((m) =>
           payload.update({
             collection: 'applications',
             id: m.id,
@@ -80,7 +86,7 @@ export async function POST(req: Request) {
       )
     }
     logInfo('apply_agreed', { actor: hashId(String(user.id)), cycle, toShortlist, toReject, heldBackByMaybe })
-    return json({ ok: true, dryRun: false, ...summary })
+    return json({ ok: true, dryRun: false, ...summary, moved: batch.length, remaining: moves.length - batch.length })
   } catch (err) {
     logError('apply_agreed_failed', err, { actor: hashId(String(user.id)) })
     return json({ ok: false, error: 'Couldn’t apply the agreed reviews.' }, 500)

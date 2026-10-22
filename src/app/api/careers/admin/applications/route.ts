@@ -1,6 +1,7 @@
 import { APPLICATION_STAGES } from '@/collections/Applications'
 import { buildWhere, filtersFrom, requireAdmin, ROW_SELECT, sortFor, toRow } from '@/lib/careers/admin'
 import { hashId } from '@/lib/careers/crypto'
+import { pgPool } from '@/lib/careers/db'
 import { logError } from '@/lib/careers/log'
 import { json } from '@/lib/careers/request'
 import { loadReviews } from '@/lib/careers/reviews'
@@ -79,8 +80,13 @@ export async function GET(req: Request) {
 
 /**
  * Bulk stage change — on the selected ids, or on everything matching the
- * current filter (`all: true`). Each row goes through the collection hook, so
- * who/when is recorded per applicant; the bulk action itself is audit-logged.
+ * current filter (`all: true`). The bulk action itself is audit-logged.
+ *
+ * One SQL statement rather than payload.update: Payload runs every row through
+ * its own update (hooks, array rewrites) inside a single transaction, which
+ * takes minutes for a few thousand rows. This writes exactly what the
+ * collection's stage hook would — stage, stageChangedAt/By and one stageHistory
+ * entry — and only for rows whose stage actually changes.
  */
 export async function POST(req: Request) {
   const auth = await requireAdmin(req)
@@ -95,20 +101,39 @@ export async function POST(req: Request) {
   if (!APPLICATION_STAGES.some((s) => s.value === body.stage)) {
     return json({ ok: false, error: 'Unknown stage' }, 400)
   }
-  const ids = (body.ids ?? []).filter((n) => Number.isInteger(n)).slice(0, MAX_SELECT)
-  const where = body.all ? buildWhere(filtersFrom(body.filters ?? {})) : { id: { in: ids } }
+  let ids = (body.ids ?? []).filter((n) => Number.isInteger(n)).slice(0, MAX_SELECT)
   if (!body.all && ids.length === 0) return json({ ok: false, error: 'Nothing selected' }, 400)
 
+  const client = await pgPool(payload).connect()
   try {
-    const res = await payload.update({
-      collection: 'applications',
-      where,
-      data: { stage: body.stage as never },
-      user,
-      overrideAccess: true,
-      depth: 0,
-      select: { stage: true },
-    })
+    if (body.all) {
+      const matching = await payload.find({
+        collection: 'applications',
+        where: buildWhere(filtersFrom(body.filters ?? {})),
+        pagination: false,
+        depth: 0,
+        select: { stage: true },
+        overrideAccess: true,
+      })
+      ids = matching.docs.map((d) => d.id)
+    }
+    const at = new Date().toISOString()
+    await client.query('BEGIN')
+    const res = await client.query(
+      `WITH moved AS (
+         UPDATE applications
+            SET stage = $1::enum_applications_stage, stage_changed_at = $2, stage_changed_by_id = $3, updated_at = $2
+          WHERE id = ANY($4::int[]) AND stage IS DISTINCT FROM $1::enum_applications_stage
+          RETURNING id
+       )
+       INSERT INTO applications_stage_history (_order, _parent_id, id, stage, at, by_id)
+       SELECT COALESCE((SELECT max(h._order) FROM applications_stage_history h WHERE h._parent_id = m.id), 0) + 1,
+              m.id, substr(md5(random()::text || clock_timestamp()::text || m.id::text), 1, 24), $1, $2, $3
+         FROM moved m`,
+      [body.stage, at, user.id, ids],
+    )
+    await client.query('COMMIT')
+    const moved = res.rowCount ?? 0
     await payload.create({
       collection: 'careers-audit-log',
       overrideAccess: true,
@@ -117,16 +142,19 @@ export async function POST(req: Request) {
         actor: user.id,
         detail: {
           stage: body.stage,
-          count: res.docs.length,
+          count: moved,
           scope: body.all ? 'filter' : 'selection',
           filters: body.all ? body.filters ?? {} : undefined,
           ids: body.all ? undefined : ids.slice(0, 500),
         },
       },
     })
-    return json({ ok: true, updated: res.docs.length, failed: res.errors.length })
+    return json({ ok: true, updated: moved, unchanged: ids.length - moved, failed: 0 })
   } catch (err) {
+    await client.query('ROLLBACK').catch(() => {})
     logError('admin_bulk_failed', err, { actor: hashId(String(user.id)) })
     return json({ ok: false, error: 'Bulk update failed.' }, 500)
+  } finally {
+    client.release()
   }
 }
