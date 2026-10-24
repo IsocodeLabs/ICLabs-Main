@@ -20,6 +20,9 @@ type AboutProps = {
   }>
 }
 
+/** founders row temporarily hidden — flip to true to bring it back */
+const SHOW_FOUNDERS = false
+
 /**
  * About — one line of who, one line of how, the people behind it, then the
  * small way in for a question. The values live on /about; this is the teaser.
@@ -72,7 +75,7 @@ export function About({ heading, body, teamLine, contactHeading, founders = [] }
             </div>
           </div>
 
-          {founders.length > 0 && (
+          {SHOW_FOUNDERS && founders.length > 0 && (
             <div className={styles.foundersRow}>
               <span className={`mono-label ${styles.foundersLabel}`}>The people</span>
               <ul className={styles.foundersList}>

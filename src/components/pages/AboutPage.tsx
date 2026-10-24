@@ -20,6 +20,9 @@ type FooterContent = {
 /** panel surface: quiet glass + a real lift so cards don't merge into the sky */
 const panel = `${glass.glass} ${glass.strong} ${styles.lift}`
 
+/** founders section temporarily hidden — flip to true to bring it back */
+const SHOW_FOUNDERS = false
+
 /**
  * The standalone /about page. A content page, not the homepage journey: the
  * anchor world drifts ambiently behind (WorldBackground), content floats on
@@ -77,6 +80,7 @@ export function AboutPage({
           </Section>
 
           {/* ── Founders ── */}
+          {SHOW_FOUNDERS && (
           <Section trail="center" className={styles.aboutSection}>
             <div className={sections.inner}>
               <Reveal className={styles.blockHead}>
@@ -139,6 +143,7 @@ export function AboutPage({
               </Reveal>
             </div>
           </Section>
+          )}
 
           {/* ── Contact close ── */}
           <Section id="contact" className={`${styles.aboutSection} ${styles.contactSection}`}>
